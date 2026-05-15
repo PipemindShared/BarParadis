@@ -17,49 +17,50 @@ export default function Home() {
         <source src="/videos/MobileIntro.mp4" type="video/mp4" />
       </video>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/5 to-black/60" />
 
       <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
 
       <FloatingGlyphs />
 
-      <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-5 text-white">
+      <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-5 text-white drop-shadow-md">
         <header className="flex justify-end">
           <div
-            className="rotate-[-6deg] rounded-md border-2 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.18em] backdrop-blur-md"
-            style={{ borderColor: `${TEAL}b3`, backgroundColor: `${TEAL}1a` }}
+            className="rotate-[-6deg] rounded-md border-2 px-2.5 py-1.5 text-[11px] uppercase tracking-[0.18em] backdrop-blur-md"
+            style={{ borderColor: `${TEAL}cc`, backgroundColor: `${TEAL}26` }}
           >
-            <span className="font-mono" style={{ color: TEAL_LIGHT }}>
-              <span style={{ color: TEAL }}>✦</span> Édition
+            <span className="font-mono text-white">
+              <span style={{ color: TEAL_LIGHT }}>✦</span> Édition
             </span>
             <br />
-            <span className="font-mono text-white/90">Interface · QC ’26</span>
+            <span className="font-mono text-white/95">Interface · QC ’26</span>
           </div>
         </header>
 
         <div className="mt-3 flex flex-1 flex-col">
-          <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-white/70">
+          <p className="font-mono text-[12px] uppercase tracking-[0.32em] text-white/85">
             ── bienvenue au
           </p>
 
-          <h1 className="mt-1 font-serif leading-[0.82] tracking-tight">
+          <h1 className="mt-1 font-serif leading-[0.82] tracking-tight text-white">
             <span
-              className="block italic text-white"
+              className="block italic"
               style={{
                 fontSize: "clamp(3.8rem,18vw,7.5rem)",
                 marginLeft: "-0.04em",
+                textShadow: "0 2px 16px rgba(0,0,0,0.35)",
               }}
             >
               Paradis
             </span>
-            <span className="ml-12 inline-block font-sans text-base font-light tracking-[0.25em] text-white/70 uppercase">
+            <span className="ml-12 inline-block font-sans text-base font-light tracking-[0.25em] text-white/85 uppercase">
               · des ·
             </span>
             <span
               className="block italic"
               style={{
                 fontSize: "clamp(3rem,14vw,6rem)",
-                color: TEAL_LIGHT,
+                textShadow: "0 2px 16px rgba(0,0,0,0.4)",
               }}
             >
               développeurs
@@ -67,62 +68,63 @@ export default function Home() {
           </h1>
 
           <div className="mt-3 flex items-center gap-2">
-            <span
-              className="h-px w-6"
-              style={{ backgroundColor: TEAL }}
-            />
+            <span className="h-px w-6" style={{ backgroundColor: TEAL_LIGHT }} />
             <p
-              className="font-mono text-[10px] uppercase tracking-[0.22em]"
+              className="font-mono text-[11px] uppercase tracking-[0.22em]"
               style={{ color: TEAL_LIGHT }}
             >
               47 réincarnés aujourd’hui
             </p>
           </div>
 
-          <div className="mt-auto max-w-[280px] self-end text-right">
-            <p className="text-base leading-snug text-white/95">
-              Tes anciennes méthodes sont{" "}
+          <div className="mt-auto max-w-[300px] self-end text-right">
+            <p className="text-lg leading-snug text-white">
+              Ta carrière d’avant est{" "}
               <span className="relative inline-block">
-                <span className="italic">mortes</span>
+                <span className="italic">morte</span>
                 <span
                   className="absolute left-[-2px] right-[-2px] top-1/2 h-[3px] -translate-y-1/2 rotate-[-3deg]"
-                  style={{ backgroundColor: TEAL }}
+                  style={{ backgroundColor: TEAL_LIGHT }}
                   aria-hidden
                 />
               </span>
               .
             </p>
-            <p className="mt-1.5 text-sm leading-snug text-white/80">
-              Bienvenue dans ta prochaine vie.
+            <p className="mt-2 text-base leading-snug text-white/85">
+              Reviens d’entre les morts.
             </p>
           </div>
         </div>
 
-        <footer className="mt-4 flex flex-col items-center gap-2.5">
+        <footer className="mt-5 flex flex-col items-center gap-2.5">
           <Link
             href="/consentement"
-            className="group relative flex w-full items-center justify-between rounded-full border-2 border-white/60 bg-white/5 px-6 py-4 text-base font-medium tracking-wide text-white backdrop-blur-md transition-all hover:bg-white/15 active:scale-[0.98]"
+            className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98]"
+            style={{
+              background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
+              boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
+            }}
           >
             <span
-              className="absolute inset-0 -m-2 animate-pulse rounded-full opacity-70 blur-2xl"
+              className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
               style={{
-                background: `linear-gradient(90deg, ${TEAL}66, rgba(180,200,255,0.25), ${TEAL}66)`,
+                background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
               }}
             />
             <span className="relative flex items-center gap-2">
               <span style={{ color: TEAL_LIGHT }}>✦</span>
-              entrer au paradis
+              Obtiens ton élixir
             </span>
             <span className="relative text-xl transition-transform group-hover:translate-x-1">
               →
             </span>
           </Link>
 
-          <p className="font-mono text-[9px] uppercase tracking-[0.28em] text-white/55">
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/65">
             ≈ 2 min · 7 questions · 1 élixir
           </p>
 
-          <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.22em] text-white/30">
+          <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-white/45">
             <Link
               href="/confidentialite"
               className="font-mono underline-offset-4 hover:underline"
@@ -140,34 +142,31 @@ export default function Home() {
 
 function FloatingGlyphs() {
   const glyphs = [
-    { char: "✦", top: "10%", left: "6%", size: "text-2xl", delay: "0s", color: "text-white/30" },
-    { char: "☁", top: "22%", right: "10%", size: "text-3xl", delay: "1.5s", color: "text-white/25" },
-    { char: "✧", top: "44%", left: "4%", size: "text-xl", delay: "3s", color: "#7DD4C766" },
-    { char: "✦", top: "58%", right: "6%", size: "text-2xl", delay: "0.8s", color: "text-white/30" },
-    { char: "⌘", top: "75%", left: "12%", size: "text-base", delay: "2.2s", color: "text-white/25" },
-    { char: "✧", top: "32%", right: "22%", size: "text-sm", delay: "1.2s", color: "#7DD4C780" },
+    { char: "✦", top: "10%", left: "6%", size: "text-2xl", delay: "0s", color: "text-white/35" },
+    { char: "☁", top: "22%", right: "10%", size: "text-3xl", delay: "1.5s", color: "text-white/30" },
+    { char: "✧", top: "44%", left: "4%", size: "text-xl", delay: "3s", colorHex: "#7DD4C766" },
+    { char: "✦", top: "58%", right: "6%", size: "text-2xl", delay: "0.8s", color: "text-white/35" },
+    { char: "⌘", top: "75%", left: "12%", size: "text-base", delay: "2.2s", color: "text-white/30" },
+    { char: "✧", top: "32%", right: "22%", size: "text-sm", delay: "1.2s", colorHex: "#7DD4C780" },
   ];
 
   return (
     <div className="pointer-events-none absolute inset-0 z-[5]">
-      {glyphs.map((g, i) => {
-        const isClass = g.color.startsWith("text-");
-        return (
-          <span
-            key={i}
-            className={`absolute ${g.size} animate-float ${isClass ? g.color : ""}`}
-            style={{
-              top: g.top,
-              left: g.left,
-              right: g.right,
-              animationDelay: g.delay,
-              ...(isClass ? {} : { color: g.color }),
-            }}
-          >
-            {g.char}
-          </span>
-        );
-      })}
+      {glyphs.map((g, i) => (
+        <span
+          key={i}
+          className={`absolute ${g.size} animate-float ${g.color ?? ""}`}
+          style={{
+            top: g.top,
+            left: g.left,
+            right: g.right,
+            animationDelay: g.delay,
+            ...(g.colorHex ? { color: g.colorHex } : {}),
+          }}
+        >
+          {g.char}
+        </span>
+      ))}
     </div>
   );
 }
