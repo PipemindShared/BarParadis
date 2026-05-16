@@ -139,7 +139,7 @@ export default function Home() {
           </div>
 
           <Link
-            href="/consentement"
+            href="/questionnaire"
             className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] animate-fade-up"
             style={{
               background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
