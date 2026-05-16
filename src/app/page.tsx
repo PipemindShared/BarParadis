@@ -13,9 +13,17 @@ export default function Home() {
         playsInline
         preload="auto"
         className="absolute inset-0 h-full w-full object-cover animate-fade-in"
+        style={{
+          filter: "saturate(0.7) hue-rotate(-12deg) brightness(0.95) contrast(1.05)",
+        }}
       >
         <source src="/videos/MobileIntro.mp4" type="video/mp4" />
       </video>
+
+      <div
+        className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+        style={{ backgroundColor: TEAL, opacity: 0.12 }}
+      />
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/5 to-black/60" />
 
