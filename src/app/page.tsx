@@ -30,10 +30,8 @@ export default function Home() {
             style={{ borderColor: `${TEAL}cc`, backgroundColor: `${TEAL}26` }}
           >
             <span className="font-mono text-white">
-              <span style={{ color: TEAL_LIGHT }}>✦</span> Édition
+              <span style={{ color: TEAL_LIGHT }}>✦</span> Interface 2026
             </span>
-            <br />
-            <span className="font-mono text-white/95">Interface · QC ’26</span>
           </div>
         </header>
 
