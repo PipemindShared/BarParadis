@@ -1,12 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { computeProfile, type Answer, type Profile } from "@/lib/questionnaire";
+import {
+  computeProfile,
+  pickDrinkName,
+  type Answer,
+  type Profile,
+} from "@/lib/questionnaire";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
+
+type Phase = "creating" | "profile" | "drink" | "cta";
 
 const PROFILE_INFO: Record<Profile, { title: string; subtitle: string }> = {
   Codeur: {
@@ -29,83 +36,217 @@ const PROFILE_INFO: Record<Profile, { title: string; subtitle: string }> = {
 
 export default function ElixirPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [drink, setDrink] = useState<string | null>(null);
+  const [phase, setPhase] = useState<Phase>("creating");
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem("paradis_answers");
-      if (!raw) return;
-      const answers: Answer[] = JSON.parse(raw);
-      const { primary } = computeProfile(answers);
-      setProfile(primary);
+      if (raw) {
+        const answers: Answer[] = JSON.parse(raw);
+        const { primary } = computeProfile(answers);
+        setProfile(primary);
+        setDrink(pickDrinkName(primary));
+      } else {
+        // No answers — pick a random profile for demo
+        const profiles: Profile[] = ["Codeur", "Designer", "Visionnaire", "Gestionnaire"];
+        const p = profiles[Math.floor(Math.random() * 4)];
+        setProfile(p);
+        setDrink(pickDrinkName(p));
+      }
     } catch {}
   }, []);
 
-  if (!profile) {
-    return (
-      <div className="flex h-[100dvh] w-full items-center justify-center bg-gradient-to-b from-[#0a1729] to-[#06101e] text-white">
-        <p className="font-mono text-sm uppercase tracking-[0.25em] text-white/60">
-          Préparation de ton élixir…
-        </p>
-      </div>
-    );
-  }
-
-  const info = PROFILE_INFO[profile];
+  useEffect(() => {
+    if (!profile) return;
+    const t1 = setTimeout(() => setPhase("profile"), 3800);
+    const t2 = setTimeout(() => setPhase("drink"), 6800);
+    const t3 = setTimeout(() => setPhase("cta"), 9000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [profile]);
 
   return (
-    <div className="relative flex h-[100dvh] w-full overflow-hidden bg-gradient-to-b from-[#0a1729] via-[#101d34] to-[#06101e] text-white">
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/3 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-40 blur-3xl"
-        style={{ background: `radial-gradient(circle, ${TEAL_LIGHT}, transparent 70%)` }}
+    <div className="relative flex h-[100dvh] w-full overflow-hidden bg-black">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{
+          filter: "saturate(0.85) brightness(0.85)",
+        }}
+      >
+        <source src="/videos/Elixir.mp4" type="video/mp4" />
+      </video>
+
+      <motion.div
+        className="absolute inset-0 bg-black"
+        initial={{ opacity: 0.7 }}
+        animate={{
+          opacity: phase === "creating" ? 0.55 : 0.4,
+        }}
+        transition={{ duration: 1.5 }}
       />
+
       <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
 
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6 text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/60"
-        >
-          ── tu es réincarné en
-        </motion.p>
+      <div className="relative z-10 flex h-full w-full flex-col items-center px-6 pb-10 pt-8 text-center text-white">
+        <AnimatePresence mode="wait">
+          {phase === "creating" && profile && (
+            <motion.div
+              key="creating"
+              className="flex flex-1 flex-col items-center justify-center gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, filter: "blur(10px)" }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                className="text-4xl"
+                style={{ color: TEAL_LIGHT }}
+              >
+                ✦
+              </motion.div>
+              <div className="space-y-2">
+                <p className="font-mono text-[12px] uppercase tracking-[0.32em] text-white/70">
+                  ── ton élixir
+                </p>
+                <p className="font-serif text-2xl italic text-white">
+                  prend forme<DotPulse />
+                </p>
+              </div>
+            </motion.div>
+          )}
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-4 font-serif text-[clamp(2.8rem,11vw,4.5rem)] italic leading-[1] tracking-tight"
-          style={{ color: TEAL_LIGHT }}
-        >
-          {info.title}
-        </motion.h1>
+          {(phase === "profile" || phase === "drink" || phase === "cta") && profile && (
+            <motion.div
+              key="reveal"
+              className="flex flex-1 flex-col items-center justify-center gap-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col items-center"
+              >
+                <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/65">
+                  ── tu es réincarné en
+                </p>
+                <h1
+                  className="mt-3 font-serif text-[clamp(2.4rem,10vw,4rem)] italic leading-[1] tracking-tight"
+                  style={{
+                    color: TEAL_LIGHT,
+                    textShadow: `0 2px 24px ${TEAL}66`,
+                  }}
+                >
+                  {PROFILE_INFO[profile].title}
+                </h1>
+                <p className="mt-4 max-w-xs text-base leading-snug text-white/80">
+                  {PROFILE_INFO[profile].subtitle}
+                </p>
+              </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-6 max-w-xs text-base leading-snug text-white/85"
-        >
-          {info.subtitle}
-        </motion.p>
+              <AnimatePresence>
+                {(phase === "drink" || phase === "cta") && drink && (
+                  <motion.div
+                    key="drink"
+                    initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="h-px w-8"
+                        style={{ backgroundColor: TEAL_LIGHT }}
+                      />
+                      <p
+                        className="font-mono text-[11px] uppercase tracking-[0.28em]"
+                        style={{ color: TEAL_LIGHT }}
+                      >
+                        ton élixir
+                      </p>
+                      <span
+                        className="h-px w-8"
+                        style={{ backgroundColor: TEAL_LIGHT }}
+                      />
+                    </div>
+                    <p className="mt-3 font-serif text-[clamp(1.8rem,7vw,2.8rem)] italic leading-tight text-white">
+                      {drink}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-          className="mt-12"
-        >
-          <Link
-            href="/"
-            className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/50 underline-offset-4 hover:underline"
-          >
-            ← recommencer
-          </Link>
-          <p className="mt-3 max-w-xs font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">
-            (page élixir + inscription · à construire)
-          </p>
-        </motion.div>
+        <AnimatePresence>
+          {phase === "cta" && (
+            <motion.div
+              key="cta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="flex w-full flex-col items-stretch gap-3"
+            >
+              <Link
+                href="/reclamer"
+                className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98]"
+                style={{
+                  background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
+                  boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
+                }}
+              >
+                <span
+                  className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
+                  style={{
+                    background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
+                  }}
+                />
+                <span className="relative flex items-center gap-2">
+                  <span style={{ color: TEAL_LIGHT }}>✦</span>
+                  Réclame ton élixir
+                </span>
+                <span className="relative text-xl transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+              <p className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/60">
+                un petit pas avant que le barman te le prépare
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+function DotPulse() {
+  return (
+    <span className="inline-flex">
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18 }}
+          className="mx-[1px]"
+        >
+          .
+        </motion.span>
+      ))}
+    </span>
   );
 }

@@ -210,6 +210,54 @@ export type Answer = {
   letter: "A" | "B" | "C" | "D";
 };
 
+export const DRINK_NAMES: Record<Profile, string[]> = {
+  Codeur: [
+    "Le Debug Céleste",
+    "L’API des Nuages",
+    "Le Commit Éternel",
+    "Le Patch de Renaissance",
+    "Le Terminal Lumineux",
+    "La Fonction Cachée",
+    "Le Backend Flottant",
+    "La Stack des Nuages",
+  ],
+  Designer: [
+    "Le Pixel Nuageux",
+    "Le Halo UX",
+    "La Maquette Flottante",
+    "Le Prototype Lumineux",
+    "Le Wireframe Céleste",
+    "Le Dégradé de Renaissance",
+    "La Grille Parfaite",
+    "Le Bouton Miraculeusement Clair",
+  ],
+  Visionnaire: [
+    "Le Nectar 2030",
+    "La Roadmap Céleste",
+    "Le Sprint vers Demain",
+    "La Vision en Suspension",
+    "Le MVP des Nuages",
+    "L’Étincelle Stratégique",
+    "Le Futur Servi Froid",
+    "L’Idée Revenue à la Vie",
+  ],
+  Gestionnaire: [
+    "Le Kanban Nuageux",
+    "Le Brief Flottant",
+    "Le Sprint Réincarné",
+    "La Priorité Cosmique",
+    "Le Post-it Immortel",
+    "La Roadmap Apaisée",
+    "Le Scope Stabilisé",
+    "Le Comité Dissous",
+  ],
+};
+
+export function pickDrinkName(profile: Profile): string {
+  const list = DRINK_NAMES[profile];
+  return list[Math.floor(Math.random() * list.length)];
+}
+
 export function computeProfile(answers: Answer[]): {
   scores: Record<Profile, number>;
   primary: Profile;
