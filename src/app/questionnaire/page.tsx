@@ -73,6 +73,7 @@ export default function QuestionnairePage() {
 
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-gradient-to-b from-[#0a1729] via-[#101d34] to-[#06101e]">
+      <DriftingClouds />
       <BackgroundOrbs />
       <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
 
@@ -87,9 +88,7 @@ export default function QuestionnairePage() {
             ← retour
           </button>
           <div className="flex items-center gap-2">
-            <span
-              className="font-mono text-[12px] uppercase tracking-[0.18em] text-white/70"
-            >
+            <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-white/70">
               <span style={{ color: TEAL_LIGHT }}>
                 {String(index + 1).padStart(2, "0")}
               </span>
@@ -122,7 +121,16 @@ export default function QuestionnairePage() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-1 flex-col"
           >
-            <div className="mt-6">
+            <motion.div
+              className="mt-6"
+              animate={{ y: [0, -4, 0] }}
+              transition={{
+                duration: 7,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.8,
+              }}
+            >
               <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/55">
                 Question {String(question.id).padStart(2, "0")}
               </p>
@@ -132,7 +140,7 @@ export default function QuestionnairePage() {
                   {question.text}
                 </span>
               </h2>
-            </div>
+            </motion.div>
 
             <ul className="mt-6 flex flex-1 flex-col gap-2.5">
               {question.options.map((option, i) => (
@@ -173,7 +181,7 @@ function OptionCard({
 
   return (
     <motion.li
-      initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+      initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{
         duration: 0.6,
@@ -181,65 +189,164 @@ function OptionCard({
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={disabled}
-        className="group relative flex w-full items-start gap-4 rounded-2xl border border-white/15 bg-white/[0.04] p-4 text-left backdrop-blur-md transition-all duration-200 enabled:hover:border-white/40 enabled:hover:bg-white/[0.08] disabled:cursor-default"
-        style={
-          selected
-            ? {
-                borderColor: TEAL,
-                backgroundColor: `${TEAL}33`,
-                boxShadow: `0 0 0 1px ${TEAL_LIGHT}66 inset, 0 10px 40px -10px ${TEAL}99`,
-              }
-            : undefined
-        }
+      <motion.div
+        animate={{ y: [0, -3, 0] }}
+        transition={{
+          duration: 5 + index * 0.4,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1.4 + index * 0.2,
+        }}
       >
-        <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-serif text-xl italic transition-colors"
-          style={{
-            borderColor: selected ? TEAL_LIGHT : "rgba(255,255,255,0.25)",
-            backgroundColor: selected ? `${TEAL_LIGHT}33` : "transparent",
-            color: selected ? TEAL_LIGHT : "white",
-          }}
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={disabled}
+          className="group relative flex w-full items-start gap-4 rounded-2xl border border-white/15 bg-white/[0.04] p-4 text-left backdrop-blur-md transition-all duration-200 enabled:hover:border-white/40 enabled:hover:bg-white/[0.08] disabled:cursor-default"
+          style={
+            selected
+              ? {
+                  borderColor: TEAL,
+                  backgroundColor: `${TEAL}33`,
+                  boxShadow: `0 0 0 1px ${TEAL_LIGHT}66 inset, 0 10px 40px -10px ${TEAL}99`,
+                }
+              : undefined
+          }
         >
-          {option.letter}
-        </div>
-        <p className="pt-1 text-[15px] leading-snug text-white/90">
-          {option.text}
-        </p>
-
-        {selected && (
-          <motion.span
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1.4, opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="pointer-events-none absolute inset-0 rounded-2xl"
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-serif text-xl italic transition-colors"
             style={{
-              boxShadow: `0 0 0 2px ${TEAL_LIGHT}`,
+              borderColor: selected ? TEAL_LIGHT : "rgba(255,255,255,0.25)",
+              backgroundColor: selected ? `${TEAL_LIGHT}33` : "transparent",
+              color: selected ? TEAL_LIGHT : "white",
             }}
-          />
-        )}
-      </button>
+          >
+            {option.letter}
+          </div>
+          <p className="pt-1 text-[15px] leading-snug text-white/90">
+            {option.text}
+          </p>
+
+          {selected && (
+            <motion.span
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1.4, opacity: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="pointer-events-none absolute inset-0 rounded-2xl"
+              style={{
+                boxShadow: `0 0 0 2px ${TEAL_LIGHT}`,
+              }}
+            />
+          )}
+        </button>
+      </motion.div>
     </motion.li>
+  );
+}
+
+function DriftingClouds() {
+  const clouds = [
+    {
+      size: 360,
+      top: "5%",
+      left: "-20%",
+      xRange: 220,
+      yRange: -40,
+      duration: 38,
+      delay: 0,
+      opacity: 0.07,
+    },
+    {
+      size: 280,
+      top: "35%",
+      left: "65%",
+      xRange: -180,
+      yRange: 50,
+      duration: 44,
+      delay: 6,
+      opacity: 0.05,
+    },
+    {
+      size: 420,
+      top: "60%",
+      left: "-25%",
+      xRange: 260,
+      yRange: -30,
+      duration: 52,
+      delay: 12,
+      opacity: 0.06,
+    },
+    {
+      size: 220,
+      top: "15%",
+      left: "75%",
+      xRange: -140,
+      yRange: 40,
+      duration: 36,
+      delay: 3,
+      opacity: 0.08,
+    },
+    {
+      size: 320,
+      top: "75%",
+      left: "40%",
+      xRange: 120,
+      yRange: -50,
+      duration: 48,
+      delay: 9,
+      opacity: 0.05,
+    },
+  ];
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {clouds.map((c, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-white blur-3xl"
+          style={{
+            top: c.top,
+            left: c.left,
+            width: c.size,
+            height: c.size,
+            opacity: c.opacity,
+          }}
+          animate={{
+            x: [0, c.xRange, 0],
+            y: [0, c.yRange, 0],
+          }}
+          transition={{
+            duration: c.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: c.delay,
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
 function BackgroundOrbs() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
+      <motion.div
         className="absolute -left-20 top-10 h-72 w-72 rounded-full opacity-30 blur-3xl"
         style={{ background: `radial-gradient(circle, ${TEAL_LIGHT}, transparent 70%)` }}
+        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div
+      <motion.div
         className="absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-25 blur-3xl"
         style={{ background: "radial-gradient(circle, #6366f1, transparent 70%)" }}
+        animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 4 }}
       />
-      <div
+      <motion.div
         className="absolute bottom-0 left-1/4 h-80 w-80 rounded-full opacity-20 blur-3xl"
         style={{ background: `radial-gradient(circle, ${TEAL}, transparent 70%)` }}
+        animate={{ x: [0, 35, 0], y: [0, -25, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
     </div>
   );
