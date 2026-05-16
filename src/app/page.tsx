@@ -160,15 +160,15 @@ export default function Home() {
           </Link>
 
           <div
-            className="flex items-center justify-between animate-fade-up"
+            className="flex items-center justify-between gap-3 animate-fade-up"
             style={{ animationDelay: "2.7s" }}
           >
-            <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-white/75">
-              2 min · 7 questions
+            <p className="whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.12em] text-white/75">
+              2&nbsp;min · 7&nbsp;questions
             </p>
             <Link
               href="/confidentialite"
-              className="font-mono text-[12px] uppercase tracking-[0.14em] text-white/60 underline-offset-4 hover:underline"
+              className="whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.12em] text-white/60 underline-offset-4 hover:underline"
             >
               confidentialité
             </Link>
