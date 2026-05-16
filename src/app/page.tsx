@@ -12,7 +12,7 @@ export default function Home() {
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover animate-fade-in"
       >
         <source src="/videos/MobileIntro.mp4" type="video/mp4" />
       </video>
@@ -24,7 +24,10 @@ export default function Home() {
       <FloatingGlyphs />
 
       <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-5 text-white drop-shadow-md">
-        <header className="flex justify-end">
+        <header
+          className="flex justify-end animate-slide-in"
+          style={{ animationDelay: "0.2s" }}
+        >
           <div
             className="rotate-[-6deg] rounded-md border-2 px-3 py-1.5 text-[13px] uppercase tracking-[0.14em] backdrop-blur-md"
             style={{ borderColor: `${TEAL}cc`, backgroundColor: `${TEAL}26` }}
@@ -35,37 +38,48 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="mt-3 flex flex-1 flex-col">
-          <p className="font-mono text-[14px] uppercase tracking-[0.28em] text-white/90">
+        <div className="mt-6 flex flex-1 flex-col items-start">
+          <p
+            className="font-mono text-[14px] uppercase tracking-[0.28em] text-white/90 animate-fade-up"
+            style={{ animationDelay: "0.5s" }}
+          >
             ── bienvenue au
           </p>
 
-          <h1 className="mt-1 font-serif leading-[0.82] tracking-tight text-white">
+          <h1 className="mt-2 font-serif leading-[0.82] tracking-tight text-white">
             <span
-              className="block italic"
+              className="block italic animate-fade-up"
               style={{
                 fontSize: "clamp(3.8rem,18vw,7.5rem)",
                 marginLeft: "-0.04em",
                 textShadow: "0 2px 16px rgba(0,0,0,0.35)",
+                animationDelay: "0.8s",
               }}
             >
               Paradis
             </span>
-            <span className="ml-12 inline-block font-sans text-lg font-light tracking-[0.25em] text-white/90 uppercase">
+            <span
+              className="ml-10 inline-block font-sans text-lg font-light tracking-[0.25em] text-white/90 uppercase animate-fade-up"
+              style={{ animationDelay: "1.2s" }}
+            >
               · des ·
             </span>
             <span
-              className="block italic"
+              className="block italic animate-fade-up"
               style={{
                 fontSize: "clamp(3rem,14vw,6rem)",
                 textShadow: "0 2px 16px rgba(0,0,0,0.4)",
+                animationDelay: "1.4s",
               }}
             >
               développeurs
             </span>
           </h1>
 
-          <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 backdrop-blur-md">
+          <div
+            className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 backdrop-blur-md animate-fade-up"
+            style={{ animationDelay: "1.8s" }}
+          >
             <span className="relative flex h-2 w-2">
               <span
                 className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
@@ -77,36 +91,49 @@ export default function Home() {
               />
             </span>
             <p className="font-mono text-[13px] uppercase tracking-[0.14em] text-white">
-              47 réincarnés à Interface
+              47 âmes réincarnées
             </p>
           </div>
 
-          <div className="mt-auto max-w-[300px] self-end text-right">
-            <p className="text-lg leading-snug text-white">
+          <div
+            className="mt-auto max-w-[340px] animate-fade-up"
+            style={{ animationDelay: "2.1s" }}
+          >
+            <p className="text-xl leading-snug text-white">
               Ta carrière d’avant est{" "}
-              <span className="relative inline-block">
+              <span className="relative inline-block whitespace-nowrap">
                 <span className="italic">morte</span>
-                <span
-                  className="absolute left-[-2px] right-[-2px] top-1/2 h-[3px] -translate-y-1/2 rotate-[-3deg]"
-                  style={{ backgroundColor: TEAL_LIGHT }}
+                <svg
+                  className="pointer-events-none absolute left-[-4px] right-[-4px] top-1/2 h-3 w-[calc(100%+8px)] -translate-y-1/2"
+                  viewBox="0 0 100 12"
+                  preserveAspectRatio="none"
                   aria-hidden
-                />
+                >
+                  <path
+                    d="M 2 6 Q 15 1 30 7 T 60 5 T 90 7 T 98 6"
+                    stroke={TEAL}
+                    strokeWidth="3.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    style={{
+                      filter: "drop-shadow(0 1px 1px rgba(0,0,0,0.3))",
+                    }}
+                  />
+                </svg>
               </span>
               .
-            </p>
-            <p className="mt-2 text-base leading-snug text-white/85">
-              Reviens d’entre les morts.
             </p>
           </div>
         </div>
 
-        <footer className="mt-5 flex flex-col items-center gap-2.5">
+        <footer className="mt-5 flex flex-col items-stretch gap-3">
           <Link
             href="/consentement"
-            className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98]"
+            className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] animate-fade-up"
             style={{
               background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
               boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
+              animationDelay: "2.4s",
             }}
           >
             <span
@@ -124,16 +151,20 @@ export default function Home() {
             </span>
           </Link>
 
-          <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-white/75">
-            ≈ 2 min · 7 questions · 1 élixir
-          </p>
-
-          <Link
-            href="/confidentialite"
-            className="font-mono text-[12px] uppercase tracking-[0.14em] text-white/60 underline-offset-4 hover:underline"
+          <div
+            className="flex items-center justify-between animate-fade-up"
+            style={{ animationDelay: "2.7s" }}
           >
-            confidentialité
-          </Link>
+            <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-white/75">
+              2 min · 7 questions
+            </p>
+            <Link
+              href="/confidentialite"
+              className="font-mono text-[12px] uppercase tracking-[0.14em] text-white/60 underline-offset-4 hover:underline"
+            >
+              confidentialité
+            </Link>
+          </div>
         </footer>
       </div>
     </div>
