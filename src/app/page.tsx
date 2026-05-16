@@ -46,7 +46,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="mt-6 flex flex-1 flex-col items-start">
+        <div className="mt-6 flex flex-col items-start">
           <p
             className="font-mono text-[14px] uppercase tracking-[0.28em] text-white/90 animate-fade-up"
             style={{ animationDelay: "0.5s" }}
@@ -102,9 +102,14 @@ export default function Home() {
               47 âmes réincarnées
             </p>
           </div>
+        </div>
 
+        <div
+          className="mt-auto flex flex-col items-stretch gap-3"
+          aria-label="Action principale"
+        >
           <div
-            className="mt-auto max-w-[340px] animate-fade-up"
+            className="max-w-[340px] animate-fade-up"
             style={{ animationDelay: "2.1s" }}
           >
             <p className="text-xl leading-snug text-white">
@@ -132,9 +137,7 @@ export default function Home() {
               .
             </p>
           </div>
-        </div>
 
-        <footer className="mt-5 flex flex-col items-stretch gap-3">
           <Link
             href="/consentement"
             className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] animate-fade-up"
@@ -159,21 +162,25 @@ export default function Home() {
             </span>
           </Link>
 
-          <div
-            className="flex items-center justify-between gap-3 animate-fade-up"
+          <p
+            className="whitespace-nowrap text-center font-mono text-[12px] uppercase tracking-[0.14em] text-white/75 animate-fade-up"
             style={{ animationDelay: "2.7s" }}
           >
-            <p className="whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.12em] text-white/75">
-              2&nbsp;min · 7&nbsp;questions
-            </p>
-            <Link
-              href="/confidentialite"
-              className="whitespace-nowrap font-mono text-[12px] uppercase tracking-[0.12em] text-white/60 underline-offset-4 hover:underline"
-            >
-              confidentialité
-            </Link>
-          </div>
-        </footer>
+            ≈ 2&nbsp;min · 7&nbsp;questions
+          </p>
+        </div>
+
+        <div
+          className="mt-5 flex justify-center animate-fade-up"
+          style={{ animationDelay: "3s" }}
+        >
+          <Link
+            href="/confidentialite"
+            className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40 underline-offset-4 hover:underline"
+          >
+            politique de confidentialité
+          </Link>
+        </div>
       </div>
     </div>
   );
