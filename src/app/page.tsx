@@ -26,7 +26,7 @@ export default function Home() {
       <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-5 text-white drop-shadow-md">
         <header className="flex justify-end">
           <div
-            className="rotate-[-6deg] rounded-md border-2 px-2.5 py-1.5 text-[11px] uppercase tracking-[0.18em] backdrop-blur-md"
+            className="rotate-[-6deg] rounded-md border-2 px-3 py-1.5 text-[13px] uppercase tracking-[0.14em] backdrop-blur-md"
             style={{ borderColor: `${TEAL}cc`, backgroundColor: `${TEAL}26` }}
           >
             <span className="font-mono text-white">
@@ -38,7 +38,7 @@ export default function Home() {
         </header>
 
         <div className="mt-3 flex flex-1 flex-col">
-          <p className="font-mono text-[12px] uppercase tracking-[0.32em] text-white/85">
+          <p className="font-mono text-[14px] uppercase tracking-[0.28em] text-white/90">
             ── bienvenue au
           </p>
 
@@ -53,7 +53,7 @@ export default function Home() {
             >
               Paradis
             </span>
-            <span className="ml-12 inline-block font-sans text-base font-light tracking-[0.25em] text-white/85 uppercase">
+            <span className="ml-12 inline-block font-sans text-lg font-light tracking-[0.25em] text-white/90 uppercase">
               · des ·
             </span>
             <span
@@ -70,10 +70,10 @@ export default function Home() {
           <div className="mt-3 flex items-center gap-2">
             <span className="h-px w-6" style={{ backgroundColor: TEAL_LIGHT }} />
             <p
-              className="font-mono text-[11px] uppercase tracking-[0.22em]"
+              className="font-mono text-[13px] uppercase tracking-[0.16em]"
               style={{ color: TEAL_LIGHT }}
             >
-              47 réincarnés aujourd’hui
+              47 réincarnés à Interface
             </p>
           </div>
 
@@ -120,11 +120,11 @@ export default function Home() {
             </span>
           </Link>
 
-          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/65">
+          <p className="font-mono text-[12px] uppercase tracking-[0.2em] text-white/75">
             ≈ 2 min · 7 questions · 1 élixir
           </p>
 
-          <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-white/45">
+          <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.14em] text-white/60">
             <Link
               href="/confidentialite"
               className="font-mono underline-offset-4 hover:underline"
