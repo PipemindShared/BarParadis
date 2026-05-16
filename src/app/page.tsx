@@ -122,16 +122,12 @@ export default function Home() {
             ≈ 2 min · 7 questions · 1 élixir
           </p>
 
-          <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.14em] text-white/60">
-            <Link
-              href="/confidentialite"
-              className="font-mono underline-offset-4 hover:underline"
-            >
-              confidentialité
-            </Link>
-            <span>·</span>
-            <span className="font-mono">pipemind × interface ’26</span>
-          </div>
+          <Link
+            href="/confidentialite"
+            className="font-mono text-[12px] uppercase tracking-[0.14em] text-white/60 underline-offset-4 hover:underline"
+          >
+            confidentialité
+          </Link>
         </footer>
       </div>
     </div>
