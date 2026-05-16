@@ -121,15 +121,9 @@ export default function QuestionnairePage() {
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-1 flex-col"
           >
-            <motion.div
-              className="mt-6"
-              animate={{ y: [0, -4, 0] }}
-              transition={{
-                duration: 7,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.8,
-              }}
+            <div
+              className="mt-6 celestial-float"
+              style={{ animationDuration: "8s", animationDelay: "0.8s" }}
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/55">
                 Question {String(question.id).padStart(2, "0")}
@@ -140,7 +134,7 @@ export default function QuestionnairePage() {
                   {question.text}
                 </span>
               </h2>
-            </motion.div>
+            </div>
 
             <ul className="mt-6 flex flex-1 flex-col gap-2.5">
               {question.options.map((option, i) => (
@@ -189,13 +183,11 @@ function OptionCard({
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      <motion.div
-        animate={{ y: [0, -3, 0] }}
-        transition={{
-          duration: 5 + index * 0.4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1.4 + index * 0.2,
+      <div
+        className="celestial-float"
+        style={{
+          animationDuration: `${6 + index * 0.6}s`,
+          animationDelay: `${1.4 + index * 0.3}s`,
         }}
       >
         <button
@@ -239,87 +231,34 @@ function OptionCard({
             />
           )}
         </button>
-      </motion.div>
+      </div>
     </motion.li>
   );
 }
 
 function DriftingClouds() {
   const clouds = [
-    {
-      size: 360,
-      top: "5%",
-      left: "-20%",
-      xRange: 220,
-      yRange: -40,
-      duration: 38,
-      delay: 0,
-      opacity: 0.07,
-    },
-    {
-      size: 280,
-      top: "35%",
-      left: "65%",
-      xRange: -180,
-      yRange: 50,
-      duration: 44,
-      delay: 6,
-      opacity: 0.05,
-    },
-    {
-      size: 420,
-      top: "60%",
-      left: "-25%",
-      xRange: 260,
-      yRange: -30,
-      duration: 52,
-      delay: 12,
-      opacity: 0.06,
-    },
-    {
-      size: 220,
-      top: "15%",
-      left: "75%",
-      xRange: -140,
-      yRange: 40,
-      duration: 36,
-      delay: 3,
-      opacity: 0.08,
-    },
-    {
-      size: 320,
-      top: "75%",
-      left: "40%",
-      xRange: 120,
-      yRange: -50,
-      duration: 48,
-      delay: 9,
-      opacity: 0.05,
-    },
+    { size: 320, top: "5%", left: "-15%", anim: "drift-a", duration: 48, delay: 0, opacity: 0.06 },
+    { size: 260, top: "35%", left: "65%", anim: "drift-b", duration: 56, delay: 4, opacity: 0.05 },
+    { size: 360, top: "65%", left: "-20%", anim: "drift-c", duration: 64, delay: 9, opacity: 0.05 },
+    { size: 220, top: "20%", left: "75%", anim: "drift-d", duration: 52, delay: 2, opacity: 0.07 },
   ];
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {clouds.map((c, i) => (
-        <motion.div
+        <div
           key={i}
-          className="absolute rounded-full bg-white blur-3xl"
+          className="cloud"
           style={{
             top: c.top,
             left: c.left,
             width: c.size,
             height: c.size,
             opacity: c.opacity,
-          }}
-          animate={{
-            x: [0, c.xRange, 0],
-            y: [0, c.yRange, 0],
-          }}
-          transition={{
-            duration: c.duration,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: c.delay,
+            animationName: c.anim,
+            animationDuration: `${c.duration}s`,
+            animationDelay: `${c.delay}s`,
           }}
         />
       ))}
@@ -330,23 +269,46 @@ function DriftingClouds() {
 function BackgroundOrbs() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <motion.div
-        className="absolute -left-20 top-10 h-72 w-72 rounded-full opacity-30 blur-3xl"
-        style={{ background: `radial-gradient(circle, ${TEAL_LIGHT}, transparent 70%)` }}
-        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      <div
+        className="orb"
+        style={{
+          top: "10%",
+          left: "-80px",
+          width: 280,
+          height: 280,
+          background: `radial-gradient(circle, ${TEAL_LIGHT}, transparent 70%)`,
+          opacity: 0.28,
+          animationName: "orb-drift-1",
+          animationDuration: "26s",
+        }}
       />
-      <motion.div
-        className="absolute -right-32 top-1/3 h-96 w-96 rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, #6366f1, transparent 70%)" }}
-        animate={{ x: [0, -40, 0], y: [0, 30, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+      <div
+        className="orb"
+        style={{
+          top: "40%",
+          right: "-120px",
+          width: 360,
+          height: 360,
+          background: "radial-gradient(circle, #6366f1, transparent 70%)",
+          opacity: 0.22,
+          animationName: "orb-drift-2",
+          animationDuration: "32s",
+          animationDelay: "5s",
+        }}
       />
-      <motion.div
-        className="absolute bottom-0 left-1/4 h-80 w-80 rounded-full opacity-20 blur-3xl"
-        style={{ background: `radial-gradient(circle, ${TEAL}, transparent 70%)` }}
-        animate={{ x: [0, 35, 0], y: [0, -25, 0] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      <div
+        className="orb"
+        style={{
+          bottom: 0,
+          left: "25%",
+          width: 320,
+          height: 320,
+          background: `radial-gradient(circle, ${TEAL}, transparent 70%)`,
+          opacity: 0.18,
+          animationName: "orb-drift-1",
+          animationDuration: "30s",
+          animationDelay: "3s",
+        }}
       />
     </div>
   );
