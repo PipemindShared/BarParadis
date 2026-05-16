@@ -65,12 +65,18 @@ export default function Home() {
             </span>
           </h1>
 
-          <div className="mt-3 flex items-center gap-2">
-            <span className="h-px w-6" style={{ backgroundColor: TEAL_LIGHT }} />
-            <p
-              className="font-mono text-[13px] uppercase tracking-[0.16em]"
-              style={{ color: TEAL_LIGHT }}
-            >
+          <div className="mt-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/35 px-3 py-1.5 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span
+                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                style={{ backgroundColor: TEAL_LIGHT }}
+              />
+              <span
+                className="relative inline-flex h-2 w-2 rounded-full"
+                style={{ backgroundColor: TEAL_LIGHT }}
+              />
+            </span>
+            <p className="font-mono text-[13px] uppercase tracking-[0.14em] text-white">
               47 réincarnés à Interface
             </p>
           </div>
