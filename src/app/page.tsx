@@ -1,12 +1,45 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
 
 export default function Home() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const fadeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const overlay = fadeRef.current;
+    if (!video || !overlay) return;
+
+    const FADE_DURATION = 1.0;
+    let raf = 0;
+
+    const tick = () => {
+      if (video.duration > 0 && !video.paused) {
+        const remaining = video.duration - video.currentTime;
+        let opacity = 0;
+        if (remaining < FADE_DURATION) {
+          opacity = 1 - remaining / FADE_DURATION;
+        } else if (video.currentTime < FADE_DURATION) {
+          opacity = 1 - video.currentTime / FADE_DURATION;
+        }
+        overlay.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-black">
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
@@ -14,7 +47,8 @@ export default function Home() {
         preload="auto"
         className="absolute inset-0 h-full w-full object-cover animate-fade-in"
         style={{
-          filter: "saturate(0.7) hue-rotate(-12deg) brightness(0.95) contrast(1.05)",
+          filter:
+            "saturate(0.7) hue-rotate(-12deg) brightness(0.95) contrast(1.05)",
         }}
       >
         <source src="/videos/MobileIntro.mp4" type="video/mp4" />
@@ -26,6 +60,13 @@ export default function Home() {
       />
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/5 to-black/60" />
+
+      <div
+        ref={fadeRef}
+        className="pointer-events-none absolute inset-0 bg-white"
+        style={{ opacity: 0 }}
+        aria-hidden
+      />
 
       <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
 

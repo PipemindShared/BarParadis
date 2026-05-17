@@ -46,7 +46,7 @@ export default function ElixirPage() {
     const overlay = fadeOverlayRef.current;
     if (!video || !overlay) return;
 
-    const FADE_DURATION = 0.7;
+    const FADE_DURATION = 1.0;
     let raf = 0;
 
     const tick = () => {
