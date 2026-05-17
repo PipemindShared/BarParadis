@@ -10,7 +10,10 @@ import {
 } from "@/lib/questionnaire";
 
 const TEAL = "#19978a";
-const TEAL_LIGHT = "#7DD4C7";
+const TEAL_DEEP = "#0f7a70";
+const INK = "#1d2a3a";
+const INK_SOFT = "#475569";
+const INK_MUTED = "#7a8a9a";
 
 const slideVariants = {
   enter: (direction: 1 | -1) => ({
@@ -72,40 +75,64 @@ export default function QuestionnairePage() {
   }
 
   return (
-    <div className="relative flex h-[100dvh] w-full overflow-hidden bg-gradient-to-b from-[#0a1729] via-[#101d34] to-[#06101e]">
-      <DriftingClouds />
-      <BackgroundOrbs />
-      <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
+    <div
+      className="relative flex h-[100dvh] w-full overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(to bottom, #f3f7fb 0%, #e5edf5 50%, #d6e2ec 100%)",
+        color: INK,
+      }}
+    >
+      {/* Divine rays from above */}
+      <div className="divine-rays pointer-events-none absolute inset-0" />
 
-      <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-6 text-white">
+      {/* Sun glow at top center */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-[-200px] h-[460px] w-[460px] -translate-x-1/2 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(255,243,210,0.55) 0%, rgba(255,243,210,0.25) 35%, transparent 70%)",
+          filter: "blur(20px)",
+        }}
+      />
+
+      <DriftingClouds />
+
+      <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.06] mix-blend-multiply grain" />
+
+      <div className="relative z-10 flex h-full w-full flex-col px-5 pt-5 pb-6">
         <header className="flex items-center justify-between gap-4">
           <button
             type="button"
             onClick={handleBack}
             disabled={index === 0 || transitioning}
-            className="font-mono text-[12px] uppercase tracking-[0.18em] text-white/55 transition-opacity disabled:opacity-25 enabled:hover:text-white"
+            className="font-mono text-[12px] uppercase tracking-[0.18em] transition-opacity disabled:opacity-25"
+            style={{ color: INK_MUTED }}
           >
             ← retour
           </button>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-white/70">
-              <span style={{ color: TEAL_LIGHT }}>
+            <span className="font-mono text-[12px] uppercase tracking-[0.18em]" style={{ color: INK_SOFT }}>
+              <span style={{ color: TEAL }}>
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="text-white/40"> / {String(total).padStart(2, "0")}</span>
+              <span style={{ color: INK_MUTED }}> / {String(total).padStart(2, "0")}</span>
             </span>
           </div>
         </header>
 
-        <div className="mt-3 h-[3px] w-full overflow-hidden rounded-full bg-white/10">
+        <div
+          className="mt-3 h-[3px] w-full overflow-hidden rounded-full"
+          style={{ backgroundColor: "rgba(29, 42, 58, 0.1)" }}
+        >
           <motion.div
             initial={false}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="h-full rounded-full"
             style={{
-              background: `linear-gradient(90deg, ${TEAL} 0%, ${TEAL_LIGHT} 100%)`,
-              boxShadow: `0 0 16px ${TEAL}99`,
+              background: `linear-gradient(90deg, ${TEAL_DEEP} 0%, ${TEAL} 100%)`,
+              boxShadow: `0 0 12px ${TEAL}66`,
             }}
           />
         </div>
@@ -125,12 +152,18 @@ export default function QuestionnairePage() {
               className="mt-6 celestial-float"
               style={{ animationDuration: "8s", animationDelay: "0.8s" }}
             >
-              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/55">
+              <p
+                className="font-mono text-[11px] uppercase tracking-[0.3em]"
+                style={{ color: INK_MUTED }}
+              >
                 Question {String(question.id).padStart(2, "0")}
               </p>
-              <h2 className="mt-3 font-serif text-[clamp(1.65rem,7.5vw,2.5rem)] italic leading-[1.05] tracking-tight text-white">
+              <h2
+                className="mt-3 font-serif text-[clamp(1.65rem,7.5vw,2.5rem)] italic leading-[1.05] tracking-tight"
+                style={{ color: INK }}
+              >
                 <span className="block">{question.intro}</span>
-                <span className="block" style={{ color: TEAL_LIGHT }}>
+                <span className="block" style={{ color: TEAL }}>
                   {question.text}
                 </span>
               </h2>
@@ -194,28 +227,30 @@ function OptionCard({
           type="button"
           onClick={handleClick}
           disabled={disabled}
-          className="group relative flex w-full items-start gap-4 rounded-2xl border border-white/15 bg-white/[0.04] p-4 text-left backdrop-blur-md transition-all duration-200 enabled:hover:border-white/40 enabled:hover:bg-white/[0.08] disabled:cursor-default"
-          style={
-            selected
-              ? {
-                  borderColor: TEAL,
-                  backgroundColor: `${TEAL}33`,
-                  boxShadow: `0 0 0 1px ${TEAL_LIGHT}66 inset, 0 10px 40px -10px ${TEAL}99`,
-                }
-              : undefined
-          }
+          className="group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all duration-200 disabled:cursor-default"
+          style={{
+            borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.12)",
+            backgroundColor: selected
+              ? "rgba(25, 151, 138, 0.10)"
+              : "rgba(255, 255, 255, 0.55)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            boxShadow: selected
+              ? `0 8px 30px -8px ${TEAL}66, 0 0 0 1px ${TEAL}33 inset`
+              : "0 4px 24px -8px rgba(29, 42, 58, 0.12)",
+          }}
         >
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border font-serif text-xl italic transition-colors"
             style={{
-              borderColor: selected ? TEAL_LIGHT : "rgba(255,255,255,0.25)",
-              backgroundColor: selected ? `${TEAL_LIGHT}33` : "transparent",
-              color: selected ? TEAL_LIGHT : "white",
+              borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.2)",
+              backgroundColor: selected ? `${TEAL}22` : "rgba(255,255,255,0.6)",
+              color: selected ? TEAL_DEEP : INK,
             }}
           >
             {option.letter}
           </div>
-          <p className="pt-1 text-[15px] leading-snug text-white/90">
+          <p className="pt-1 text-[15px] leading-snug" style={{ color: INK }}>
             {option.text}
           </p>
 
@@ -226,7 +261,7 @@ function OptionCard({
               transition={{ duration: 0.6, ease: "easeOut" }}
               className="pointer-events-none absolute inset-0 rounded-2xl"
               style={{
-                boxShadow: `0 0 0 2px ${TEAL_LIGHT}`,
+                boxShadow: `0 0 0 2px ${TEAL}`,
               }}
             />
           )}
@@ -238,10 +273,11 @@ function OptionCard({
 
 function DriftingClouds() {
   const clouds = [
-    { size: 320, top: "5%", left: "-15%", anim: "drift-a", duration: 48, delay: 0, opacity: 0.06 },
-    { size: 260, top: "35%", left: "65%", anim: "drift-b", duration: 56, delay: 4, opacity: 0.05 },
-    { size: 360, top: "65%", left: "-20%", anim: "drift-c", duration: 64, delay: 9, opacity: 0.05 },
-    { size: 220, top: "20%", left: "75%", anim: "drift-d", duration: 52, delay: 2, opacity: 0.07 },
+    { size: 360, top: "8%", left: "-15%", anim: "drift-a", duration: 48, delay: 0, opacity: 0.6 },
+    { size: 280, top: "32%", left: "65%", anim: "drift-b", duration: 56, delay: 4, opacity: 0.5 },
+    { size: 400, top: "58%", left: "-22%", anim: "drift-c", duration: 64, delay: 9, opacity: 0.55 },
+    { size: 240, top: "20%", left: "72%", anim: "drift-d", duration: 52, delay: 2, opacity: 0.7 },
+    { size: 320, top: "78%", left: "45%", anim: "drift-e", duration: 60, delay: 6, opacity: 0.5 },
   ];
 
   return (
@@ -249,7 +285,7 @@ function DriftingClouds() {
       {clouds.map((c, i) => (
         <div
           key={i}
-          className="cloud"
+          className="cloud-light"
           style={{
             top: c.top,
             left: c.left,
@@ -262,54 +298,6 @@ function DriftingClouds() {
           }}
         />
       ))}
-    </div>
-  );
-}
-
-function BackgroundOrbs() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        className="orb"
-        style={{
-          top: "10%",
-          left: "-80px",
-          width: 280,
-          height: 280,
-          background: `radial-gradient(circle, ${TEAL_LIGHT}, transparent 70%)`,
-          opacity: 0.28,
-          animationName: "orb-drift-1",
-          animationDuration: "26s",
-        }}
-      />
-      <div
-        className="orb"
-        style={{
-          top: "40%",
-          right: "-120px",
-          width: 360,
-          height: 360,
-          background: "radial-gradient(circle, #6366f1, transparent 70%)",
-          opacity: 0.22,
-          animationName: "orb-drift-2",
-          animationDuration: "32s",
-          animationDelay: "5s",
-        }}
-      />
-      <div
-        className="orb"
-        style={{
-          bottom: 0,
-          left: "25%",
-          width: 320,
-          height: 320,
-          background: `radial-gradient(circle, ${TEAL}, transparent 70%)`,
-          opacity: 0.18,
-          animationName: "orb-drift-1",
-          animationDuration: "30s",
-          animationDelay: "3s",
-        }}
-      />
     </div>
   );
 }
