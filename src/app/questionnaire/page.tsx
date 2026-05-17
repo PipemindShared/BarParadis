@@ -91,7 +91,7 @@ export default function QuestionnairePage() {
         className="sun-pulse pointer-events-none absolute left-1/2 top-[-160px] h-[520px] w-[520px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(255,210,130,0.95) 0%, rgba(255,200,110,0.7) 20%, rgba(255,220,160,0.4) 45%, rgba(255,235,190,0.2) 65%, transparent 80%)",
+            "radial-gradient(circle, rgba(255,210,130,0.75) 0%, rgba(255,200,110,0.55) 20%, rgba(255,220,160,0.32) 45%, rgba(255,235,190,0.16) 65%, transparent 80%)",
           filter: "blur(18px)",
         }}
       />
