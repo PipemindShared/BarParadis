@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   computeProfile,
   pickDrinkName,
@@ -38,6 +38,34 @@ export default function ElixirPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [drink, setDrink] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("creating");
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const fadeOverlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const overlay = fadeOverlayRef.current;
+    if (!video || !overlay) return;
+
+    const FADE_DURATION = 0.7;
+    let raf = 0;
+
+    const tick = () => {
+      if (video.duration > 0 && !video.paused) {
+        const remaining = video.duration - video.currentTime;
+        let opacity = 0;
+        if (remaining < FADE_DURATION) {
+          opacity = 1 - remaining / FADE_DURATION;
+        } else if (video.currentTime < FADE_DURATION) {
+          opacity = 1 - video.currentTime / FADE_DURATION;
+        }
+        overlay.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     try {
@@ -72,6 +100,7 @@ export default function ElixirPage() {
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-black">
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
@@ -84,6 +113,13 @@ export default function ElixirPage() {
       >
         <source src="/videos/Elixir.mp4" type="video/mp4" />
       </video>
+
+      <div
+        ref={fadeOverlayRef}
+        className="pointer-events-none absolute inset-0 bg-white"
+        style={{ opacity: 0 }}
+        aria-hidden
+      />
 
       <motion.div
         className="pointer-events-none absolute inset-0"
