@@ -15,7 +15,7 @@ export default function Home() {
     const overlay = fadeRef.current;
     if (!video || !overlay) return;
 
-    const FADE_DURATION = 1.0;
+    const FADE_DURATION = 2.0;
     let raf = 0;
 
     const tick = () => {
