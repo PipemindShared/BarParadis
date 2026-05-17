@@ -79,19 +79,21 @@ export default function ElixirPage() {
         preload="auto"
         className="absolute inset-0 h-full w-full object-cover"
         style={{
-          filter: "saturate(0.85) brightness(0.85)",
+          filter: "saturate(0.95)",
         }}
       >
         <source src="/videos/Elixir.mp4" type="video/mp4" />
       </video>
 
       <motion.div
-        className="absolute inset-0 bg-black"
-        initial={{ opacity: 0.7 }}
-        animate={{
-          opacity: phase === "creating" ? 0.55 : 0.4,
-        }}
+        className="pointer-events-none absolute inset-0"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: phase === "creating" ? 1 : 0.7 }}
         transition={{ duration: 1.5 }}
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.45) 100%)",
+        }}
       />
 
       <div className="pointer-events-none absolute inset-0 z-[6] opacity-[0.08] mix-blend-overlay grain" />
