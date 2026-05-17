@@ -88,7 +88,7 @@ export default function QuestionnairePage() {
 
       {/* Sun glow at top center */}
       <div
-        className="pointer-events-none absolute left-1/2 top-[-200px] h-[460px] w-[460px] -translate-x-1/2 rounded-full"
+        className="sun-pulse pointer-events-none absolute left-1/2 top-[-200px] h-[460px] w-[460px] rounded-full"
         style={{
           background:
             "radial-gradient(circle, rgba(255,243,210,0.55) 0%, rgba(255,243,210,0.25) 35%, transparent 70%)",
