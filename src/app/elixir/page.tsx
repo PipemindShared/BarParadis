@@ -88,11 +88,18 @@ export default function ElixirPage() {
       <motion.div
         className="pointer-events-none absolute inset-0"
         initial={{ opacity: 1 }}
-        animate={{ opacity: phase === "creating" ? 1 : 0.7 }}
+        animate={{ opacity: phase === "creating" ? 1 : 0.85 }}
         transition={{ duration: 1.5 }}
         style={{
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.45) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 55%, transparent 85%)",
         }}
       />
 
@@ -142,19 +149,25 @@ export default function ElixirPage() {
                 transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="flex flex-col items-center"
               >
-                <p className="font-mono text-[12px] uppercase tracking-[0.3em] text-white/65">
+                <p
+                  className="font-mono text-[12px] uppercase tracking-[0.3em] text-white"
+                  style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85), 0 0 20px rgba(0,0,0,0.6)" }}
+                >
                   ── tu es réincarné en
                 </p>
                 <h1
                   className="mt-3 font-serif text-[clamp(2.4rem,10vw,4rem)] italic leading-[1] tracking-tight"
                   style={{
                     color: TEAL_LIGHT,
-                    textShadow: `0 2px 24px ${TEAL}66`,
+                    textShadow: `0 2px 4px rgba(0,0,0,0.85), 0 0 32px rgba(0,0,0,0.7), 0 0 60px ${TEAL}66`,
                   }}
                 >
                   {PROFILE_INFO[profile].title}
                 </h1>
-                <p className="mt-4 max-w-xs text-base leading-snug text-white/80">
+                <p
+                  className="mt-4 max-w-xs text-base leading-snug text-white"
+                  style={{ textShadow: "0 1px 6px rgba(0,0,0,0.85), 0 0 20px rgba(0,0,0,0.5)" }}
+                >
                   {PROFILE_INFO[profile].subtitle}
                 </p>
               </motion.div>
@@ -171,20 +184,35 @@ export default function ElixirPage() {
                     <div className="flex items-center gap-3">
                       <span
                         className="h-px w-8"
-                        style={{ backgroundColor: TEAL_LIGHT }}
+                        style={{
+                          backgroundColor: TEAL_LIGHT,
+                          boxShadow: "0 0 8px rgba(0,0,0,0.6)",
+                        }}
                       />
                       <p
                         className="font-mono text-[11px] uppercase tracking-[0.28em]"
-                        style={{ color: TEAL_LIGHT }}
+                        style={{
+                          color: TEAL_LIGHT,
+                          textShadow: "0 1px 8px rgba(0,0,0,0.85), 0 0 20px rgba(0,0,0,0.6)",
+                        }}
                       >
                         ton élixir
                       </p>
                       <span
                         className="h-px w-8"
-                        style={{ backgroundColor: TEAL_LIGHT }}
+                        style={{
+                          backgroundColor: TEAL_LIGHT,
+                          boxShadow: "0 0 8px rgba(0,0,0,0.6)",
+                        }}
                       />
                     </div>
-                    <p className="mt-3 font-serif text-[clamp(1.8rem,7vw,2.8rem)] italic leading-tight text-white">
+                    <p
+                      className="mt-3 font-serif text-[clamp(1.8rem,7vw,2.8rem)] italic leading-tight text-white"
+                      style={{
+                        textShadow:
+                          "0 2px 8px rgba(0,0,0,0.9), 0 0 32px rgba(0,0,0,0.75), 0 0 60px rgba(0,0,0,0.5)",
+                      }}
+                    >
                       {drink}
                     </p>
                   </motion.div>
@@ -225,7 +253,10 @@ export default function ElixirPage() {
                   →
                 </span>
               </Link>
-              <p className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/60">
+              <p
+                className="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-white/85"
+                style={{ textShadow: "0 1px 8px rgba(0,0,0,0.85), 0 0 16px rgba(0,0,0,0.6)" }}
+              >
                 un petit pas avant que le barman te le prépare
               </p>
             </motion.div>
