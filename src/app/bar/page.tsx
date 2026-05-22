@@ -3,7 +3,7 @@
 import { useAction, useMutation, useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import {
@@ -189,70 +189,39 @@ export default function BarPage() {
       <main className="relative z-10 flex flex-1 gap-5 overflow-hidden p-5">
         {/* Column En cours */}
         <section className="flex flex-1 flex-col">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div className="flex items-baseline gap-3">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/55">
-                ── en cours
-              </h2>
-              <span
-                className="font-serif text-3xl italic"
-                style={{ color: TEAL_LIGHT }}
-              >
-                {data.preparing.length}
-              </span>
-            </div>
-            <button
-              onClick={handlePullNext}
-              disabled={data.waiting.length === 0}
-              className="group flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
-              style={{
-                background:
-                  data.waiting.length > 0
-                    ? `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`
-                    : "rgba(255,255,255,0.06)",
-                color: "white",
-                boxShadow:
-                  data.waiting.length > 0
-                    ? `0 8px 24px -6px ${TEAL}88`
-                    : "none",
-              }}
+          <div className="mb-4 flex items-baseline gap-3">
+            <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/55">
+              ── en cours
+            </h2>
+            <span
+              className="font-serif text-3xl italic"
+              style={{ color: TEAL_LIGHT }}
             >
-              <span style={{ color: TEAL_LIGHT }}>✦</span>
-              Préparer le prochain
-              <span className="transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </button>
+              {data.preparing.length}
+            </span>
           </div>
 
-          <div
-            className="grid flex-1 auto-rows-max gap-4 overflow-y-auto pb-2"
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            }}
-          >
-            <AnimatePresence mode="popLayout">
-              {data.preparing.map((p) => (
-                <DrinkCard
-                  key={p._id}
-                  participant={p}
-                  now={now}
-                  mode="preparing"
-                  onMarkReady={() => handleMarkReady(p)}
-                />
-              ))}
-            </AnimatePresence>
-            {data.preparing.length === 0 && (
-              <EmptyState
-                title="Rien en préparation"
-                hint={
-                  data.waiting.length > 0
-                    ? `${data.waiting.length} en file — tape Préparer le prochain`
-                    : "La file est vide, profite du calme"
-                }
+          <ColumnGrid
+            preCard={
+              <ActionCard
+                onClick={handlePullNext}
+                disabled={data.waiting.length === 0}
+                queueCount={data.waiting.length}
+              />
+            }
+            items={data.preparing}
+            renderCard={(p) => (
+              <DrinkCard
+                key={p._id}
+                participant={p}
+                now={now}
+                mode="preparing"
+                onMarkReady={() => handleMarkReady(p)}
               />
             )}
-          </div>
+            maxVisible={8}
+            keyFn={(p) => p._id}
+          />
         </section>
 
         {/* Divider */}
@@ -278,31 +247,27 @@ export default function BarPage() {
             </span>
           </div>
 
-          <div
-            className="grid flex-1 auto-rows-max gap-4 overflow-y-auto pb-2"
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            }}
-          >
-            <AnimatePresence mode="popLayout">
-              {data.ready.map((p) => (
-                <DrinkCard
-                  key={p._id}
-                  participant={p}
-                  now={now}
-                  mode="ready"
-                  onMarkServed={() => markServed({ participantId: p._id })}
-                  onMarkNoShow={() => setNoShowDialog(p)}
-                />
-              ))}
-            </AnimatePresence>
-            {data.ready.length === 0 && (
+          <ColumnGrid
+            items={data.ready}
+            renderCard={(p) => (
+              <DrinkCard
+                key={p._id}
+                participant={p}
+                now={now}
+                mode="ready"
+                onMarkServed={() => markServed({ participantId: p._id })}
+                onMarkNoShow={() => setNoShowDialog(p)}
+              />
+            )}
+            maxVisible={9}
+            keyFn={(p) => p._id}
+            emptyState={
               <EmptyState
                 title="Aucun élixir prêt"
                 hint="Termine ceux en cours pour libérer la file"
               />
-            )}
-          </div>
+            }
+          />
         </section>
       </main>
 
@@ -441,7 +406,7 @@ function DrinkCard({
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative aspect-[3/4] overflow-hidden rounded-2xl transition-transform hover:scale-[1.015]"
+      className="group relative aspect-[4/5] overflow-hidden rounded-2xl transition-transform hover:scale-[1.015]"
       style={{ boxShadow: cardBoxShadow }}
     >
       {/* Background image (desaturated if mocktail) */}
@@ -608,7 +573,7 @@ function DrinkCard({
 
 function EmptyState({ title, hint }: { title: string; hint: string }) {
   return (
-    <div className="col-span-full flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/8 py-16">
+    <div className="col-span-full flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/10 py-16">
       <div
         className="text-4xl"
         style={{ color: "rgba(125, 212, 199, 0.35)" }}
@@ -620,6 +585,182 @@ function EmptyState({ title, hint }: { title: string; hint: string }) {
         {hint}
       </p>
     </div>
+  );
+}
+
+function ColumnGrid<T>({
+  preCard,
+  items,
+  renderCard,
+  maxVisible,
+  keyFn,
+  emptyState,
+}: {
+  preCard?: React.ReactNode;
+  items: T[];
+  renderCard: (item: T) => React.ReactNode;
+  maxVisible: number;
+  keyFn: (item: T) => string;
+  emptyState?: React.ReactNode;
+}) {
+  const reserved = preCard ? 1 : 0;
+  const effectiveMax = maxVisible - reserved;
+  const visible = items.slice(0, effectiveMax);
+  const overflow = items.length - visible.length;
+
+  // Si vraiment vide et qu'on a un emptyState (colonne Prêts), affiche-le
+  if (!preCard && items.length === 0 && emptyState) {
+    return (
+      <div
+        className="grid flex-1 auto-rows-max gap-4"
+        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))" }}
+      >
+        {emptyState}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="grid flex-1 auto-rows-max gap-4"
+      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))" }}
+    >
+      {preCard}
+      <AnimatePresence mode="popLayout">
+        {visible.map((item) => (
+          <React.Fragment key={keyFn(item)}>{renderCard(item)}</React.Fragment>
+        ))}
+      </AnimatePresence>
+      {overflow > 0 && <OverflowCard count={overflow} />}
+    </div>
+  );
+}
+
+function ActionCard({
+  onClick,
+  disabled,
+  queueCount,
+}: {
+  onClick: () => void;
+  disabled: boolean;
+  queueCount: number;
+}) {
+  return (
+    <motion.button
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      onClick={onClick}
+      disabled={disabled}
+      className="group relative aspect-[4/5] overflow-hidden rounded-2xl transition-all active:scale-[0.97] disabled:cursor-not-allowed"
+      style={{
+        background: disabled
+          ? "rgba(255,255,255,0.025)"
+          : `linear-gradient(135deg, ${TEAL}26 0%, ${TEAL_LIGHT}14 50%, ${TEAL}26 100%)`,
+        border: disabled
+          ? "2px dashed rgba(255,255,255,0.10)"
+          : `2px solid ${TEAL}77`,
+        boxShadow: disabled
+          ? "none"
+          : `0 0 36px ${TEAL}55, inset 0 0 32px ${TEAL}22`,
+      }}
+    >
+      {/* Halo animé quand actif */}
+      {!disabled && (
+        <div
+          className="pointer-events-none absolute inset-0 animate-pulse"
+          style={{
+            background: `radial-gradient(circle at center, ${TEAL_LIGHT}22 0%, transparent 70%)`,
+          }}
+        />
+      )}
+
+      <div className="relative flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+        <div
+          className="text-6xl transition-transform group-hover:scale-110"
+          style={{
+            color: disabled ? "rgba(255,255,255,0.18)" : TEAL_LIGHT,
+            textShadow: disabled ? "none" : `0 0 24px ${TEAL_LIGHT}88`,
+          }}
+        >
+          ✦
+        </div>
+
+        <div className="space-y-0.5">
+          <p
+            className="font-serif text-2xl italic leading-tight"
+            style={{ color: disabled ? "rgba(255,255,255,0.35)" : "white" }}
+          >
+            Préparer
+          </p>
+          <p
+            className="font-serif text-2xl italic leading-tight"
+            style={{ color: disabled ? "rgba(255,255,255,0.35)" : "white" }}
+          >
+            le prochain
+          </p>
+        </div>
+
+        <div className="mt-2 flex items-center gap-2">
+          {disabled ? (
+            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/35">
+              file vide
+            </p>
+          ) : (
+            <>
+              <span
+                className="flex h-7 w-7 items-center justify-center rounded-full font-mono text-xs font-bold"
+                style={{
+                  backgroundColor: TEAL,
+                  color: "white",
+                  boxShadow: `0 0 12px ${TEAL_LIGHT}`,
+                }}
+              >
+                {queueCount}
+              </span>
+              <p
+                className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                style={{ color: TEAL_LIGHT }}
+              >
+                en file
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </motion.button>
+  );
+}
+
+function OverflowCard({ count }: { count: number }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="relative flex aspect-[4/5] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 p-4"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+      }}
+    >
+      <div
+        className="text-3xl"
+        style={{ color: "rgba(125, 212, 199, 0.5)" }}
+      >
+        ⋯
+      </div>
+      <p
+        className="font-serif text-3xl italic"
+        style={{ color: TEAL_LIGHT }}
+      >
+        +{count}
+      </p>
+      <p className="text-center font-mono text-[9px] uppercase tracking-[0.24em] text-white/45">
+        autre{count > 1 ? "s" : ""} drink{count > 1 ? "s" : ""}
+        <br />
+        en file (mode avancé)
+      </p>
+    </motion.div>
   );
 }
 
