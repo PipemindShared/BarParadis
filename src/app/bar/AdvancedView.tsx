@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
+import { RecipeManager } from "./RecipeManager";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import {
   getElixirImage,
@@ -68,6 +69,7 @@ export function AdvancedView({
   const togglePriority = useMutation(api.bar.togglePriority);
   const [search, setSearch] = useState("");
   const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [recipesOpen, setRecipesOpen] = useState(false);
   const [activeMobileCol, setActiveMobileCol] = useState<Status>("waiting");
 
   const allByStatus = useMemo<Record<Status, Participant[]>>(
@@ -122,6 +124,13 @@ export function AdvancedView({
             </button>
           )}
         </div>
+
+        <button
+          onClick={() => setRecipesOpen(true)}
+          className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/85 transition-all hover:bg-white/10"
+        >
+          📖 Recettes
+        </button>
 
         <button
           onClick={() => setInventoryOpen(true)}
@@ -236,6 +245,10 @@ export function AdvancedView({
 
       {inventoryOpen && (
         <InventoryDialog onClose={() => setInventoryOpen(false)} />
+      )}
+
+      {recipesOpen && (
+        <RecipeManager onClose={() => setRecipesOpen(false)} />
       )}
     </div>
   );

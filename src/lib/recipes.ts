@@ -200,3 +200,57 @@ export function getRecipe(elixirName: string | undefined | null): Recipe | null 
   if (!elixirName) return null;
   return RECIPES[elixirName] ?? null;
 }
+
+export type ElixirKey = "renaissance" | "perles" | "cendres" | "hotfix";
+
+export const ELIXIR_NAME_TO_KEY: Record<string, ElixirKey> = {
+  [ELIXIRS.renaissance]: "renaissance",
+  [ELIXIRS.perles]: "perles",
+  [ELIXIRS.cendres]: "cendres",
+  [ELIXIRS.hotfix]: "hotfix",
+};
+
+export const ELIXIR_KEY_TO_NAME: Record<ElixirKey, string> = {
+  renaissance: ELIXIRS.renaissance,
+  perles: ELIXIRS.perles,
+  cendres: ELIXIRS.cendres,
+  hotfix: ELIXIRS.hotfix,
+};
+
+type RecipeOverride = {
+  alcoholic: {
+    ingredients: { name: string; qty: string }[];
+    steps: string[];
+  };
+  mocktail: {
+    ingredients: { name: string; qty: string }[];
+    steps: string[];
+  };
+};
+
+/**
+ * Retourne une recette en appliquant les overrides Convex sur les défauts.
+ */
+export function getRecipeMerged(
+  elixirName: string | undefined | null,
+  overrides: Partial<Record<ElixirKey, RecipeOverride>> | undefined
+): Recipe | null {
+  const base = getRecipe(elixirName);
+  if (!base) return null;
+  const key = ELIXIR_NAME_TO_KEY[elixirName ?? ""];
+  if (!key || !overrides || !overrides[key]) return base;
+  const o = overrides[key]!;
+  return {
+    ...base,
+    alcoholic: {
+      ...base.alcoholic,
+      ingredients: o.alcoholic.ingredients,
+      steps: o.alcoholic.steps,
+    },
+    mocktail: {
+      ...base.mocktail,
+      ingredients: o.mocktail.ingredients,
+      steps: o.mocktail.steps,
+    },
+  };
+}

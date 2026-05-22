@@ -12,6 +12,7 @@ import type * as bar from "../bar.js";
 import type * as inventory from "../inventory.js";
 import type * as participants from "../participants.js";
 import type * as phone from "../phone.js";
+import type * as recipes from "../recipes.js";
 import type * as sms from "../sms.js";
 
 import type {
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   inventory: typeof inventory;
   participants: typeof participants;
   phone: typeof phone;
+  recipes: typeof recipes;
   sms: typeof sms;
 }>;
 

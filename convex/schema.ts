@@ -79,4 +79,28 @@ export default defineSchema({
     reason: v.optional(v.string()),
     updatedAt: v.number(),
   }).index("by_elixir", ["elixir"]),
+
+  // Recettes éditables (override les défauts du code)
+  recipes: defineTable({
+    elixir: v.union(
+      v.literal("renaissance"),
+      v.literal("perles"),
+      v.literal("cendres"),
+      v.literal("hotfix")
+    ),
+    alcoholic: v.object({
+      ingredients: v.array(
+        v.object({ name: v.string(), qty: v.string() })
+      ),
+      steps: v.array(v.string()),
+    }),
+    mocktail: v.object({
+      ingredients: v.array(
+        v.object({ name: v.string(), qty: v.string() })
+      ),
+      steps: v.array(v.string()),
+    }),
+    updatedAt: v.number(),
+    updatedBy: v.optional(v.string()),
+  }).index("by_elixir", ["elixir"]),
 });

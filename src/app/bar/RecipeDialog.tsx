@@ -1,7 +1,9 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { getRecipe } from "@/lib/recipes";
+import { api } from "../../../convex/_generated/api";
+import { getRecipeMerged } from "@/lib/recipes";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
@@ -17,7 +19,8 @@ export function RecipeDialog({
   firstName?: string;
   onClose: () => void;
 }) {
-  const recipe = getRecipe(elixir);
+  const overrides = useQuery(api.recipes.list);
+  const recipe = getRecipeMerged(elixir, overrides);
   if (!recipe) return null;
 
   const variant = withAlcohol ? recipe.alcoholic : recipe.mocktail;
