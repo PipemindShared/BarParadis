@@ -219,8 +219,7 @@ export default function ReclamerPage() {
                 <>
                   J’accepte que Pipemind utilise mes infos pour préparer mon
                   élixir, m’envoyer un <strong>SMS quand il est prêt</strong>,
-                  et me recontacter par <strong>courriel</strong> après
-                  l’événement.
+                  et me recontacter par courriel après l’événement.
                 </>
               }
             />
