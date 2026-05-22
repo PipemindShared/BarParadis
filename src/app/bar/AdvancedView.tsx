@@ -54,6 +54,7 @@ export function AdvancedView({
   onMarkServed,
   onMarkNoShow,
   onPullNext,
+  onShowRecipe,
 }: {
   data: Data;
   now: number;
@@ -61,6 +62,7 @@ export function AdvancedView({
   onMarkServed: (p: Participant) => void;
   onMarkNoShow: (p: Participant) => void;
   onPullNext: () => void;
+  onShowRecipe: (p: Participant) => void;
 }) {
   const setStatus = useMutation(api.bar.setStatus);
   const togglePriority = useMutation(api.bar.togglePriority);
@@ -160,6 +162,7 @@ export function AdvancedView({
             onMarkReady={onMarkReady}
             onMarkServed={onMarkServed}
             onMarkNoShow={onMarkNoShow}
+            onShowRecipe={onShowRecipe}
           />
         ))}
       </div>
@@ -223,6 +226,7 @@ export function AdvancedView({
                   onMarkReady={() => onMarkReady(p)}
                   onMarkServed={() => onMarkServed(p)}
                   onMarkNoShow={() => onMarkNoShow(p)}
+                  onShowRecipe={() => onShowRecipe(p)}
                 />
               ))}
             </div>
@@ -247,6 +251,7 @@ function KanbanColumn({
   onMarkReady,
   onMarkServed,
   onMarkNoShow,
+  onShowRecipe,
 }: {
   col: { key: Status; label: string; accent: string };
   items: Participant[];
@@ -257,6 +262,7 @@ function KanbanColumn({
   onMarkReady: (p: Participant) => void;
   onMarkServed: (p: Participant) => void;
   onMarkNoShow: (p: Participant) => void;
+  onShowRecipe: (p: Participant) => void;
 }) {
   return (
     <div
@@ -292,6 +298,7 @@ function KanbanColumn({
               onMarkReady={() => onMarkReady(p)}
               onMarkServed={() => onMarkServed(p)}
               onMarkNoShow={() => onMarkNoShow(p)}
+              onShowRecipe={() => onShowRecipe(p)}
             />
           ))
         )}
@@ -309,6 +316,7 @@ function CompactCard({
   onMarkReady,
   onMarkServed,
   onMarkNoShow,
+  onShowRecipe,
 }: {
   participant: Participant;
   now: number;
@@ -318,6 +326,7 @@ function CompactCard({
   onMarkReady: () => void;
   onMarkServed: () => void;
   onMarkNoShow: () => void;
+  onShowRecipe: () => void;
 }) {
   const image = getElixirImage(participant.elixir);
   const profile = getProfileStyle(participant.profile);
@@ -342,7 +351,7 @@ function CompactCard({
       layout
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative shrink-0 overflow-hidden rounded-xl border bg-white/[0.03]"
+      className="relative shrink-0 cursor-pointer overflow-hidden rounded-xl border bg-white/[0.03]"
       style={{
         borderColor: isPriority
           ? "rgba(251, 191, 36, 0.55)"
@@ -354,7 +363,10 @@ function CompactCard({
           : isPriority
             ? "0 0 0 1px rgba(251, 191, 36, 0.4), 0 4px 12px -4px rgba(251, 191, 36, 0.3)"
             : "0 2px 8px -4px rgba(0,0,0,0.4)",
+        touchAction: "manipulation",
       }}
+      onDoubleClick={onShowRecipe}
+      title="Double-cliquer pour la recette"
     >
       {/* Image strip à gauche (plus compact: 56x56) + contenu */}
       <div className="flex gap-2.5 p-2.5">

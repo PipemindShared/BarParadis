@@ -14,6 +14,7 @@ import {
   isAdminPhone,
 } from "@/lib/bar-utils";
 import { AdvancedView } from "./AdvancedView";
+import { RecipeDialog } from "./RecipeDialog";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
@@ -64,6 +65,7 @@ export default function BarPage() {
   const resetTest = useMutation(api.bar.resetTestDrinks);
 
   const [noShowDialog, setNoShowDialog] = useState<Participant | null>(null);
+  const [recipeDialog, setRecipeDialog] = useState<Participant | null>(null);
 
   function logout() {
     try {
@@ -235,6 +237,7 @@ export default function BarPage() {
           onMarkServed={(p) => markServed({ participantId: p._id })}
           onMarkNoShow={(p) => setNoShowDialog(p)}
           onPullNext={handlePullNext}
+          onShowRecipe={(p) => setRecipeDialog(p)}
         />
       ) : (
       <main className="relative z-10 flex flex-1 flex-col gap-5 overflow-y-auto p-5 lg:flex-row lg:overflow-hidden">
@@ -268,6 +271,7 @@ export default function BarPage() {
                 now={now}
                 mode="preparing"
                 onMarkReady={() => handleMarkReady(p)}
+                onShowRecipe={() => setRecipeDialog(p)}
               />
             )}
             maxVisible={8}
@@ -308,6 +312,7 @@ export default function BarPage() {
                 mode="ready"
                 onMarkServed={() => markServed({ participantId: p._id })}
                 onMarkNoShow={() => setNoShowDialog(p)}
+                onShowRecipe={() => setRecipeDialog(p)}
               />
             )}
             maxVisible={9}
@@ -333,6 +338,16 @@ export default function BarPage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Recipe dialog */}
+      {recipeDialog && (
+        <RecipeDialog
+          elixir={recipeDialog.elixir}
+          withAlcohol={recipeDialog.withAlcohol !== false}
+          firstName={recipeDialog.firstName}
+          onClose={() => setRecipeDialog(null)}
+        />
+      )}
 
       {/* Reset confirmation */}
       <AnimatePresence>
@@ -426,6 +441,7 @@ function DrinkCard({
   onMarkReady,
   onMarkServed,
   onMarkNoShow,
+  onShowRecipe,
 }: {
   participant: Participant;
   now: number;
@@ -433,6 +449,7 @@ function DrinkCard({
   onMarkReady?: () => void;
   onMarkServed?: () => void;
   onMarkNoShow?: () => void;
+  onShowRecipe?: () => void;
 }) {
   const image = getElixirImage(participant.elixir);
   const profile = getProfileStyle(participant.profile);
@@ -459,8 +476,13 @@ function DrinkCard({
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative aspect-[4/5] overflow-hidden rounded-2xl transition-transform hover:scale-[1.015]"
-      style={{ boxShadow: cardBoxShadow }}
+      className="group relative aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl transition-transform hover:scale-[1.015]"
+      style={{
+        boxShadow: cardBoxShadow,
+        touchAction: "manipulation",
+      }}
+      onDoubleClick={onShowRecipe}
+      title="Double-cliquer pour voir la recette"
     >
       {/* Background image (desaturated if mocktail) */}
       <img
