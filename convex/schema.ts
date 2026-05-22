@@ -29,22 +29,32 @@ export default defineSchema({
       )
     ),
 
-    // État dans la file d'attente
+    // État dans la file d'attente (6 statuts du flow barman)
     queueStatus: v.optional(
       v.union(
-        v.literal("waiting"),
+        v.literal("waiting"), // en attente (file normale)
+        v.literal("priority"), // prioritaire (marqué manuellement)
+        v.literal("preparing"), // en cours de fabrication
+        v.literal("ready"), // prêt à distribuer
+        v.literal("served"), // distribué
+        v.literal("no_show"), // no show
+        // legacy (anciens statuts, à ne plus utiliser)
         v.literal("called"),
         v.literal("present"),
-        v.literal("preparing"),
-        v.literal("served"),
         v.literal("expired"),
         v.literal("requeued"),
         v.literal("cancelled")
       )
     ),
     queuePosition: v.optional(v.number()),
-    calledAt: v.optional(v.number()),
+    preparingAt: v.optional(v.number()),
+    readyAt: v.optional(v.number()),
     servedAt: v.optional(v.number()),
+    noShowAt: v.optional(v.number()),
+    // Barman qui prépare ce drink (nom libre, multi-tablette)
+    barmanName: v.optional(v.string()),
+    // Réassignement
+    reassignedFromId: v.optional(v.id("participants")),
 
     // Métadonnées
     source: v.string(), // "Interface 2026 — Zone Pipemind"
