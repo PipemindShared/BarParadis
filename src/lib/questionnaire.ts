@@ -133,42 +133,14 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 5,
-    intro: "Une divinité observe ta renaissance.",
-    text: "Laquelle t’appelle ?",
+    intro: "Sous quelle divinité",
+    text: "veux-tu renaître ?",
     type: "deity",
     options: [
-      {
-        letter: "A",
-        text: "Iris",
-        subtitle: "Mythologie grecque",
-        description:
-          "Messagère arc-en-ciel des dieux. Sa traversée du ciel laisse une traînée acidulée.",
-        elixir: ELIXIRS.renaissance,
-      },
-      {
-        letter: "B",
-        text: "Idun",
-        subtitle: "Mythologie nordique",
-        description:
-          "Gardienne des pommes d’or qui gardent les dieux éternellement jeunes.",
-        elixir: ELIXIRS.perles,
-      },
-      {
-        letter: "C",
-        text: "Mellona",
-        subtitle: "Mythologie romaine",
-        description:
-          "Déesse des abeilles, des miels rares et des poussières sucrées.",
-        elixir: ELIXIRS.cendres,
-      },
-      {
-        letter: "D",
-        text: "Heimdall",
-        subtitle: "Mythologie nordique",
-        description:
-          "Veilleur d’Asgard aux yeux d’or, gardien des nuits longues et des élixirs forts.",
-        elixir: ELIXIRS.hotfix,
-      },
+      { letter: "A", text: "Iris", elixir: ELIXIRS.renaissance },
+      { letter: "B", text: "Idun", elixir: ELIXIRS.perles },
+      { letter: "C", text: "Mellona", elixir: ELIXIRS.cendres },
+      { letter: "D", text: "Heimdall", elixir: ELIXIRS.hotfix },
     ],
   },
   {

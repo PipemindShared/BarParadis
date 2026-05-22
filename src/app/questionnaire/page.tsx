@@ -169,17 +169,31 @@ export default function QuestionnairePage() {
               </h2>
             </div>
 
-            <ul className="mt-6 flex flex-1 flex-col gap-2.5">
-              {question.options.map((option, i) => (
-                <OptionCard
-                  key={option.letter}
-                  option={option}
-                  index={i}
-                  onSelect={handleSelect}
-                  disabled={transitioning}
-                />
-              ))}
-            </ul>
+            {question.type === "deity" ? (
+              <ul className="mt-5 grid flex-1 grid-cols-2 gap-3 content-start">
+                {question.options.map((option, i) => (
+                  <DeityCard
+                    key={option.letter}
+                    option={option}
+                    index={i}
+                    onSelect={handleSelect}
+                    disabled={transitioning}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <ul className="mt-6 flex flex-1 flex-col gap-2.5">
+                {question.options.map((option, i) => (
+                  <OptionCard
+                    key={option.letter}
+                    option={option}
+                    index={i}
+                    onSelect={handleSelect}
+                    disabled={transitioning}
+                  />
+                ))}
+              </ul>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -250,42 +264,123 @@ function OptionCard({
           >
             {option.letter}
           </div>
-          {option.subtitle || option.description ? (
-            <div className="flex-1 pt-0.5">
-              <p
-                className="font-serif text-[22px] italic leading-none"
-                style={{ color: INK }}
-              >
-                {option.text}
-              </p>
-              {option.subtitle && (
-                <p
-                  className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em]"
-                  style={{ color: TEAL }}
-                >
-                  {option.subtitle}
-                </p>
-              )}
-              {option.description && (
-                <p
-                  className="mt-2 text-[13px] leading-snug"
-                  style={{ color: INK_SOFT }}
-                >
-                  {option.description}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p className="pt-1 text-[15px] leading-snug" style={{ color: INK }}>
-              {option.text}
-            </p>
-          )}
+          <p className="pt-1 text-[15px] leading-snug" style={{ color: INK }}>
+            {option.text}
+          </p>
 
           {selected && (
             <motion.span
               initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1.4, opacity: 0 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
+              className="pointer-events-none absolute inset-0 rounded-2xl"
+              style={{
+                boxShadow: `0 0 0 2px ${TEAL}`,
+              }}
+            />
+          )}
+        </button>
+      </div>
+    </motion.li>
+  );
+}
+
+function DeityCard({
+  option,
+  index,
+  onSelect,
+  disabled,
+}: {
+  option: Option;
+  index: number;
+  onSelect: (option: Option) => void;
+  disabled: boolean;
+}) {
+  const [selected, setSelected] = useState(false);
+
+  function handleClick() {
+    if (disabled || selected) return;
+    setSelected(true);
+    onSelect(option);
+  }
+
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={{
+        duration: 0.6,
+        delay: 0.15 + index * 0.08,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <div
+        className="celestial-float"
+        style={{
+          animationDuration: `${6 + index * 0.6}s`,
+          animationDelay: `${1.4 + index * 0.3}s`,
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={disabled}
+          className="group relative flex w-full flex-col items-center gap-2 rounded-2xl border p-3 transition-all duration-200 disabled:cursor-default"
+          style={{
+            borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.12)",
+            backgroundColor: selected
+              ? "rgba(25, 151, 138, 0.10)"
+              : "rgba(255, 255, 255, 0.55)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            boxShadow: selected
+              ? `0 8px 30px -8px ${TEAL}66, 0 0 0 1px ${TEAL}33 inset`
+              : "0 4px 24px -8px rgba(29, 42, 58, 0.12)",
+          }}
+        >
+          <span
+            className="absolute left-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full font-mono text-[10px] font-medium"
+            style={{
+              backgroundColor: selected ? TEAL : "rgba(255,255,255,0.75)",
+              color: selected ? "#fff" : INK_MUTED,
+              border: selected ? "none" : "1px solid rgba(29, 42, 58, 0.15)",
+            }}
+          >
+            {option.letter}
+          </span>
+
+          <div
+            className="relative h-[110px] w-[110px] overflow-hidden rounded-full transition-all"
+            style={{
+              border: `2px solid ${selected ? TEAL : "rgba(255,255,255,0.7)"}`,
+              boxShadow: selected
+                ? `0 0 24px ${TEAL}66, 0 0 0 4px ${TEAL}22`
+                : "0 4px 14px -4px rgba(29, 42, 58, 0.25)",
+            }}
+          >
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              className="h-full w-full object-cover"
+              src={`/videos/${option.text}.mp4`}
+            />
+          </div>
+
+          <p
+            className="mt-1 font-serif text-[20px] italic leading-none"
+            style={{ color: INK }}
+          >
+            {option.text}
+          </p>
+
+          {selected && (
+            <motion.span
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1.5, opacity: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
               className="pointer-events-none absolute inset-0 rounded-2xl"
               style={{
                 boxShadow: `0 0 0 2px ${TEAL}`,
