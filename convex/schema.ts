@@ -55,6 +55,8 @@ export default defineSchema({
     barmanName: v.optional(v.string()),
     // Réassignement
     reassignedFromId: v.optional(v.id("participants")),
+    // Données générées (seed) pour le mode test
+    isSeed: v.optional(v.boolean()),
 
     // Métadonnées
     source: v.string(), // "Interface 2026 — Zone Pipemind"

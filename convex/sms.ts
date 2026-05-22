@@ -73,6 +73,9 @@ export const notifyReady = action({
     if (!participant) {
       return { sent: false, reason: "participant_not_found" };
     }
+    if (participant.isSeed) {
+      return { sent: false, reason: "seed_participant" };
+    }
 
     const drinkLabel = participant.elixir ?? "ton élixir";
     const body = wasReassigned
@@ -112,6 +115,9 @@ export const sendConfirmation = action({
     });
     if (!participant) {
       return { sent: false, reason: "participant_not_found" };
+    }
+    if (participant.isSeed) {
+      return { sent: false, reason: "seed_participant" };
     }
 
     const drinkLabel = participant.elixir ?? "ton élixir";

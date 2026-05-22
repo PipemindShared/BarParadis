@@ -11,6 +11,7 @@ import {
   getProfileStyle,
   formatDuration,
   maskLastName,
+  isAdminPhone,
 } from "@/lib/bar-utils";
 
 const TEAL = "#19978a";
@@ -123,7 +124,7 @@ export default function BarPage() {
             borderBottom: "1px solid rgba(245, 158, 11, 0.4)",
           }}
         >
-          ⚠ mode test — seuls les téléphones de test sont visibles
+          ⚠ mode test — données générées (15 drinks fictifs)
         </div>
       )}
 
@@ -295,11 +296,13 @@ export default function BarPage() {
                 Remettre tous les drinks de test en attente ?
               </h3>
               <p className="mt-2 text-sm text-white/65">
-                Tous les drinks des téléphones de test ({" "}
-                <code className="font-mono text-xs">418-262-3688</code>,{" "}
-                <code className="font-mono text-xs">418-907-5688</code>,{" "}
-                <code className="font-mono text-xs">581-349-4191</code>) seront remis à
-                l'état « en attente ». Les drinks live ne sont pas touchés.
+                Les 15 drinks générés du mode test seront remis à
+                l’état « en attente » avec un nouveau timestamp. Les inscriptions
+                réelles ne sont pas touchées.
+                <br />
+                <span className="text-xs text-white/45">
+                  (Si la base de seed est vide, elle sera créée maintenant.)
+                </span>
               </p>
               <div className="mt-5 flex gap-2">
                 <button
@@ -369,6 +372,7 @@ function DrinkCard({
   const image = getElixirImage(participant.elixir);
   const profile = getProfileStyle(participant.profile);
   const withAlcohol = participant.withAlcohol !== false;
+  const isAdmin = isAdminPhone(participant.phone);
 
   const startedAt =
     mode === "preparing" ? participant.preparingAt : participant.readyAt;
@@ -408,6 +412,21 @@ function DrinkCard({
           }}
         >
           🚫 Sans alcool
+        </div>
+      )}
+
+      {/* Admin badge (téléphones de test commandant en prod) */}
+      {isAdmin && (
+        <div
+          className="absolute right-2 z-10 rounded-md px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em]"
+          style={{
+            top: !withAlcohol ? 32 : 8,
+            backgroundColor: "rgba(245, 158, 11, 0.95)",
+            color: "#1a0c00",
+            boxShadow: "0 0 12px rgba(245, 158, 11, 0.6)",
+          }}
+        >
+          ⚙ Admin
         </div>
       )}
 

@@ -1,5 +1,17 @@
 import { ELIXIRS } from "./questionnaire";
 
+// Téléphones de test (admin) — mêmes valeurs que convex/phone.ts
+const ADMIN_PHONES = new Set([
+  "+14182623688",
+  "+14189075688",
+  "+15813494191",
+]);
+
+export function isAdminPhone(phone: string | undefined | null): boolean {
+  if (!phone) return false;
+  return ADMIN_PHONES.has(phone);
+}
+
 export type ProfileKey = "Codeur" | "Designer" | "Manager";
 
 export const PROFILE_STYLES: Record<

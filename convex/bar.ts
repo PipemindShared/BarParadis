@@ -1,9 +1,34 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
-import { isTestPhone } from "./phone";
 
 const modeValidator = v.union(v.literal("live"), v.literal("test"));
 type Mode = "live" | "test";
+
+// Profils, divinités, élixirs pour les seeds (mêmes que le client)
+const SEED_PARTICIPANTS: Array<{
+  firstName: string;
+  lastName: string;
+  profile: "Codeur" | "Designer" | "Manager";
+  deity: "Iris" | "Idun" | "Mellona" | "Heimdall";
+  elixir: string;
+  withAlcohol: boolean;
+}> = [
+  { firstName: "Marie", lastName: "Tremblay", profile: "Codeur", deity: "Iris", elixir: "L’Élixir de Renaissance", withAlcohol: true },
+  { firstName: "Olivier", lastName: "Bouchard", profile: "Designer", deity: "Mellona", elixir: "Les Cendres du Phénix", withAlcohol: true },
+  { firstName: "Sophie", lastName: "Gagnon", profile: "Manager", deity: "Heimdall", elixir: "Le Hotfix Royal", withAlcohol: false },
+  { firstName: "Jean-Philippe", lastName: "Lapointe", profile: "Codeur", deity: "Idun", elixir: "Les Perles du Paradis", withAlcohol: true },
+  { firstName: "Maxime", lastName: "Roy", profile: "Designer", deity: "Iris", elixir: "L’Élixir de Renaissance", withAlcohol: false },
+  { firstName: "Émilie", lastName: "Pelletier", profile: "Manager", deity: "Mellona", elixir: "Les Cendres du Phénix", withAlcohol: true },
+  { firstName: "Antoine", lastName: "Drouin", profile: "Codeur", deity: "Heimdall", elixir: "Le Hotfix Royal", withAlcohol: true },
+  { firstName: "Charlotte", lastName: "Vachon", profile: "Designer", deity: "Idun", elixir: "Les Perles du Paradis", withAlcohol: false },
+  { firstName: "Hugo", lastName: "Beaudoin", profile: "Manager", deity: "Iris", elixir: "L’Élixir de Renaissance", withAlcohol: true },
+  { firstName: "Léa", lastName: "Boisvert", profile: "Codeur", deity: "Mellona", elixir: "Les Cendres du Phénix", withAlcohol: true },
+  { firstName: "Samuel", lastName: "Charette", profile: "Designer", deity: "Heimdall", elixir: "Le Hotfix Royal", withAlcohol: true },
+  { firstName: "Camille", lastName: "Gosselin", profile: "Manager", deity: "Idun", elixir: "Les Perles du Paradis", withAlcohol: false },
+  { firstName: "Vincent", lastName: "Caron", profile: "Codeur", deity: "Iris", elixir: "L’Élixir de Renaissance", withAlcohol: true },
+  { firstName: "Élodie", lastName: "Dufresne", profile: "Designer", deity: "Mellona", elixir: "Les Cendres du Phénix", withAlcohol: false },
+  { firstName: "Mathieu", lastName: "Thibault", profile: "Manager", deity: "Heimdall", elixir: "Le Hotfix Royal", withAlcohol: true },
+];
 
 /**
  * Vérifie le PIN d'accès au bar.
@@ -34,8 +59,8 @@ export const listAll = query({
     const effectiveMode: Mode = mode ?? "live";
     const raw = await ctx.db.query("participants").order("asc").collect();
     const all = raw.filter((p) => {
-      const isTest = isTestPhone(p.phone);
-      return effectiveMode === "test" ? isTest : !isTest;
+      const isSeed = p.isSeed === true;
+      return effectiveMode === "test" ? isSeed : !isSeed;
     });
 
     // Tri: prioritaire d'abord, puis par createdAt
@@ -256,19 +281,53 @@ export const reassignmentCandidates = query({
 });
 
 /**
- * Réinitialise tous les drinks de test (téléphones de test) à l'état "waiting".
- * Efface les timestamps d'avancement pour permettre un test propre.
- * Utilisé en mode test uniquement.
+ * Mode test: génère les 15 drinks de seed s'ils n'existent pas, sinon
+ * les remet à l'état "waiting" avec createdAt = maintenant (staggered).
  */
 export const resetTestDrinks = mutation({
   args: {},
   handler: async (ctx) => {
-    const all = await ctx.db.query("participants").collect();
-    let count = 0;
-    for (const p of all) {
-      if (isTestPhone(p.phone)) {
-        await ctx.db.patch(p._id, {
+    const existing = (await ctx.db.query("participants").collect()).filter(
+      (p) => p.isSeed === true
+    );
+
+    const now = Date.now();
+    let resetCount = 0;
+    let createdCount = 0;
+
+    if (existing.length === 0) {
+      // Première fois: créer les 15 drinks
+      for (let i = 0; i < SEED_PARTICIPANTS.length; i++) {
+        const s = SEED_PARTICIPANTS[i];
+        const offset = (SEED_PARTICIPANTS.length - 1 - i) * 30_000; // 30s entre chaque
+        await ctx.db.insert("participants", {
+          firstName: s.firstName,
+          lastName: s.lastName,
+          email: `${s.firstName.toLowerCase().replace(/[^a-z]/g, "")}.${s.lastName.toLowerCase().replace(/[^a-z]/g, "")}@seed.paradis`,
+          phone: `+1418555${String(i).padStart(4, "0")}`,
+          consentParticipation: true,
+          consentEmailMarketing: false,
+          consentSmsMarketing: false,
+          profile: s.profile,
+          deity: s.deity,
+          elixir: s.elixir,
+          withAlcohol: s.withAlcohol,
           queueStatus: "waiting",
+          source: "Seed test data",
+          createdAt: now - offset,
+          isSeed: true,
+        });
+        createdCount++;
+      }
+    } else {
+      // Reset: tous remis en attente avec createdAt staggered
+      // Tri par createdAt actuel pour garder l'ordre relatif
+      const sorted = [...existing].sort((a, b) => a.createdAt - b.createdAt);
+      for (let i = 0; i < sorted.length; i++) {
+        const offset = (sorted.length - 1 - i) * 30_000;
+        await ctx.db.patch(sorted[i]._id, {
+          queueStatus: "waiting",
+          createdAt: now - offset,
           preparingAt: undefined,
           readyAt: undefined,
           servedAt: undefined,
@@ -276,9 +335,10 @@ export const resetTestDrinks = mutation({
           barmanName: undefined,
           reassignedFromId: undefined,
         });
-        count++;
+        resetCount++;
       }
     }
-    return { count };
+
+    return { resetCount, createdCount, total: resetCount + createdCount };
   },
 });
