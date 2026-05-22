@@ -106,7 +106,7 @@ export default function ReclamerPage() {
       const message = err instanceof Error ? err.message : String(err);
       if (message.includes("PHONE_ALREADY_REGISTERED")) {
         setError(
-          "Ce numéro a déjà réclamé un élixir au Paradis. Une seule renaissance par téléphone."
+          "Ce numéro a déjà réclamé un élixir au Paradis. Une seule renaissance par personne."
         );
       } else if (message.includes("format reconnu")) {
         setError(message);
