@@ -85,3 +85,87 @@ export const getById = query({
     return await ctx.db.get(id);
   },
 });
+
+/**
+ * Position d'un participant dans la file: combien d'élixirs avant le sien.
+ * Compte les drinks en "preparing" + prioritaires devant + waiting plus anciens.
+ * Exclut les seeds (test data).
+ */
+export const getQueuePosition = query({
+  args: { participantId: v.id("participants") },
+  handler: async (ctx, { participantId }) => {
+    const me = await ctx.db.get(participantId);
+    if (!me) return null;
+
+    const myStatus = me.queueStatus ?? "waiting";
+    const isPriorityMe = myStatus === "priority";
+
+    // Si on est plus dans la file (ready, served, no_show), pas de position à calculer
+    if (
+      myStatus !== "waiting" &&
+      myStatus !== "priority" &&
+      myStatus !== "preparing"
+    ) {
+      return {
+        status: myStatus,
+        ahead: 0,
+        me: {
+          firstName: me.firstName,
+          elixir: me.elixir,
+          deity: me.deity,
+        },
+      };
+    }
+
+    const all = await ctx.db.query("participants").collect();
+    const real = all.filter((p) => !p.isSeed);
+
+    // Drinks en cours de préparation (devant tout le monde)
+    const preparingCount = real.filter(
+      (p) => p.queueStatus === "preparing" && p._id !== participantId
+    ).length;
+
+    let ahead = preparingCount;
+
+    if (myStatus === "preparing") {
+      // Je suis en préparation — donc personne d'autre devant
+      // (sauf les autres en préparation qui ont commencé avant moi)
+      ahead = real.filter(
+        (p) =>
+          p.queueStatus === "preparing" &&
+          p._id !== participantId &&
+          (p.preparingAt ?? p.createdAt) < (me.preparingAt ?? me.createdAt)
+      ).length;
+    } else {
+      // En attente (waiting ou priority)
+      // Prioritaires devant moi
+      const priorityAhead = real.filter((p) => {
+        if (p.queueStatus !== "priority") return false;
+        if (isPriorityMe) return p.createdAt < me.createdAt;
+        return true; // si je suis waiting, tous les priority sont devant
+      }).length;
+      ahead += priorityAhead;
+
+      // Si je suis waiting, les autres waiting plus anciens
+      if (!isPriorityMe) {
+        const waitingAhead = real.filter(
+          (p) =>
+            p.queueStatus === "waiting" &&
+            p._id !== participantId &&
+            p.createdAt < me.createdAt
+        ).length;
+        ahead += waitingAhead;
+      }
+    }
+
+    return {
+      status: myStatus,
+      ahead,
+      me: {
+        firstName: me.firstName,
+        elixir: me.elixir,
+        deity: me.deity,
+      },
+    };
+  },
+});
