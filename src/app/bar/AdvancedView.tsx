@@ -275,25 +275,24 @@ function CompactCard({
       layout
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative overflow-hidden rounded-xl border"
+      className="relative overflow-hidden rounded-xl border bg-white/[0.03]"
       style={{
         borderColor: isPriority
           ? "rgba(251, 191, 36, 0.55)"
           : !withAlcohol
-            ? `${TEAL_LIGHT}88`
-            : "rgba(255,255,255,0.08)",
-        backgroundColor: "rgba(255,255,255,0.02)",
+            ? `${TEAL_LIGHT}99`
+            : "rgba(255,255,255,0.10)",
         boxShadow: !withAlcohol
-          ? `0 0 0 1px ${TEAL_LIGHT}55`
+          ? `0 0 0 1px ${TEAL_LIGHT}55, 0 4px 12px -4px ${TEAL_LIGHT}33`
           : isPriority
-            ? "0 0 0 1px rgba(251, 191, 36, 0.3)"
-            : "none",
+            ? "0 0 0 1px rgba(251, 191, 36, 0.4), 0 4px 12px -4px rgba(251, 191, 36, 0.3)"
+            : "0 2px 8px -4px rgba(0,0,0,0.4)",
       }}
     >
-      {/* Image strip à gauche */}
-      <div className="flex">
+      {/* Image strip à gauche (plus compact: 56x56) + contenu */}
+      <div className="flex gap-2.5 p-2.5">
         <div
-          className="relative h-[88px] w-[88px] shrink-0"
+          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg"
           style={
             !withAlcohol
               ? { filter: "saturate(0.3) brightness(0.7)" }
@@ -305,75 +304,97 @@ function CompactCard({
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />
+          {isPriority && (
+            <div
+              className="absolute right-0.5 top-0.5 rounded-full px-1 text-[10px] font-bold leading-none"
+              style={{
+                backgroundColor: "#fbbf24",
+                color: "#1a0c00",
+                lineHeight: 1.2,
+                padding: "1px 3px",
+              }}
+            >
+              ★
+            </div>
+          )}
         </div>
 
         {/* Contenu droite */}
-        <div className="flex flex-1 flex-col justify-between p-2">
-          <div>
-            <div className="flex items-center gap-1.5">
-              {isPriority && (
-                <span className="text-xs" title="Prioritaire">
-                  ★
-                </span>
-              )}
-              {!withAlcohol && (
-                <span
-                  className="rounded px-1 py-0.5 font-mono text-[7px] font-bold uppercase tracking-wide"
-                  style={{ backgroundColor: TEAL, color: "white" }}
-                >
-                  ⊘ Sans
-                </span>
-              )}
-              {isAdmin && (
-                <span
-                  className="rounded px-1 py-0.5 font-mono text-[7px] font-bold uppercase tracking-wide"
-                  style={{
-                    backgroundColor: "rgba(245, 158, 11, 0.85)",
-                    color: "#1a0c00",
-                  }}
-                >
-                  ⚙
-                </span>
-              )}
-              {profile && (
-                <span
-                  className="font-mono text-[8px] font-bold uppercase tracking-wide"
-                  style={{ color: profile.color }}
-                  title={profile.label}
-                >
-                  {profile.icon}
-                </span>
-              )}
-            </div>
-            <p
-              className="font-serif text-[13px] italic leading-tight text-white"
-              style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
-            >
-              {participant.elixir ?? "—"}
-            </p>
-            <p className="text-[11px] font-medium leading-tight text-white/85">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          {/* Badges row */}
+          <div className="flex items-center gap-1">
+            {!withAlcohol && (
+              <span
+                className="rounded px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide"
+                style={{ backgroundColor: TEAL, color: "white" }}
+              >
+                ⊘ Sans alcool
+              </span>
+            )}
+            {isAdmin && (
+              <span
+                className="rounded px-1 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide"
+                style={{
+                  backgroundColor: "rgba(245, 158, 11, 0.9)",
+                  color: "#1a0c00",
+                }}
+                title="Téléphone admin/test"
+              >
+                ⚙
+              </span>
+            )}
+            {profile && (
+              <span
+                className="rounded px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide"
+                style={{
+                  backgroundColor: profile.bg,
+                  color: profile.color,
+                }}
+                title={profile.label}
+              >
+                {profile.icon} {profile.label}
+              </span>
+            )}
+          </div>
+
+          {/* Nom du drink */}
+          <p
+            className="truncate font-serif text-[14px] italic leading-tight text-white"
+            title={participant.elixir ?? undefined}
+          >
+            {participant.elixir ?? "—"}
+          </p>
+
+          {/* Client + temps */}
+          <div className="flex items-center justify-between gap-2">
+            <p className="truncate text-[12px] font-medium leading-tight text-white/90">
               {participant.firstName} {maskLastName(participant.lastName)}
             </p>
+            <p
+              className="shrink-0 font-mono text-[10px] font-semibold uppercase tracking-wider"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              {formatDuration(elapsed)}
+            </p>
           </div>
-          <p className="font-mono text-[8px] uppercase tracking-wider text-white/45">
-            {formatDuration(elapsed)}
-          </p>
         </div>
       </div>
 
       {/* Quick actions selon le statut */}
-      <div className="flex gap-1 border-t border-white/8 px-2 py-1.5">
+      <div className="flex gap-1.5 border-t border-white/10 bg-black/15 px-2 py-1.5">
         {status === "waiting" && (
           <>
             <ActionBtn
               onClick={onTogglePriority}
               icon={isPriority ? "★" : "☆"}
-              title={isPriority ? "Retirer priorité" : "Prioriser"}
+              label={isPriority ? "Retirer" : "Prioriser"}
+              accent={isPriority ? "#fbbf24" : undefined}
             />
             <ActionBtn
               onClick={() => onSetStatus("preparing")}
               icon="→"
-              title="Mettre en préparation"
+              label="Préparer"
+              accent={TEAL}
             />
           </>
         )}
@@ -382,12 +403,12 @@ function CompactCard({
             <ActionBtn
               onClick={() => onSetStatus("waiting")}
               icon="←"
-              title="Renvoyer en file"
+              label="En file"
             />
             <ActionBtn
               onClick={onMarkReady}
               icon="✓"
-              title="Marquer prêt"
+              label="Prêt"
               accent={TEAL}
             />
           </>
@@ -397,28 +418,24 @@ function CompactCard({
             <ActionBtn
               onClick={onMarkServed}
               icon="✓"
-              title="Servi"
+              label="Servi"
               accent={TEAL}
             />
-            <ActionBtn
-              onClick={onMarkNoShow}
-              icon="⊘"
-              title="No-show"
-            />
+            <ActionBtn onClick={onMarkNoShow} icon="⊘" label="No-show" />
           </>
         )}
         {status === "served" && (
           <ActionBtn
             onClick={() => onSetStatus("ready")}
             icon="↶"
-            title="Annuler service"
+            label="Annuler"
           />
         )}
         {status === "no_show" && (
           <ActionBtn
             onClick={() => onSetStatus("waiting")}
             icon="↶"
-            title="Remettre en file"
+            label="Remettre"
           />
         )}
       </div>
@@ -429,25 +446,27 @@ function CompactCard({
 function ActionBtn({
   onClick,
   icon,
-  title,
+  label,
   accent,
 }: {
   onClick: () => void;
   icon: string;
-  title: string;
+  label: string;
   accent?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      title={title}
-      className="flex flex-1 items-center justify-center rounded py-1 text-xs transition-all active:scale-95"
+      title={label}
+      className="flex flex-1 items-center justify-center gap-1 rounded-md py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95"
       style={{
-        backgroundColor: accent ? `${accent}` : "rgba(255,255,255,0.06)",
+        backgroundColor: accent ?? "rgba(255,255,255,0.08)",
         color: accent ? "white" : "rgba(255,255,255,0.85)",
+        border: accent ? "none" : "1px solid rgba(255,255,255,0.10)",
       }}
     >
-      {icon}
+      <span className="text-[12px]">{icon}</span>
+      <span>{label}</span>
     </button>
   );
 }

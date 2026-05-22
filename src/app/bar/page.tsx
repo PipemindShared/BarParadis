@@ -237,7 +237,7 @@ export default function BarPage() {
           onPullNext={handlePullNext}
         />
       ) : (
-      <main className="relative z-10 flex flex-1 gap-5 overflow-hidden p-5">
+      <main className="relative z-10 flex flex-1 flex-col gap-5 overflow-y-auto p-5 lg:flex-row lg:overflow-hidden">
         {/* Column En cours */}
         <section className="flex flex-1 flex-col">
           <div className="mb-4 flex items-baseline gap-3">
@@ -495,8 +495,8 @@ function DrinkCard({
           }}
         >
           <span className="text-base">⊘</span>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-white">
-            Mocktail · sans alcool
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.32em] text-white">
+            Sans alcool
           </span>
           <span className="text-base">⊘</span>
         </div>
@@ -505,7 +505,7 @@ function DrinkCard({
       {/* Top-right badges (shifted down if mocktail banner present) */}
       <div
         className="absolute right-2 z-10 flex flex-col items-end gap-1.5"
-        style={{ top: !withAlcohol ? 36 : 8 }}
+        style={{ top: !withAlcohol ? 44 : 8 }}
       >
         {isAdmin && (
           <div
@@ -524,7 +524,7 @@ function DrinkCard({
       {/* Top-left chips */}
       <div
         className="absolute left-2 z-10 flex flex-col items-start gap-1.5"
-        style={{ top: !withAlcohol ? 36 : 8 }}
+        style={{ top: !withAlcohol ? 44 : 8 }}
       >
         {participant.queueStatus === "priority" && (
           <div
