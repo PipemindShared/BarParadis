@@ -193,10 +193,10 @@ function KanbanColumn({
 }) {
   return (
     <div
-      className="flex w-[260px] shrink-0 flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-3"
+      className="flex h-full w-[260px] shrink-0 flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-3"
       style={{ borderTopWidth: 2, borderTopColor: col.accent }}
     >
-      <div className="mb-3 flex items-center justify-between px-1">
+      <div className="mb-3 flex shrink-0 items-center justify-between px-1">
         <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/65">
           {col.label}
         </h3>
@@ -208,7 +208,7 @@ function KanbanColumn({
         </span>
       </div>
 
-      <div className="flex flex-col gap-2 overflow-y-auto pr-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
         {items.length === 0 ? (
           <p className="py-8 text-center font-mono text-[9px] uppercase tracking-[0.2em] text-white/25">
             vide
@@ -275,7 +275,7 @@ function CompactCard({
       layout
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative overflow-hidden rounded-xl border bg-white/[0.03]"
+      className="relative shrink-0 overflow-hidden rounded-xl border bg-white/[0.03]"
       style={{
         borderColor: isPriority
           ? "rgba(251, 191, 36, 0.55)"
