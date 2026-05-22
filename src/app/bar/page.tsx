@@ -70,7 +70,9 @@ export default function BarPage() {
   async function handleReset() {
     const result = await resetTest({});
     setResetConfirm(false);
-    console.log(`[bar] ${result.count} drinks de test remis en attente`);
+    console.log(
+      `[bar] reset OK — ${result.total} drinks (${result.createdCount} créés, ${result.resetCount} reset)`
+    );
   }
 
   async function handlePullNext() {
