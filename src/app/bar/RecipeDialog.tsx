@@ -147,7 +147,7 @@ export function RecipeDialog({
               {!withAlcohol && (
                 <Section title="Substitution mocktail">
                   <p className="text-sm leading-snug text-white/85">
-                    {variant.substitution}
+                    {recipe.mocktail.substitution}
                   </p>
                 </Section>
               )}
@@ -199,7 +199,10 @@ export function RecipeDialog({
               <Section title="Détails service">
                 <div className="flex flex-wrap gap-2">
                   <Chip>Givrage : {recipe.rim}</Chip>
-                  <Chip>Spiritueux : {variant.spirits || "—"}</Chip>
+                  <Chip>
+                    Spiritueux :{" "}
+                    {withAlcohol ? recipe.alcoholic.spirits : "Aucun (mocktail)"}
+                  </Chip>
                 </div>
               </Section>
             </div>
