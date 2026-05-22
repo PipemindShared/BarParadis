@@ -133,8 +133,8 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 5,
-    intro: "Sous quelle divinité",
-    text: "veux-tu renaître ?",
+    intro: "Quelle divinité",
+    text: "préparera ton élixir ?",
     type: "deity",
     options: [
       { letter: "A", text: "Iris", elixir: ELIXIRS.renaissance },
