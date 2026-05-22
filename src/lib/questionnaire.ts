@@ -1,12 +1,15 @@
 export type Profile = "Codeur" | "Designer" | "Manager";
 
-export type QuestionType = "profile" | "trait" | "alcohol";
+export type QuestionType = "profile" | "trait" | "deity" | "alcohol";
 
 export type Option = {
   letter: "A" | "B" | "C" | "D";
   text: string;
+  subtitle?: string; // ex: "Grecque" pour les divinités
+  description?: string; // sous-texte pour les divinités
   profile?: Profile;
   trait?: string;
+  elixir?: string;
   withAlcohol?: boolean;
 };
 
@@ -17,6 +20,13 @@ export type Question = {
   type: QuestionType;
   options: Option[];
 };
+
+export const ELIXIRS = {
+  renaissance: "L’Élixir de Renaissance",
+  perles: "Les Perles du Paradis",
+  cendres: "Les Cendres du Phénix",
+  hotfix: "Le Hotfix Royal",
+} as const;
 
 export const QUESTIONS: Question[] = [
   {
@@ -123,6 +133,46 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 5,
+    intro: "Une divinité observe ta renaissance.",
+    text: "Laquelle t’appelle ?",
+    type: "deity",
+    options: [
+      {
+        letter: "A",
+        text: "Iris",
+        subtitle: "Mythologie grecque",
+        description:
+          "Messagère arc-en-ciel des dieux. Sa traversée du ciel laisse une traînée acidulée.",
+        elixir: ELIXIRS.renaissance,
+      },
+      {
+        letter: "B",
+        text: "Idun",
+        subtitle: "Mythologie nordique",
+        description:
+          "Gardienne des pommes d’or qui gardent les dieux éternellement jeunes.",
+        elixir: ELIXIRS.perles,
+      },
+      {
+        letter: "C",
+        text: "Mellona",
+        subtitle: "Mythologie romaine",
+        description:
+          "Déesse des abeilles, des miels rares et des poussières sucrées.",
+        elixir: ELIXIRS.cendres,
+      },
+      {
+        letter: "D",
+        text: "Heimdall",
+        subtitle: "Mythologie nordique",
+        description:
+          "Veilleur d’Asgard aux yeux d’or, gardien des nuits longues et des élixirs forts.",
+        elixir: ELIXIRS.hotfix,
+      },
+    ],
+  },
+  {
+    id: 6,
     intro: "Pour ton élixir,",
     text: "avec ou sans spiritueux ?",
     type: "alcohol",
@@ -146,7 +196,6 @@ export type Answer = {
   letter: "A" | "B" | "C" | "D";
 };
 
-// Subtle tiebreaker: certains traits "tirent" vers un profil quand il y a égalité
 const TRAIT_TO_PROFILE_HINT: Record<string, Profile | null> = {
   stubborn: "Codeur",
   empathic: "Designer",
@@ -158,11 +207,10 @@ const TRAIT_TO_PROFILE_HINT: Record<string, Profile | null> = {
   night_cowboy: "Codeur",
 };
 
-// Mapping profil → élixirs possibles (Renaissance est l'option universelle/showcase)
 export const PROFILE_ELIXIRS: Record<Profile, string[]> = {
-  Codeur: ["Les Perles du Paradis", "L’Élixir de Renaissance"],
-  Designer: ["Les Cendres du Phénix", "L’Élixir de Renaissance"],
-  Manager: ["Le Hotfix Royal", "L’Élixir de Renaissance"],
+  Codeur: [ELIXIRS.perles, ELIXIRS.renaissance],
+  Designer: [ELIXIRS.cendres, ELIXIRS.renaissance],
+  Manager: [ELIXIRS.hotfix, ELIXIRS.renaissance],
 };
 
 export function pickDrinkName(profile: Profile): string {
@@ -175,6 +223,8 @@ export type QuestionnaireResult = {
   primary: Profile;
   withAlcohol: boolean;
   traits: string[];
+  elixir: string | null;
+  deity: string | null;
 };
 
 export function computeResult(answers: Answer[]): QuestionnaireResult {
@@ -185,6 +235,8 @@ export function computeResult(answers: Answer[]): QuestionnaireResult {
   };
   const traits: string[] = [];
   let withAlcohol = true;
+  let elixir: string | null = null;
+  let deity: string | null = null;
 
   for (const answer of answers) {
     const question = QUESTIONS.find((q) => q.id === answer.questionId);
@@ -205,6 +257,12 @@ export function computeResult(answers: Answer[]): QuestionnaireResult {
     if (option.withAlcohol !== undefined) {
       withAlcohol = option.withAlcohol;
     }
+    if (option.elixir) {
+      elixir = option.elixir;
+    }
+    if (question.type === "deity" && option.text) {
+      deity = option.text;
+    }
   }
 
   const sorted = (Object.entries(scores) as [Profile, number][]).sort(
@@ -216,6 +274,8 @@ export function computeResult(answers: Answer[]): QuestionnaireResult {
     primary: sorted[0][0],
     withAlcohol,
     traits,
+    elixir,
+    deity,
   };
 }
 

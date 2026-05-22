@@ -250,9 +250,36 @@ function OptionCard({
           >
             {option.letter}
           </div>
-          <p className="pt-1 text-[15px] leading-snug" style={{ color: INK }}>
-            {option.text}
-          </p>
+          {option.subtitle || option.description ? (
+            <div className="flex-1 pt-0.5">
+              <p
+                className="font-serif text-[22px] italic leading-none"
+                style={{ color: INK }}
+              >
+                {option.text}
+              </p>
+              {option.subtitle && (
+                <p
+                  className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em]"
+                  style={{ color: TEAL }}
+                >
+                  {option.subtitle}
+                </p>
+              )}
+              {option.description && (
+                <p
+                  className="mt-2 text-[13px] leading-snug"
+                  style={{ color: INK_SOFT }}
+                >
+                  {option.description}
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="pt-1 text-[15px] leading-snug" style={{ color: INK }}>
+              {option.text}
+            </p>
+          )}
 
           {selected && (
             <motion.span
