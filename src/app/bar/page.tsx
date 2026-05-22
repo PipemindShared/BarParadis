@@ -392,11 +392,12 @@ function DrinkCard({
   const elapsed = startedAt ? now - startedAt : 0;
   const isOld = mode === "ready" && elapsed > 10 * 60 * 1000;
 
-  // Visual treatment for no-alcohol: outer ring teal + desaturated image + top banner
-  const cardBoxShadow = !withAlcohol
-    ? `0 0 0 3px ${TEAL_LIGHT}, 0 0 32px -4px ${TEAL_LIGHT}88, 0 8px 24px -8px rgba(0,0,0,0.6)`
-    : isOld
-      ? "0 0 0 3px #f87171, 0 0 32px -4px rgba(248, 113, 113, 0.6), 0 8px 24px -8px rgba(0,0,0,0.6)"
+  // Bordure: rouge si trop vieux (priorité), sinon teal si mocktail, sinon shadow normale.
+  // Le mocktail reste identifiable via le bandeau et l'image désaturée même en rouge.
+  const cardBoxShadow = isOld
+    ? "0 0 0 3px #f87171, 0 0 32px -4px rgba(248, 113, 113, 0.6), 0 8px 24px -8px rgba(0,0,0,0.6)"
+    : !withAlcohol
+      ? `0 0 0 3px ${TEAL_LIGHT}, 0 0 32px -4px ${TEAL_LIGHT}88, 0 8px 24px -8px rgba(0,0,0,0.6)`
       : "0 8px 24px -8px rgba(0,0,0,0.6)";
 
   return (
