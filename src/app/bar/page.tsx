@@ -13,6 +13,7 @@ import {
   maskLastName,
   isAdminPhone,
 } from "@/lib/bar-utils";
+import { AdvancedView } from "./AdvancedView";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
@@ -24,6 +25,7 @@ export default function BarPage() {
   const [authReady, setAuthReady] = useState(false);
   const [barmanName, setBarmanName] = useState<string>("Barman");
   const [mode, setMode] = useState<"live" | "test">("live");
+  const [view, setView] = useState<"simple" | "advanced">("simple");
   const [now, setNow] = useState(Date.now());
   const [resetConfirm, setResetConfirm] = useState(false);
 
@@ -37,6 +39,10 @@ export default function BarPage() {
       const storedMode = localStorage.getItem("bar_mode");
       if (storedMode === "test" || storedMode === "live") {
         setMode(storedMode);
+      }
+      const storedView = localStorage.getItem("bar_view");
+      if (storedView === "simple" || storedView === "advanced") {
+        setView(storedView);
       }
     } catch {}
     setAuthReady(true);
@@ -77,6 +83,13 @@ export default function BarPage() {
 
   async function handlePullNext() {
     await pullNext({ barmanName });
+  }
+
+  function switchView(v: "simple" | "advanced") {
+    setView(v);
+    try {
+      localStorage.setItem("bar_view", v);
+    } catch {}
   }
 
   async function handleMarkReady(p: Participant) {
@@ -163,6 +176,35 @@ export default function BarPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Toggle Simple/Avancé */}
+          <div
+            className="flex rounded-full border border-white/15 p-0.5"
+            style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+          >
+            <button
+              onClick={() => switchView("simple")}
+              className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-all"
+              style={{
+                backgroundColor:
+                  view === "simple" ? TEAL : "transparent",
+                color: view === "simple" ? "white" : "rgba(255,255,255,0.55)",
+              }}
+            >
+              Simple
+            </button>
+            <button
+              onClick={() => switchView("advanced")}
+              className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-all"
+              style={{
+                backgroundColor:
+                  view === "advanced" ? TEAL : "transparent",
+                color:
+                  view === "advanced" ? "white" : "rgba(255,255,255,0.55)",
+              }}
+            >
+              Avancé
+            </button>
+          </div>
           {mode === "test" && (
             <button
               onClick={() => setResetConfirm(true)}
@@ -185,7 +227,16 @@ export default function BarPage() {
         </div>
       </header>
 
-      {/* MAIN: 2-column layout (En cours | Prêts) */}
+      {view === "advanced" ? (
+        <AdvancedView
+          data={data}
+          now={now}
+          onMarkReady={handleMarkReady}
+          onMarkServed={(p) => markServed({ participantId: p._id })}
+          onMarkNoShow={(p) => setNoShowDialog(p)}
+          onPullNext={handlePullNext}
+        />
+      ) : (
       <main className="relative z-10 flex flex-1 gap-5 overflow-hidden p-5">
         {/* Column En cours */}
         <section className="flex flex-1 flex-col">
@@ -270,6 +321,7 @@ export default function BarPage() {
           />
         </section>
       </main>
+      )}
 
       {/* No-show dialog */}
       <AnimatePresence>

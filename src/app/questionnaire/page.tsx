@@ -1,13 +1,32 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
 import {
   QUESTIONS,
+  ELIXIRS,
   type Answer,
   type Option,
 } from "@/lib/questionnaire";
+
+// Mapping deity → elixir key (pour matcher l'inventaire)
+const DEITY_TO_ELIXIR_KEY: Record<string, "renaissance" | "perles" | "cendres" | "hotfix"> = {
+  Iris: "renaissance",
+  Idun: "perles",
+  Mellona: "cendres",
+  Heimdall: "hotfix",
+};
+
+function getElixirKey(option: Option): "renaissance" | "perles" | "cendres" | "hotfix" | null {
+  if (option.elixir === ELIXIRS.renaissance) return "renaissance";
+  if (option.elixir === ELIXIRS.perles) return "perles";
+  if (option.elixir === ELIXIRS.cendres) return "cendres";
+  if (option.elixir === ELIXIRS.hotfix) return "hotfix";
+  return DEITY_TO_ELIXIR_KEY[option.text] ?? null;
+}
 
 const TEAL = "#19978a";
 const TEAL_DEEP = "#0f7a70";
@@ -39,6 +58,7 @@ export default function QuestionnairePage() {
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [transitioning, setTransitioning] = useState(false);
+  const inventory = useQuery(api.inventory.list);
 
   const total = QUESTIONS.length;
   const question = QUESTIONS[index];
@@ -171,15 +191,26 @@ export default function QuestionnairePage() {
 
             {question.type === "deity" ? (
               <ul className="mt-5 grid flex-1 grid-cols-2 gap-3 content-start">
-                {question.options.map((option, i) => (
-                  <DeityCard
-                    key={option.letter}
-                    option={option}
-                    index={i}
-                    onSelect={handleSelect}
-                    disabled={transitioning}
-                  />
-                ))}
+                {question.options.map((option, i) => {
+                  const key = getElixirKey(option);
+                  const slot = key ? inventory?.[key] : null;
+                  const unavailable = slot ? !slot.available : false;
+                  return (
+                    <DeityCard
+                      key={option.letter}
+                      option={option}
+                      index={i}
+                      onSelect={handleSelect}
+                      disabled={transitioning}
+                      unavailable={unavailable}
+                      unavailableReason={
+                        unavailable
+                          ? slot?.reason ?? "Ce dieu est trop occupé."
+                          : undefined
+                      }
+                    />
+                  );
+                })}
               </ul>
             ) : (
               <ul className="mt-6 flex flex-1 flex-col gap-2.5">
@@ -290,16 +321,20 @@ function DeityCard({
   index,
   onSelect,
   disabled,
+  unavailable,
+  unavailableReason,
 }: {
   option: Option;
   index: number;
   onSelect: (option: Option) => void;
   disabled: boolean;
+  unavailable?: boolean;
+  unavailableReason?: string;
 }) {
   const [selected, setSelected] = useState(false);
 
   function handleClick() {
-    if (disabled || selected) return;
+    if (disabled || selected || unavailable) return;
     setSelected(true);
     onSelect(option);
   }
@@ -317,13 +352,19 @@ function DeityCard({
       <button
         type="button"
         onClick={handleClick}
-        disabled={disabled}
-        className="group relative aspect-square w-full overflow-hidden rounded-2xl border transition-all duration-200 disabled:cursor-default"
+        disabled={disabled || unavailable}
+        className="group relative aspect-square w-full overflow-hidden rounded-2xl border transition-all duration-200 disabled:cursor-not-allowed"
         style={{
-          borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.15)",
+          borderColor: selected
+            ? TEAL
+            : unavailable
+              ? "rgba(29, 42, 58, 0.18)"
+              : "rgba(29, 42, 58, 0.15)",
           boxShadow: selected
             ? `0 0 0 2px ${TEAL}, 0 12px 40px -10px ${TEAL}99`
-            : "0 6px 24px -8px rgba(29, 42, 58, 0.25)",
+            : unavailable
+              ? "0 2px 8px -4px rgba(29, 42, 58, 0.15)"
+              : "0 6px 24px -8px rgba(29, 42, 58, 0.25)",
         }}
       >
         <video
@@ -332,16 +373,22 @@ function DeityCard({
           muted
           playsInline
           preload="metadata"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover transition-all"
           src={`/videos/${option.text}.mp4`}
+          style={
+            unavailable
+              ? { filter: "grayscale(0.85) brightness(0.55)" }
+              : undefined
+          }
         />
 
         {/* Dégradé sombre en bas pour lisibilité du nom */}
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%]"
           style={{
-            background:
-              "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+            background: unavailable
+              ? "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.15) 100%)"
+              : "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
           }}
         />
 
@@ -349,8 +396,12 @@ function DeityCard({
         <span
           className="absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full font-mono text-[11px] font-medium backdrop-blur-md"
           style={{
-            backgroundColor: selected ? TEAL : "rgba(255,255,255,0.85)",
-            color: selected ? "#fff" : INK,
+            backgroundColor: selected
+              ? TEAL
+              : unavailable
+                ? "rgba(255,255,255,0.4)"
+                : "rgba(255,255,255,0.85)",
+            color: selected ? "#fff" : unavailable ? "rgba(0,0,0,0.5)" : INK,
           }}
         >
           {option.letter}
@@ -361,12 +412,36 @@ function DeityCard({
           <p
             className="font-serif text-[26px] italic leading-none tracking-tight text-white"
             style={{
-              textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 0 24px rgba(0,0,0,0.6)",
+              textShadow:
+                "0 2px 12px rgba(0,0,0,0.9), 0 0 24px rgba(0,0,0,0.6)",
+              opacity: unavailable ? 0.55 : 1,
             }}
           >
             {option.text}
           </p>
+          {unavailable && unavailableReason && (
+            <p
+              className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-white/80"
+              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.95)" }}
+            >
+              {unavailableReason}
+            </p>
+          )}
         </div>
+
+        {/* Cadenas/indicateur de désactivation */}
+        {unavailable && (
+          <div
+            className="absolute right-2 top-2 z-10 rounded-full px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.2em] backdrop-blur-md"
+            style={{
+              backgroundColor: "rgba(0,0,0,0.65)",
+              color: "rgba(255,255,255,0.85)",
+              border: "1px solid rgba(255,255,255,0.2)",
+            }}
+          >
+            ⊘ Occupé
+          </div>
+        )}
 
         {selected && (
           <motion.span

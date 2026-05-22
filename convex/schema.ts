@@ -66,4 +66,17 @@ export default defineSchema({
     .index("by_phone", ["phone"])
     .index("by_queue_status", ["queueStatus"])
     .index("by_created", ["createdAt"]),
+
+  // Disponibilité des élixirs (1 ligne par élixir)
+  elixirInventory: defineTable({
+    elixir: v.union(
+      v.literal("renaissance"),
+      v.literal("perles"),
+      v.literal("cendres"),
+      v.literal("hotfix")
+    ),
+    available: v.boolean(),
+    reason: v.optional(v.string()),
+    updatedAt: v.number(),
+  }).index("by_elixir", ["elixir"]),
 });
