@@ -66,6 +66,7 @@ export function AdvancedView({
   const togglePriority = useMutation(api.bar.togglePriority);
   const [search, setSearch] = useState("");
   const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [activeMobileCol, setActiveMobileCol] = useState<Status>("waiting");
 
   const allByStatus = useMemo<Record<Status, Participant[]>>(
     () => ({
@@ -99,8 +100,8 @@ export function AdvancedView({
   return (
     <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center gap-3 border-b border-white/10 bg-black/30 px-5 py-3 backdrop-blur-md">
-        <div className="relative flex flex-1 max-w-md">
+      <div className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-black/30 px-4 py-3 backdrop-blur-md sm:gap-3 sm:px-5">
+        <div className="relative flex flex-1 basis-full max-w-md sm:basis-auto">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -143,8 +144,8 @@ export function AdvancedView({
         </button>
       </div>
 
-      {/* Kanban */}
-      <div className="flex flex-1 gap-3 overflow-x-auto overflow-y-hidden p-4">
+      {/* Desktop/Tablet: kanban 5 colonnes côte à côte */}
+      <div className="hidden flex-1 gap-3 overflow-x-auto overflow-y-hidden p-4 teal-scrollbar lg:flex">
         {COLUMN_DEFS.map((col) => (
           <KanbanColumn
             key={col.key}
@@ -161,6 +162,72 @@ export function AdvancedView({
             onMarkNoShow={onMarkNoShow}
           />
         ))}
+      </div>
+
+      {/* Mobile: onglets + colonne active en pleine largeur */}
+      <div className="flex flex-1 flex-col overflow-hidden lg:hidden">
+        <div className="flex gap-1.5 overflow-x-auto border-b border-white/10 px-3 py-3 teal-scrollbar">
+          {COLUMN_DEFS.map((col) => {
+            const active = activeMobileCol === col.key;
+            const count = allByStatus[col.key].length;
+            return (
+              <button
+                key={col.key}
+                onClick={() => setActiveMobileCol(col.key)}
+                className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[10px] font-bold uppercase tracking-wider transition-all"
+                style={{
+                  backgroundColor: active
+                    ? `${col.accent}22`
+                    : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${
+                    active ? col.accent : "rgba(255,255,255,0.08)"
+                  }`,
+                  color: active ? col.accent : "rgba(255,255,255,0.6)",
+                }}
+              >
+                {col.label}
+                <span
+                  className="rounded-full px-1.5 py-0.5 font-serif text-[11px] italic"
+                  style={{
+                    backgroundColor: active
+                      ? `${col.accent}33`
+                      : "rgba(255,255,255,0.06)",
+                  }}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-3 teal-scrollbar">
+          {filtered[activeMobileCol].length === 0 ? (
+            <p className="py-12 text-center font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+              vide
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {filtered[activeMobileCol].map((p) => (
+                <CompactCard
+                  key={p._id}
+                  participant={p}
+                  now={now}
+                  status={activeMobileCol}
+                  onSetStatus={(s) =>
+                    setStatus({ participantId: p._id, status: s })
+                  }
+                  onTogglePriority={() =>
+                    togglePriority({ participantId: p._id })
+                  }
+                  onMarkReady={() => onMarkReady(p)}
+                  onMarkServed={() => onMarkServed(p)}
+                  onMarkNoShow={() => onMarkNoShow(p)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {inventoryOpen && (
@@ -193,7 +260,7 @@ function KanbanColumn({
 }) {
   return (
     <div
-      className="flex h-full w-[260px] shrink-0 flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-3"
+      className="flex h-full min-w-[220px] flex-1 flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-3"
       style={{ borderTopWidth: 2, borderTopColor: col.accent }}
     >
       <div className="mb-3 flex shrink-0 items-center justify-between px-1">
@@ -208,7 +275,7 @@ function KanbanColumn({
         </span>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-1 teal-scrollbar">
         {items.length === 0 ? (
           <p className="py-8 text-center font-mono text-[9px] uppercase tracking-[0.2em] text-white/25">
             vide
