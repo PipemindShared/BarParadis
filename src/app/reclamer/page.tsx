@@ -19,9 +19,7 @@ type FormState = {
   lastName: string;
   email: string;
   phone: string;
-  consentParticipation: boolean;
-  consentEmailMarketing: boolean;
-  consentSmsMarketing: boolean;
+  consentAll: boolean;
 };
 
 const INITIAL_FORM: FormState = {
@@ -29,9 +27,7 @@ const INITIAL_FORM: FormState = {
   lastName: "",
   email: "",
   phone: "",
-  consentParticipation: false,
-  consentEmailMarketing: false,
-  consentSmsMarketing: false,
+  consentAll: false,
 };
 
 export default function ReclamerPage() {
@@ -61,7 +57,7 @@ export default function ReclamerPage() {
       return "Ton courriel a l’air pas correct.";
     if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10)
       return "Ton téléphone a l’air trop court.";
-    if (!form.consentParticipation)
+    if (!form.consentAll)
       return "L’oracle a besoin de ton accord pour te faire signe.";
     return null;
   }
@@ -82,9 +78,9 @@ export default function ReclamerPage() {
         lastName: form.lastName.trim(),
         email: form.email.trim().toLowerCase(),
         phone: form.phone.trim(),
-        consentParticipation: form.consentParticipation,
-        consentEmailMarketing: form.consentEmailMarketing,
-        consentSmsMarketing: form.consentSmsMarketing,
+        consentParticipation: form.consentAll,
+        consentEmailMarketing: form.consentAll,
+        consentSmsMarketing: form.consentAll,
         profile: result?.primary,
         deity: result?.deity ?? undefined,
         elixir: result?.elixir ?? undefined,
@@ -204,28 +200,18 @@ export default function ReclamerPage() {
             inputMode="tel"
           />
 
-          <div className="mt-2 flex flex-col gap-2.5">
+          <div className="mt-2">
             <Checkbox
-              checked={form.consentParticipation}
-              onChange={(v) => update("consentParticipation", v)}
+              checked={form.consentAll}
+              onChange={(v) => update("consentAll", v)}
               required
               label={
                 <>
-                  J’accepte que Pipemind utilise mes infos pour me préparer mon
-                  élixir et gérer ma place dans la file.{" "}
-                  <span style={{ color: TEAL_DEEP }}>* obligatoire</span>
+                  J’accepte que Pipemind utilise mes infos pour préparer mon
+                  élixir, gérer ma place dans la file, et me recontacter par{" "}
+                  <strong>courriel ou SMS</strong> après l’événement.
                 </>
               }
-            />
-            <Checkbox
-              checked={form.consentEmailMarketing}
-              onChange={(v) => update("consentEmailMarketing", v)}
-              label="J’accepte de recevoir des courriels de Pipemind après l’événement (formations, offres)."
-            />
-            <Checkbox
-              checked={form.consentSmsMarketing}
-              onChange={(v) => update("consentSmsMarketing", v)}
-              label="J’accepte de recevoir des SMS de Pipemind après l’événement."
             />
           </div>
 
