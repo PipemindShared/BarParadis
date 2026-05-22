@@ -3,7 +3,7 @@
 import { useMutation } from "convex/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { computeResult, type Answer } from "@/lib/questionnaire";
 
@@ -48,28 +48,30 @@ export default function ReclamerPage() {
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    if (error) setError(null);
   }
 
-  function validate(): string | null {
-    if (!form.firstName.trim()) return "On a besoin de ton prénom.";
-    if (!form.lastName.trim()) return "Pis ton nom de famille aussi.";
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      return "Ton courriel a l’air pas correct.";
-    if (!form.phone.trim() || form.phone.replace(/\D/g, "").length < 10)
-      return "Ton téléphone a l’air trop court.";
-    if (!form.consentAll)
-      return "L’oracle a besoin de ton accord pour te faire signe.";
-    return null;
-  }
+  const fieldValidity = useMemo(() => {
+    const firstName = form.firstName.trim().length >= 2;
+    const lastName = form.lastName.trim().length >= 2;
+    const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+    const phoneDigits = form.phone.replace(/\D/g, "").length;
+    const phone = phoneDigits === 10 || phoneDigits === 11;
+    const consent = form.consentAll;
+    return {
+      firstName,
+      lastName,
+      email,
+      phone,
+      consent,
+      all: firstName && lastName && email && phone && consent,
+    };
+  }, [form]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    if (!fieldValidity.all) return;
     setSubmitting(true);
     try {
       const result = answers.length > 0 ? computeResult(answers) : null;
@@ -170,6 +172,8 @@ export default function ReclamerPage() {
               onChange={(v) => update("firstName", v)}
               autoComplete="given-name"
               placeholder="Gabriel"
+              valid={fieldValidity.firstName}
+              touched={form.firstName.length > 0}
             />
             <Field
               label="Nom"
@@ -177,6 +181,8 @@ export default function ReclamerPage() {
               onChange={(v) => update("lastName", v)}
               autoComplete="family-name"
               placeholder="Tremblay"
+              valid={fieldValidity.lastName}
+              touched={form.lastName.length > 0}
             />
           </div>
 
@@ -188,6 +194,8 @@ export default function ReclamerPage() {
             autoComplete="email"
             placeholder="toi@exemple.com"
             inputMode="email"
+            valid={fieldValidity.email}
+            touched={form.email.length > 0}
           />
 
           <Field
@@ -198,6 +206,8 @@ export default function ReclamerPage() {
             autoComplete="tel"
             placeholder="(514) 555-1234"
             inputMode="tel"
+            valid={fieldValidity.phone}
+            touched={form.phone.length > 0}
           />
 
           <div className="mt-2">
@@ -233,21 +243,38 @@ export default function ReclamerPage() {
 
           <button
             type="submit"
-            disabled={submitting}
-            className="group relative mt-3 flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] disabled:opacity-60"
-            style={{
-              background: `linear-gradient(135deg, ${TEAL} 0%, ${TEAL_DEEP} 100%)`,
-              boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
-            }}
+            disabled={!fieldValidity.all || submitting}
+            className="group relative mt-3 flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide transition-all active:scale-[0.98] disabled:cursor-not-allowed"
+            style={
+              fieldValidity.all && !submitting
+                ? {
+                    background: `linear-gradient(135deg, ${TEAL} 0%, ${TEAL_DEEP} 100%)`,
+                    color: "white",
+                    boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
+                  }
+                : {
+                    backgroundColor: "rgba(29, 42, 58, 0.08)",
+                    color: INK_MUTED,
+                    boxShadow: "none",
+                  }
+            }
           >
-            <span
-              className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
-              style={{
-                background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
-              }}
-            />
+            {fieldValidity.all && !submitting && (
+              <span
+                className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
+                style={{
+                  background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
+                }}
+              />
+            )}
             <span className="relative flex items-center gap-2">
-              <span style={{ color: TEAL_LIGHT }}>✦</span>
+              <span
+                style={{
+                  color: fieldValidity.all && !submitting ? TEAL_LIGHT : INK_MUTED,
+                }}
+              >
+                ✦
+              </span>
               {submitting ? "Envoi à l’oracle…" : "Réclamer mon élixir"}
             </span>
             <span className="relative text-xl transition-transform group-hover:translate-x-1">
@@ -277,6 +304,8 @@ function Field({
   autoComplete,
   placeholder,
   inputMode,
+  valid,
+  touched,
 }: {
   label: string;
   value: string;
@@ -285,7 +314,12 @@ function Field({
   autoComplete?: string;
   placeholder?: string;
   inputMode?: "text" | "email" | "tel" | "numeric";
+  valid?: boolean;
+  touched?: boolean;
 }) {
+  const showInvalid = touched && valid === false;
+  const showValid = touched && valid === true;
+
   return (
     <label className="flex flex-col gap-1">
       <span
@@ -294,30 +328,58 @@ function Field({
       >
         {label}
       </span>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        inputMode={inputMode}
-        className="rounded-xl border px-3 py-3 text-[15px] outline-none transition-all placeholder:opacity-40"
-        style={{
-          borderColor: "rgba(29, 42, 58, 0.15)",
-          backgroundColor: "rgba(255, 255, 255, 0.7)",
-          color: INK,
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-        }}
-        onFocus={(e) => {
-          e.currentTarget.style.borderColor = TEAL;
-          e.currentTarget.style.boxShadow = `0 0 0 3px ${TEAL}22`;
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.borderColor = "rgba(29, 42, 58, 0.15)";
-          e.currentTarget.style.boxShadow = "none";
-        }}
-      />
+      <div className="relative">
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          autoComplete={autoComplete}
+          placeholder={placeholder}
+          inputMode={inputMode}
+          className="w-full rounded-xl border px-3 py-3 pr-9 text-[15px] outline-none transition-all placeholder:opacity-40"
+          style={{
+            borderColor: showInvalid
+              ? "rgba(220, 38, 38, 0.4)"
+              : showValid
+                ? `${TEAL}66`
+                : "rgba(29, 42, 58, 0.15)",
+            backgroundColor: "rgba(255, 255, 255, 0.7)",
+            color: INK,
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = TEAL;
+            e.currentTarget.style.boxShadow = `0 0 0 3px ${TEAL}22`;
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = showInvalid
+              ? "rgba(220, 38, 38, 0.4)"
+              : showValid
+                ? `${TEAL}66`
+                : "rgba(29, 42, 58, 0.15)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+        />
+        {showValid && (
+          <span
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+            style={{ color: TEAL }}
+            aria-hidden
+          >
+            <svg viewBox="0 0 16 16" className="h-4 w-4">
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8.5 6.5 12 13 4.5"
+              />
+            </svg>
+          </span>
+        )}
+      </div>
     </label>
   );
 }
