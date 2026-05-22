@@ -314,81 +314,72 @@ function DeityCard({
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      <div
-        className="celestial-float"
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={disabled}
+        className="group relative aspect-square w-full overflow-hidden rounded-2xl border transition-all duration-200 disabled:cursor-default"
         style={{
-          animationDuration: `${6 + index * 0.6}s`,
-          animationDelay: `${1.4 + index * 0.3}s`,
+          borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.15)",
+          boxShadow: selected
+            ? `0 0 0 2px ${TEAL}, 0 12px 40px -10px ${TEAL}99`
+            : "0 6px 24px -8px rgba(29, 42, 58, 0.25)",
         }}
       >
-        <button
-          type="button"
-          onClick={handleClick}
-          disabled={disabled}
-          className="group relative flex w-full flex-col items-center gap-2 rounded-2xl border p-3 transition-all duration-200 disabled:cursor-default"
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 h-full w-full object-cover"
+          src={`/videos/${option.text}.mp4`}
+        />
+
+        {/* Dégradé sombre en bas pour lisibilité du nom */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%]"
           style={{
-            borderColor: selected ? TEAL : "rgba(29, 42, 58, 0.12)",
-            backgroundColor: selected
-              ? "rgba(25, 151, 138, 0.10)"
-              : "rgba(255, 255, 255, 0.55)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            boxShadow: selected
-              ? `0 8px 30px -8px ${TEAL}66, 0 0 0 1px ${TEAL}33 inset`
-              : "0 4px 24px -8px rgba(29, 42, 58, 0.12)",
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+          }}
+        />
+
+        {/* Badge lettre haut-gauche */}
+        <span
+          className="absolute left-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full font-mono text-[11px] font-medium backdrop-blur-md"
+          style={{
+            backgroundColor: selected ? TEAL : "rgba(255,255,255,0.85)",
+            color: selected ? "#fff" : INK,
           }}
         >
-          <span
-            className="absolute left-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full font-mono text-[10px] font-medium"
-            style={{
-              backgroundColor: selected ? TEAL : "rgba(255,255,255,0.75)",
-              color: selected ? "#fff" : INK_MUTED,
-              border: selected ? "none" : "1px solid rgba(29, 42, 58, 0.15)",
-            }}
-          >
-            {option.letter}
-          </span>
+          {option.letter}
+        </span>
 
-          <div
-            className="relative h-[110px] w-[110px] overflow-hidden rounded-full transition-all"
-            style={{
-              border: `2px solid ${selected ? TEAL : "rgba(255,255,255,0.7)"}`,
-              boxShadow: selected
-                ? `0 0 24px ${TEAL}66, 0 0 0 4px ${TEAL}22`
-                : "0 4px 14px -4px rgba(29, 42, 58, 0.25)",
-            }}
-          >
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              className="h-full w-full object-cover"
-              src={`/videos/${option.text}.mp4`}
-            />
-          </div>
-
+        {/* Nom de la divinité par-dessus la vidéo, en bas */}
+        <div className="absolute inset-x-0 bottom-0 z-10 px-3 pb-3 pt-6 text-center">
           <p
-            className="mt-1 font-serif text-[20px] italic leading-none"
-            style={{ color: INK }}
+            className="font-serif text-[26px] italic leading-none tracking-tight text-white"
+            style={{
+              textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 0 24px rgba(0,0,0,0.6)",
+            }}
           >
             {option.text}
           </p>
+        </div>
 
-          {selected && (
-            <motion.span
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1.5, opacity: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="pointer-events-none absolute inset-0 rounded-2xl"
-              style={{
-                boxShadow: `0 0 0 2px ${TEAL}`,
-              }}
-            />
-          )}
-        </button>
-      </div>
+        {selected && (
+          <motion.span
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{
+              boxShadow: `0 0 0 2px ${TEAL}`,
+            }}
+          />
+        )}
+      </button>
     </motion.li>
   );
 }
