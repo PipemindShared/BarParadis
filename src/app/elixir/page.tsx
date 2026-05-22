@@ -24,11 +24,7 @@ const PROFILE_INFO: Record<Profile, { title: string; subtitle: string }> = {
     title: "Designer des nuages",
     subtitle: "Tu vois les frictions que les autres ne voient pas.",
   },
-  Visionnaire: {
-    title: "Visionnaire du MVP",
-    subtitle: "Tu arrives toujours trois réunions avant tout le monde.",
-  },
-  Gestionnaire: {
+  Manager: {
     title: "Gardien de la roadmap",
     subtitle: "Tu sais ce que ton équipe doit faire lundi matin.",
   },
@@ -77,8 +73,8 @@ export default function ElixirPage() {
         setDrink(pickDrinkName(primary));
       } else {
         // No answers — pick a random profile for demo
-        const profiles: Profile[] = ["Codeur", "Designer", "Visionnaire", "Gestionnaire"];
-        const p = profiles[Math.floor(Math.random() * 4)];
+        const profiles: Profile[] = ["Codeur", "Designer", "Manager"];
+        const p = profiles[Math.floor(Math.random() * profiles.length)];
         setProfile(p);
         setDrink(pickDrinkName(p));
       }

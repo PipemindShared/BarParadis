@@ -1,205 +1,141 @@
-export type Profile = "Codeur" | "Designer" | "Visionnaire" | "Gestionnaire";
+export type Profile = "Codeur" | "Designer" | "Manager";
+
+export type QuestionType = "profile" | "trait" | "alcohol";
 
 export type Option = {
   letter: "A" | "B" | "C" | "D";
   text: string;
-  profiles: Profile[];
+  profile?: Profile;
+  trait?: string;
+  withAlcohol?: boolean;
 };
 
 export type Question = {
   id: number;
   intro: string;
   text: string;
+  type: QuestionType;
   options: Option[];
 };
 
 export const QUESTIONS: Question[] = [
   {
     id: 1,
-    intro: "Comment es-tu arrivé",
-    text: "dans le nuage éternel du travail ?",
+    intro: "Dans ta vie d’avant à job,",
+    text: "ton arme principale c’était…",
+    type: "profile",
     options: [
       {
         letter: "A",
-        text: "J’ai ouvert un fichier Excel avec 47 onglets, 12 macros et une formule que personne n’ose toucher.",
-        profiles: ["Gestionnaire", "Codeur"],
+        text: "Un clavier mécanique qui clique pas à peu près",
+        profile: "Codeur",
       },
       {
         letter: "B",
-        text: "J’ai dit “on devrait refaire l’interface” dans une réunion de 14 personnes.",
-        profiles: ["Designer"],
+        text: "Ton iPad pis Figma ouvert sur deux écrans",
+        profile: "Designer",
       },
       {
         letter: "C",
-        text: "J’ai pitché une idée tellement en avance que même mon PowerPoint a quitté la salle.",
-        profiles: ["Visionnaire"],
-      },
-      {
-        letter: "D",
-        text: "J’ai tenté d’automatiser une tâche de 5 minutes et j’ai créé une architecture distribuée.",
-        profiles: ["Codeur"],
+        text: "Un Excel à 47 onglets que personne ose toucher",
+        profile: "Manager",
       },
     ],
   },
   {
     id: 2,
-    intro: "Devant le portail céleste,",
-    text: "ton dernier grand accomplissement ?",
+    intro: "Vendredi, 6h le soir. Un bug pète en prod.",
+    text: "Ta réaction ?",
+    type: "profile",
     options: [
       {
         letter: "A",
-        text: "J’ai livré un projet malgré 18 changements de scope.",
-        profiles: ["Gestionnaire"],
+        text: "Tu pognes les logs, le bureau est tranquille, t’es ben content",
+        profile: "Codeur",
       },
       {
         letter: "B",
-        text: "J’ai transformé une idée vague en prototype fonctionnel.",
-        profiles: ["Visionnaire", "Codeur"],
+        text: "Tu ressors le Figma original — c’est clairement pas ton design qui a été shippé",
+        profile: "Designer",
       },
       {
         letter: "C",
-        text: "J’ai rendu une interface compréhensible pour des humains normaux.",
-        profiles: ["Designer"],
-      },
-      {
-        letter: "D",
-        text: "J’ai connecté trois API qui ne voulaient clairement pas se parler.",
-        profiles: ["Codeur"],
+        text: "Tu pitches ça dans Jira, on en r’parle lundi 9h",
+        profile: "Manager",
       },
     ],
   },
   {
     id: 3,
-    intro: "Ton guide céleste IA",
-    text: "t’offre un superpouvoir.",
+    intro: "Quelle phrase",
+    text: "tu répétais le plus à job ?",
+    type: "trait",
     options: [
       {
         letter: "A",
-        text: "Générer une application complète à partir d’une bonne spécification.",
-        profiles: ["Codeur"],
+        text: "« Ça marche sur ma machine »",
+        trait: "stubborn",
       },
       {
         letter: "B",
-        text: "Transformer une idée confuse en parcours utilisateur clair.",
-        profiles: ["Designer"],
+        text: "« As-tu pensé à l’utilisateur, là ? »",
+        trait: "empathic",
       },
       {
         letter: "C",
-        text: "Identifier les prochaines grandes opportunités avant tout le monde.",
-        profiles: ["Visionnaire"],
+        text: "« Booke-moi 30 minutes dans 3 semaines, on va voir ça ensemble »",
+        trait: "procrastinator",
       },
       {
         letter: "D",
-        text: "Transformer une équipe débordée en machine bien organisée.",
-        profiles: ["Gestionnaire"],
+        text: "« Petite question rapide… » (pis 14 paragraphes après)",
+        trait: "chaotic",
       },
     ],
   },
   {
     id: 4,
-    intro: "Quelle erreur fatale",
-    text: "t’a envoyé dans les nuages ?",
+    intro: "Le symbole",
+    text: "de ton chaos professionnel ?",
+    type: "trait",
     options: [
       {
         letter: "A",
-        text: "J’ai dit “on va juste faire un petit MVP” et 8 mois plus tard, il y avait un ERP.",
-        profiles: ["Visionnaire", "Gestionnaire"],
+        text: "Le café d’hier que tu bois pareil",
+        trait: "endurant",
       },
       {
         letter: "B",
-        text: "J’ai accepté un design “temporaire” qui est resté en production 4 ans.",
-        profiles: ["Designer"],
+        text: "L’Excel que tout le monde évite (pis tu sais c’est toi qui va l’ouvrir)",
+        trait: "guardian",
       },
       {
         letter: "C",
-        text: "J’ai codé sans documentation, mais avec beaucoup de confiance.",
-        profiles: ["Codeur"],
+        text: "Le meeting qui aurait dû être un courriel",
+        trait: "social_survivor",
       },
       {
         letter: "D",
-        text: "J’ai créé un comité pour décider s’il fallait créer un comité.",
-        profiles: ["Gestionnaire"],
+        text: "Le commit nommé « fix » à 11h47 le soir",
+        trait: "night_cowboy",
       },
     ],
   },
   {
     id: 5,
-    intro: "Pour préparer ton élixir,",
-    text: "choisis un ingrédient mystique.",
+    intro: "Pour ton élixir,",
+    text: "avec ou sans spiritueux ?",
+    type: "alcohol",
     options: [
       {
         letter: "A",
-        text: "Une goutte de café tombée dans un terminal.",
-        profiles: ["Codeur"],
+        text: "Avec — c’est ma deuxième vie, je la prends pas à jeun",
+        withAlcohol: true,
       },
       {
         letter: "B",
-        text: "Une plume de nuage parfaitement alignée sur une grille de design.",
-        profiles: ["Designer"],
-      },
-      {
-        letter: "C",
-        text: "Une étincelle trouvée dans une roadmap 2030.",
-        profiles: ["Visionnaire"],
-      },
-      {
-        letter: "D",
-        text: "Une poussière de Post-it sacré, mais non confessionnel.",
-        profiles: ["Gestionnaire"],
-      },
-    ],
-  },
-  {
-    id: 6,
-    intro: "Dans ta prochaine vie pro,",
-    text: "tu veux surtout…",
-    options: [
-      {
-        letter: "A",
-        text: "Créer des applications plus vite avec l’IA.",
-        profiles: ["Codeur"],
-      },
-      {
-        letter: "B",
-        text: "Concevoir des expériences plus claires et plus belles.",
-        profiles: ["Designer"],
-      },
-      {
-        letter: "C",
-        text: "Transformer des idées ambitieuses en prototypes convaincants.",
-        profiles: ["Visionnaire"],
-      },
-      {
-        letter: "D",
-        text: "Aider mon équipe à livrer mieux, plus vite et avec moins de chaos.",
-        profiles: ["Gestionnaire"],
-      },
-    ],
-  },
-  {
-    id: 7,
-    intro: "Ton outil IA idéal",
-    text: "serait capable de…",
-    options: [
-      {
-        letter: "A",
-        text: "Générer du code propre à partir d’une spécification claire.",
-        profiles: ["Codeur"],
-      },
-      {
-        letter: "B",
-        text: "Proposer plusieurs interfaces avant même que quelqu’un dise “on peut faire plus moderne ?”",
-        profiles: ["Designer"],
-      },
-      {
-        letter: "C",
-        text: "Transformer une idée floue en démo qui donne envie d’investir.",
-        profiles: ["Visionnaire"],
-      },
-      {
-        letter: "D",
-        text: "Résumer les besoins, prioriser les tâches et réduire les réunions inutiles.",
-        profiles: ["Gestionnaire"],
+        text: "Sans — je veux me souvenir de cette renaissance",
+        withAlcohol: false,
       },
     ],
   },
@@ -210,73 +146,64 @@ export type Answer = {
   letter: "A" | "B" | "C" | "D";
 };
 
-export const DRINK_NAMES: Record<Profile, string[]> = {
-  Codeur: [
-    "Le Debug Céleste",
-    "L’API des Nuages",
-    "Le Commit Éternel",
-    "Le Patch de Renaissance",
-    "Le Terminal Lumineux",
-    "La Fonction Cachée",
-    "Le Backend Flottant",
-    "La Stack des Nuages",
-  ],
-  Designer: [
-    "Le Pixel Nuageux",
-    "Le Halo UX",
-    "La Maquette Flottante",
-    "Le Prototype Lumineux",
-    "Le Wireframe Céleste",
-    "Le Dégradé de Renaissance",
-    "La Grille Parfaite",
-    "Le Bouton Miraculeusement Clair",
-  ],
-  Visionnaire: [
-    "Le Nectar 2030",
-    "La Roadmap Céleste",
-    "Le Sprint vers Demain",
-    "La Vision en Suspension",
-    "Le MVP des Nuages",
-    "L’Étincelle Stratégique",
-    "Le Futur Servi Froid",
-    "L’Idée Revenue à la Vie",
-  ],
-  Gestionnaire: [
-    "Le Kanban Nuageux",
-    "Le Brief Flottant",
-    "Le Sprint Réincarné",
-    "La Priorité Cosmique",
-    "Le Post-it Immortel",
-    "La Roadmap Apaisée",
-    "Le Scope Stabilisé",
-    "Le Comité Dissous",
-  ],
+// Subtle tiebreaker: certains traits "tirent" vers un profil quand il y a égalité
+const TRAIT_TO_PROFILE_HINT: Record<string, Profile | null> = {
+  stubborn: "Codeur",
+  empathic: "Designer",
+  procrastinator: "Manager",
+  chaotic: null,
+  endurant: null,
+  guardian: null,
+  social_survivor: "Manager",
+  night_cowboy: "Codeur",
+};
+
+// Mapping profil → élixirs possibles (Renaissance est l'option universelle/showcase)
+export const PROFILE_ELIXIRS: Record<Profile, string[]> = {
+  Codeur: ["Les Perles du Paradis", "L’Élixir de Renaissance"],
+  Designer: ["Les Cendres du Phénix", "L’Élixir de Renaissance"],
+  Manager: ["Le Hotfix Royal", "L’Élixir de Renaissance"],
 };
 
 export function pickDrinkName(profile: Profile): string {
-  const list = DRINK_NAMES[profile];
+  const list = PROFILE_ELIXIRS[profile];
   return list[Math.floor(Math.random() * list.length)];
 }
 
-export function computeProfile(answers: Answer[]): {
+export type QuestionnaireResult = {
   scores: Record<Profile, number>;
   primary: Profile;
-  secondary: Profile | null;
-} {
+  withAlcohol: boolean;
+  traits: string[];
+};
+
+export function computeResult(answers: Answer[]): QuestionnaireResult {
   const scores: Record<Profile, number> = {
     Codeur: 0,
     Designer: 0,
-    Visionnaire: 0,
-    Gestionnaire: 0,
+    Manager: 0,
   };
+  const traits: string[] = [];
+  let withAlcohol = true;
 
   for (const answer of answers) {
     const question = QUESTIONS.find((q) => q.id === answer.questionId);
     if (!question) continue;
     const option = question.options.find((o) => o.letter === answer.letter);
     if (!option) continue;
-    for (const profile of option.profiles) {
-      scores[profile] += 1;
+
+    if (option.profile) {
+      scores[option.profile] += 1;
+    }
+    if (option.trait) {
+      traits.push(option.trait);
+      const hint = TRAIT_TO_PROFILE_HINT[option.trait];
+      if (hint) {
+        scores[hint] += 0.25;
+      }
+    }
+    if (option.withAlcohol !== undefined) {
+      withAlcohol = option.withAlcohol;
     }
   }
 
@@ -287,6 +214,25 @@ export function computeProfile(answers: Answer[]): {
   return {
     scores,
     primary: sorted[0][0],
-    secondary: sorted[1][1] > 0 && sorted[1][1] < sorted[0][1] ? sorted[1][0] : null,
+    withAlcohol,
+    traits,
+  };
+}
+
+// Backward compat
+export function computeProfile(answers: Answer[]): {
+  scores: Record<Profile, number>;
+  primary: Profile;
+  secondary: Profile | null;
+} {
+  const result = computeResult(answers);
+  const sorted = (Object.entries(result.scores) as [Profile, number][]).sort(
+    (a, b) => b[1] - a[1]
+  );
+  return {
+    scores: result.scores,
+    primary: sorted[0][0],
+    secondary:
+      sorted[1][1] > 0 && sorted[1][1] < sorted[0][1] ? sorted[1][0] : null,
   };
 }
