@@ -36,8 +36,8 @@ export default function BarLoginPage() {
     setChecking(true);
     setError(null);
     try {
-      const { ok } = await verifyPin({ pin });
-      if (!ok) {
+      const { ok, mode } = await verifyPin({ pin });
+      if (!ok || !mode) {
         setError("PIN incorrect");
         setPin("");
         setChecking(false);
@@ -45,6 +45,7 @@ export default function BarLoginPage() {
       }
       try {
         localStorage.setItem("bar_unlocked", "1");
+        localStorage.setItem("bar_mode", mode);
         if (name.trim()) localStorage.setItem("bar_barman_name", name.trim());
       } catch {}
       router.push("/bar");

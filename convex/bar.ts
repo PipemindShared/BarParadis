@@ -1,31 +1,42 @@
 import { v } from "convex/values";
 import { mutation, query, action } from "./_generated/server";
-import { api } from "./_generated/api";
+import { isTestPhone } from "./phone";
+
+const modeValidator = v.union(v.literal("live"), v.literal("test"));
+type Mode = "live" | "test";
 
 /**
  * Vérifie le PIN d'accès au bar.
- * Retourne { ok: true } si correct, { ok: false } sinon.
+ * Retourne le mode correspondant ("live" ou "test") si valide, null sinon.
  */
 export const verifyPin = action({
   args: { pin: v.string() },
-  handler: async (_ctx, { pin }): Promise<{ ok: boolean }> => {
-    const expected = process.env.BAR_ACCESS_PIN;
-    if (!expected) {
-      console.warn("[bar.verifyPin] BAR_ACCESS_PIN non configuré");
-      return { ok: false };
-    }
-    return { ok: pin.trim() === expected };
+  handler: async (
+    _ctx,
+    { pin }
+  ): Promise<{ ok: boolean; mode: Mode | null }> => {
+    const live = process.env.BAR_ACCESS_PIN;
+    const test = process.env.BAR_TEST_PIN;
+    const trimmed = pin.trim();
+    if (live && trimmed === live) return { ok: true, mode: "live" };
+    if (test && trimmed === test) return { ok: true, mode: "test" };
+    return { ok: false, mode: null };
   },
 });
 
 /**
  * Récupère tous les drinks groupés par statut, ordonnés par priorité puis ancienneté.
- * Utilisé par l'app barman (mode Simple et Avancé).
+ * Filtre selon le mode: "live" exclut les téléphones de test, "test" n'inclut qu'eux.
  */
 export const listAll = query({
-  args: {},
-  handler: async (ctx) => {
-    const all = await ctx.db.query("participants").order("asc").collect();
+  args: { mode: v.optional(modeValidator) },
+  handler: async (ctx, { mode }) => {
+    const effectiveMode: Mode = mode ?? "live";
+    const raw = await ctx.db.query("participants").order("asc").collect();
+    const all = raw.filter((p) => {
+      const isTest = isTestPhone(p.phone);
+      return effectiveMode === "test" ? isTest : !isTest;
+    });
 
     // Tri: prioritaire d'abord, puis par createdAt
     const byStatus: Record<string, typeof all> = {
@@ -241,5 +252,33 @@ export const reassignmentCandidates = query({
           (p.queueStatus === "waiting" || p.queueStatus === "priority")
       )
       .sort((a, b) => a.createdAt - b.createdAt);
+  },
+});
+
+/**
+ * Réinitialise tous les drinks de test (téléphones de test) à l'état "waiting".
+ * Efface les timestamps d'avancement pour permettre un test propre.
+ * Utilisé en mode test uniquement.
+ */
+export const resetTestDrinks = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("participants").collect();
+    let count = 0;
+    for (const p of all) {
+      if (isTestPhone(p.phone)) {
+        await ctx.db.patch(p._id, {
+          queueStatus: "waiting",
+          preparingAt: undefined,
+          readyAt: undefined,
+          servedAt: undefined,
+          noShowAt: undefined,
+          barmanName: undefined,
+          reassignedFromId: undefined,
+        });
+        count++;
+      }
+    }
+    return { count };
   },
 });
