@@ -186,17 +186,25 @@ export default function BarPage() {
       </header>
 
       {/* MAIN: 2-column layout (En cours | Prêts) */}
-      <main className="relative z-10 flex flex-1 gap-4 overflow-hidden p-4">
+      <main className="relative z-10 flex flex-1 gap-5 overflow-hidden p-5">
         {/* Column En cours */}
         <section className="flex flex-1 flex-col">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-mono text-[11px] uppercase tracking-[0.28em] text-white/65">
-              ── en cours ({data.preparing.length})
-            </h2>
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="flex items-baseline gap-3">
+              <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/55">
+                ── en cours
+              </h2>
+              <span
+                className="font-serif text-3xl italic"
+                style={{ color: TEAL_LIGHT }}
+              >
+                {data.preparing.length}
+              </span>
+            </div>
             <button
               onClick={handlePullNext}
               disabled={data.waiting.length === 0}
-              className="rounded-full px-4 py-2 text-sm font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+              className="group flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
               style={{
                 background:
                   data.waiting.length > 0
@@ -209,11 +217,20 @@ export default function BarPage() {
                     : "none",
               }}
             >
-              ✦ Préparer le prochain →
+              <span style={{ color: TEAL_LIGHT }}>✦</span>
+              Préparer le prochain
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </button>
           </div>
 
-          <div className="grid flex-1 grid-cols-1 gap-3 overflow-y-auto sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          <div
+            className="grid flex-1 auto-rows-max gap-4 overflow-y-auto pb-2"
+            style={{
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            }}
+          >
             <AnimatePresence mode="popLayout">
               {data.preparing.map((p) => (
                 <DrinkCard
@@ -226,19 +243,47 @@ export default function BarPage() {
               ))}
             </AnimatePresence>
             {data.preparing.length === 0 && (
-              <p className="col-span-full mt-8 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-white/35">
-                aucun drink en préparation
-              </p>
+              <EmptyState
+                title="Rien en préparation"
+                hint={
+                  data.waiting.length > 0
+                    ? `${data.waiting.length} en file — tape Préparer le prochain`
+                    : "La file est vide, profite du calme"
+                }
+              />
             )}
           </div>
         </section>
 
+        {/* Divider */}
+        <div
+          className="hidden w-px shrink-0 lg:block"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, rgba(125, 212, 199, 0.18), transparent)",
+          }}
+        />
+
         {/* Column Prêts */}
         <section className="flex flex-1 flex-col">
-          <h2 className="mb-3 font-mono text-[11px] uppercase tracking-[0.28em] text-white/65">
-            ── prêts à distribuer ({data.ready.length})
-          </h2>
-          <div className="grid flex-1 grid-cols-1 gap-3 overflow-y-auto sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="mb-4 flex items-baseline gap-3">
+            <h2 className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/55">
+              ── prêts à distribuer
+            </h2>
+            <span
+              className="font-serif text-3xl italic"
+              style={{ color: "#fbbf24" }}
+            >
+              {data.ready.length}
+            </span>
+          </div>
+
+          <div
+            className="grid flex-1 auto-rows-max gap-4 overflow-y-auto pb-2"
+            style={{
+              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            }}
+          >
             <AnimatePresence mode="popLayout">
               {data.ready.map((p) => (
                 <DrinkCard
@@ -252,9 +297,10 @@ export default function BarPage() {
               ))}
             </AnimatePresence>
             {data.ready.length === 0 && (
-              <p className="col-span-full mt-8 text-center font-mono text-[11px] uppercase tracking-[0.22em] text-white/35">
-                aucun drink prêt
-              </p>
+              <EmptyState
+                title="Aucun élixir prêt"
+                hint="Termine ceux en cours pour libérer la file"
+              />
             )}
           </div>
         </section>
@@ -381,6 +427,13 @@ function DrinkCard({
   const elapsed = startedAt ? now - startedAt : 0;
   const isOld = mode === "ready" && elapsed > 10 * 60 * 1000;
 
+  // Visual treatment for no-alcohol: outer ring teal + desaturated image + top banner
+  const cardBoxShadow = !withAlcohol
+    ? `0 0 0 3px ${TEAL_LIGHT}, 0 0 32px -4px ${TEAL_LIGHT}88, 0 8px 24px -8px rgba(0,0,0,0.6)`
+    : isOld
+      ? "0 0 0 3px #f87171, 0 0 32px -4px rgba(248, 113, 113, 0.6), 0 8px 24px -8px rgba(0,0,0,0.6)"
+      : "0 8px 24px -8px rgba(0,0,0,0.6)";
+
   return (
     <motion.div
       layout
@@ -388,129 +441,160 @@ function DrinkCard({
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, scale: 0.9, filter: "blur(6px)" }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-white/10"
-      style={{
-        boxShadow: isOld
-          ? "0 0 0 2px #f87171, 0 8px 32px -8px rgba(248, 113, 113, 0.5)"
-          : "0 8px 24px -8px rgba(0,0,0,0.6)",
-      }}
+      className="group relative aspect-[3/4] overflow-hidden rounded-2xl transition-transform hover:scale-[1.015]"
+      style={{ boxShadow: cardBoxShadow }}
     >
-      {/* Background image */}
+      {/* Background image (desaturated if mocktail) */}
       <img
         src={image}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover transition-all"
+        style={
+          !withAlcohol
+            ? { filter: "saturate(0.25) brightness(0.7) contrast(1.05)" }
+            : undefined
+        }
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/30" />
-
-      {/* No-alcohol big badge */}
+      {/* Teal wash overlay for mocktail */}
       {!withAlcohol && (
         <div
-          className="absolute right-2 top-2 z-10 rounded-md px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.15em]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundColor: TEAL,
-            color: "white",
-            boxShadow: `0 0 12px ${TEAL}`,
+            background: `linear-gradient(135deg, ${TEAL}66 0%, transparent 60%)`,
+            mixBlendMode: "color",
           }}
-        >
-          🚫 Sans alcool
-        </div>
+        />
       )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
 
-      {/* Admin badge (téléphones de test commandant en prod) */}
-      {isAdmin && (
+      {/* MOCKTAIL banner pleine largeur en haut */}
+      {!withAlcohol && (
         <div
-          className="absolute right-2 z-10 rounded-md px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em]"
+          className="absolute inset-x-0 top-0 z-20 flex items-center justify-center gap-2 py-1.5"
           style={{
-            top: !withAlcohol ? 32 : 8,
-            backgroundColor: "rgba(245, 158, 11, 0.95)",
-            color: "#1a0c00",
-            boxShadow: "0 0 12px rgba(245, 158, 11, 0.6)",
+            background: `linear-gradient(90deg, ${TEAL_LIGHT} 0%, ${TEAL} 50%, ${TEAL_LIGHT} 100%)`,
+            boxShadow: `0 4px 16px ${TEAL}66`,
           }}
         >
-          ⚙ Admin
+          <span className="text-base">⊘</span>
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-white">
+            Mocktail · sans alcool
+          </span>
+          <span className="text-base">⊘</span>
         </div>
       )}
 
-      {/* Priority star */}
-      {participant.queueStatus === "priority" && (
-        <div className="absolute left-2 top-2 z-10 text-xl" title="Prioritaire">
-          ⭐
-        </div>
-      )}
+      {/* Top-right badges (shifted down if mocktail banner present) */}
+      <div
+        className="absolute right-2 z-10 flex flex-col items-end gap-1.5"
+        style={{ top: !withAlcohol ? 36 : 8 }}
+      >
+        {isAdmin && (
+          <div
+            className="rounded-md px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em]"
+            style={{
+              backgroundColor: "rgba(245, 158, 11, 0.95)",
+              color: "#1a0c00",
+              boxShadow: "0 0 12px rgba(245, 158, 11, 0.55)",
+            }}
+          >
+            ⚙ Admin
+          </div>
+        )}
+      </div>
 
-      {/* Profile chip */}
-      {profile && (
-        <div
-          className="absolute left-2 top-2 z-10 flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[9px] font-semibold uppercase tracking-[0.15em] backdrop-blur-md"
-          style={{
-            backgroundColor: profile.bg,
-            color: profile.color,
-            border: `1px solid ${profile.color}66`,
-            ...(participant.queueStatus === "priority"
-              ? { left: "auto", right: "auto", top: 32 }
-              : {}),
-          }}
-        >
-          <span>{profile.icon}</span>
-          {profile.label}
-        </div>
-      )}
+      {/* Top-left chips */}
+      <div
+        className="absolute left-2 z-10 flex flex-col items-start gap-1.5"
+        style={{ top: !withAlcohol ? 36 : 8 }}
+      >
+        {participant.queueStatus === "priority" && (
+          <div
+            className="rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{
+              background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+              color: "#1a0c00",
+              boxShadow: "0 0 12px rgba(251, 191, 36, 0.6)",
+            }}
+          >
+            ★ Prioritaire
+          </div>
+        )}
+        {profile && (
+          <div
+            className="flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.18em] backdrop-blur-md"
+            style={{
+              backgroundColor: profile.bg,
+              color: profile.color,
+              border: `1px solid ${profile.color}88`,
+            }}
+          >
+            <span>{profile.icon}</span>
+            {profile.label}
+          </div>
+        )}
+      </div>
 
-      {/* Content */}
-      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 p-3">
+      {/* Content bottom */}
+      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 p-4">
         <p
-          className="font-serif text-lg italic leading-tight text-white"
-          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.9)" }}
+          className="font-serif text-2xl italic leading-[1.05] text-white"
+          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.95)" }}
         >
           {participant.elixir ?? "Élixir mystère"}
         </p>
         <p
-          className="text-sm font-medium text-white/95"
+          className="text-base font-semibold leading-tight text-white/95"
           style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
         >
           {participant.firstName} {maskLastName(participant.lastName)}
         </p>
-        <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/65">
-          {mode === "preparing" ? "Préparé depuis" : "Prêt depuis"} {formatDuration(elapsed)}
-          {isOld && " ⚠️"}
+        <p
+          className="font-mono text-[10px] uppercase tracking-[0.2em]"
+          style={{
+            color: isOld ? "#fca5a5" : "rgba(255,255,255,0.65)",
+          }}
+        >
+          {mode === "preparing" ? "Préparé" : "Prêt"} depuis{" "}
+          {formatDuration(elapsed)}
+          {isOld && " ⚠"}
         </p>
 
         {/* Actions */}
         {mode === "preparing" && onMarkReady && (
           <button
             onClick={onMarkReady}
-            className="mt-2 rounded-full py-2.5 text-sm font-bold transition-all active:scale-95"
+            className="mt-3 flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold uppercase tracking-[0.1em] transition-all active:scale-95"
             style={{
               background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
               color: "white",
-              boxShadow: `0 6px 16px -4px ${TEAL}99`,
+              boxShadow: `0 8px 20px -4px ${TEAL}99`,
             }}
           >
-            ✓ Prêt
+            ✓ Marquer prêt
           </button>
         )}
 
         {mode === "ready" && onMarkServed && onMarkNoShow && (
-          <div className="mt-2 flex gap-2">
+          <div className="mt-3 flex gap-2">
             <button
               onClick={onMarkServed}
-              className="flex-1 rounded-full py-2.5 text-sm font-bold transition-all active:scale-95"
+              className="flex-1 rounded-full py-3 text-sm font-bold uppercase tracking-[0.1em] transition-all active:scale-95"
               style={{
                 background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
                 color: "white",
-                boxShadow: `0 6px 16px -4px ${TEAL}99`,
+                boxShadow: `0 8px 20px -4px ${TEAL}99`,
               }}
             >
               ✓ Servi
             </button>
             <button
               onClick={onMarkNoShow}
-              className="rounded-full px-3 py-2.5 text-xs transition-all active:scale-95"
+              className="rounded-full px-3 py-3 text-xs uppercase tracking-[0.1em] transition-all active:scale-95"
               style={{
                 backgroundColor: "rgba(255,255,255,0.08)",
                 color: "rgba(255,255,255,0.85)",
-                border: "1px solid rgba(255,255,255,0.18)",
+                border: "1px solid rgba(255,255,255,0.2)",
               }}
             >
               No-show
@@ -519,6 +603,23 @@ function DrinkCard({
         )}
       </div>
     </motion.div>
+  );
+}
+
+function EmptyState({ title, hint }: { title: string; hint: string }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/8 py-16">
+      <div
+        className="text-4xl"
+        style={{ color: "rgba(125, 212, 199, 0.35)" }}
+      >
+        ✦
+      </div>
+      <p className="font-serif text-xl italic text-white/55">{title}</p>
+      <p className="max-w-xs text-center font-mono text-[10px] uppercase tracking-[0.22em] text-white/35">
+        {hint}
+      </p>
+    </div>
   );
 }
 
