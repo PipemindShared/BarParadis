@@ -21,27 +21,18 @@ export default function ManifestePage() {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-mono text-[11px] uppercase tracking-[0.32em] text-white/55"
           >
-            ── le contexte
+            ── bienvenue au paradis
           </motion.p>
         </header>
 
         <main className="flex flex-col gap-10">
           {/* Bad news */}
           <div>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-              className="font-mono text-[11px] uppercase tracking-[0.32em] text-white/55"
-            >
-              mauvaise nouvelle
-            </motion.p>
-
             <motion.h1
               initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-3 font-serif text-[clamp(2rem,8.5vw,3rem)] italic leading-[1.05] tracking-tight text-white"
+              transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="font-serif text-[clamp(2rem,8.5vw,3rem)] italic leading-[1.05] tracking-tight text-white"
             >
               L’IA vient de tuer{" "}
               <span className="whitespace-nowrap">le code,</span>{" "}
@@ -54,7 +45,7 @@ export default function ManifestePage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.6 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
               className="mt-3 text-sm leading-snug text-white/65"
             >
               (Du moins, tels qu’on les connaissait.)
@@ -65,7 +56,7 @@ export default function ManifestePage() {
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 1.2, delay: 2.0, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, delay: 1.8, ease: [0.16, 1, 0.3, 1] }}
             className="h-px origin-left"
             style={{
               background: `linear-gradient(to right, ${TEAL_LIGHT}, ${TEAL}, transparent)`,
@@ -75,21 +66,11 @@ export default function ManifestePage() {
 
           {/* Good news */}
           <div>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 2.3 }}
-              className="font-mono text-[11px] uppercase tracking-[0.32em]"
-              style={{ color: TEAL_LIGHT }}
-            >
-              bonne nouvelle
-            </motion.p>
-
             <motion.h2
               initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1, delay: 2.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-3 font-serif text-[clamp(2rem,8.5vw,3rem)] italic leading-[1.05] tracking-tight text-white"
+              transition={{ duration: 1, delay: 2.2, ease: [0.16, 1, 0.3, 1] }}
+              className="font-serif text-[clamp(2rem,8.5vw,3rem)] italic leading-[1.05] tracking-tight text-white"
             >
               Ici, on suit la{" "}
               <span
@@ -107,7 +88,7 @@ export default function ManifestePage() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 3.5 }}
+              transition={{ duration: 0.8, delay: 3.0 }}
               className="mt-3 text-base leading-snug text-white/80"
             >
               On laisse l’IA faire la job, on réincarne sa carrière.
@@ -118,7 +99,7 @@ export default function ManifestePage() {
         <motion.footer
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 4.0, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, delay: 3.5, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-stretch gap-3"
         >
           <Link
