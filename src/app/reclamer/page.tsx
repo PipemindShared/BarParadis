@@ -80,7 +80,7 @@ export default function ReclamerPage() {
         phone: form.phone.trim(),
         consentParticipation: form.consentAll,
         consentEmailMarketing: form.consentAll,
-        consentSmsMarketing: form.consentAll,
+        consentSmsMarketing: false,
         profile: result?.primary,
         deity: result?.deity ?? undefined,
         elixir: result?.elixir ?? undefined,
@@ -208,8 +208,9 @@ export default function ReclamerPage() {
               label={
                 <>
                   J’accepte que Pipemind utilise mes infos pour préparer mon
-                  élixir, gérer ma place dans la file, et me recontacter par{" "}
-                  <strong>courriel ou SMS</strong> après l’événement.
+                  élixir, m’envoyer un <strong>SMS quand il est prêt</strong>,
+                  et me recontacter par <strong>courriel</strong> après
+                  l’événement.
                 </>
               }
             />
