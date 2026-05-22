@@ -51,6 +51,7 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_email", ["email"])
+    .index("by_phone", ["phone"])
     .index("by_queue_status", ["queueStatus"])
     .index("by_created", ["createdAt"]),
 });

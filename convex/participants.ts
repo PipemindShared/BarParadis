@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { isTestPhone, normalizePhone } from "./phone";
 
 export const register = mutation({
   args: {
@@ -31,8 +32,33 @@ export const register = mutation({
       );
     }
 
+    const normalizedPhone = normalizePhone(args.phone);
+
+    // Téléphones de test : illimités, on saute la vérif d'unicité
+    if (!isTestPhone(normalizedPhone)) {
+      const existing = await ctx.db
+        .query("participants")
+        .withIndex("by_phone", (q) => q.eq("phone", normalizedPhone))
+        .first();
+      if (existing) {
+        throw new Error("PHONE_ALREADY_REGISTERED");
+      }
+    }
+
     const participantId = await ctx.db.insert("participants", {
-      ...args,
+      firstName: args.firstName,
+      lastName: args.lastName,
+      email: args.email,
+      phone: normalizedPhone,
+      consentParticipation: args.consentParticipation,
+      consentEmailMarketing: args.consentEmailMarketing,
+      consentSmsMarketing: args.consentSmsMarketing,
+      profile: args.profile,
+      deity: args.deity,
+      elixir: args.elixir,
+      withAlcohol: args.withAlcohol,
+      traits: args.traits,
+      rawAnswers: args.rawAnswers,
       queueStatus: "waiting",
       source: "Interface 2026 — Zone Pipemind",
       createdAt: Date.now(),

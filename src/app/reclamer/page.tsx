@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -33,6 +33,7 @@ const INITIAL_FORM: FormState = {
 export default function ReclamerPage() {
   const router = useRouter();
   const register = useMutation(api.participants.register);
+  const sendConfirmationSms = useAction(api.sms.sendConfirmation);
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
@@ -93,13 +94,25 @@ export default function ReclamerPage() {
       try {
         localStorage.setItem("paradis_participant_id", participantId);
       } catch {}
+
+      // SMS de confirmation en arrière-plan — on attend pas la réponse
+      // pour pas bloquer la redirection si Twilio est lent
+      sendConfirmationSms({ participantId }).catch((e) => {
+        console.warn("SMS confirmation failed (non-blocking):", e);
+      });
+
       router.push("/file");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "L’oracle a eu un trouble. Réessaie dans une seconde."
-      );
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("PHONE_ALREADY_REGISTERED")) {
+        setError(
+          "Ce numéro a déjà réclamé un élixir au Paradis. Une seule renaissance par téléphone."
+        );
+      } else if (message.includes("format reconnu")) {
+        setError(message);
+      } else {
+        setError("L’oracle a eu un trouble. Réessaie dans une seconde.");
+      }
       setSubmitting(false);
     }
   }

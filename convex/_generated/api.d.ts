@@ -9,6 +9,8 @@
  */
 
 import type * as participants from "../participants.js";
+import type * as phone from "../phone.js";
+import type * as sms from "../sms.js";
 
 import type {
   ApiFromModules,
@@ -18,6 +20,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   participants: typeof participants;
+  phone: typeof phone;
+  sms: typeof sms;
 }>;
 
 /**
