@@ -222,6 +222,13 @@ function PositionDisplay({
         </>
       ) : (
         <>
+          <p
+            className="font-mono text-[10px] uppercase tracking-[0.28em]"
+            style={{ color: INK_MUTED }}
+          >
+            élixirs en préparation avant le tien
+          </p>
+
           <AnimatePresence mode="wait">
             <motion.div
               key={ahead}
@@ -285,6 +292,37 @@ function PositionDisplay({
       >
         · mise à jour en temps réel ·
       </p>
+
+      {/* Lien formations */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
+        className="mt-8"
+      >
+        <Link
+          href="/formations"
+          className="group flex items-center gap-2 rounded-full border px-4 py-2.5 transition-all hover:bg-white/60 active:scale-95"
+          style={{
+            borderColor: `${TEAL}55`,
+            backgroundColor: "rgba(255,255,255,0.5)",
+            color: INK,
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+        >
+          <span style={{ color: TEAL }}>✦</span>
+          <span className="font-serif text-sm italic">
+            En attendant ton élixir, prépare ta prochaine vie
+          </span>
+          <span
+            className="text-sm transition-transform group-hover:translate-x-0.5"
+            style={{ color: TEAL }}
+          >
+            →
+          </span>
+        </Link>
+      </motion.div>
     </motion.div>
   );
 }
