@@ -214,7 +214,7 @@ export function SettingsDialog({
                         setDraftMessage(e.target.value);
                         setMessageDirty(true);
                       }}
-                      placeholder="Le paradis fait une pause. L'oracle se retire pour quelques minutes."
+                      placeholder="Le portail du paradis s'est refermé."
                       rows={3}
                       className="w-full resize-none rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/50 focus:bg-white/15"
                     />

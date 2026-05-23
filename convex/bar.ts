@@ -283,7 +283,7 @@ export const reassignmentCandidates = query({
 const CONFIG_KEY = "main";
 
 const DEFAULT_CLOSED_MESSAGE =
-  "Le paradis fait une pause. L'oracle se retire pour quelques minutes.";
+  "Le portail du paradis s'est refermé.";
 
 /**
  * Config publique du bar — utilisée par l'app visiteur pour savoir

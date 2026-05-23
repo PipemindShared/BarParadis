@@ -14,8 +14,7 @@ export default function Home() {
   const config = useQuery(api.bar.getConfig);
   const accepting = config?.acceptingOrders ?? true;
   const closedMessage =
-    config?.closedMessage ??
-    "Le paradis fait une pause. L'oracle se retire pour quelques minutes.";
+    config?.closedMessage ?? "Le portail du paradis s'est refermé.";
 
   useEffect(() => {
     const video = videoRef.current;
@@ -232,9 +231,6 @@ export default function Home() {
                 style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
               >
                 {closedMessage}
-              </p>
-              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white/55">
-                Reviens dans quelques instants
               </p>
             </div>
           )}
