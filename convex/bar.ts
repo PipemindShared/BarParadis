@@ -431,9 +431,13 @@ export const resetTestDrinks = mutation({
       const sorted = [...existing].sort((a, b) => a.createdAt - b.createdAt);
       for (let i = 0; i < sorted.length; i++) {
         const offset = (sorted.length - 1 - i) * 30_000;
+        const elixir = sorted[i].elixir ?? "";
+        const profile = (sorted[i].profile ?? "Codeur") as SeedProfile;
         await ctx.db.patch(sorted[i]._id, {
           queueStatus: "waiting",
           createdAt: now - offset,
+          // Re-pioche un nom de drink à chaque reset (varie les noms)
+          drinkName: pickSeedDrinkName(elixir, profile),
           preparingAt: undefined,
           readyAt: undefined,
           servedAt: undefined,
