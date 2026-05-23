@@ -126,25 +126,27 @@ export function RecipeManager({
           className="relative flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0a1729] shadow-2xl"
         >
           {/* Header */}
-          <div className="relative shrink-0 border-b border-white/10 px-5 py-4">
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/10 bg-black/40 px-5 py-4">
+            <div className="min-w-0 flex-1">
+              <p
+                className="font-mono text-[10px] uppercase tracking-[0.28em]"
+                style={{ color: TEAL_LIGHT }}
+              >
+                ── gestionnaire de recettes
+              </p>
+              <h2 className="mt-1 font-serif text-2xl italic text-white">
+                Éditer une recette
+              </h2>
+              <p className="mt-1 text-xs text-white/70">
+                Changements appliqués en temps réel sur les cards barman.
+              </p>
+            </div>
             <button
               onClick={onClose}
-              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-xl text-white/85 transition-all hover:bg-white/10"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/10 text-xl text-white transition-all hover:bg-white/20"
             >
               ×
             </button>
-            <p
-              className="font-mono text-[10px] uppercase tracking-[0.28em]"
-              style={{ color: TEAL_LIGHT }}
-            >
-              ── gestionnaire de recettes
-            </p>
-            <h2 className="mt-1 font-serif text-2xl italic text-white">
-              Éditer une recette
-            </h2>
-            <p className="mt-1 text-xs text-white/55">
-              Changements appliqués en temps réel sur les cards barman.
-            </p>
           </div>
 
           {/* Elixir tabs */}
@@ -210,7 +212,7 @@ export function RecipeManager({
             {hasOverride && (
               <button
                 onClick={() => setResetConfirm(true)}
-                className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-colors hover:text-red-300"
+                className="rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/70 transition-all hover:border-red-400/40 hover:bg-red-400/10 hover:text-red-200"
               >
                 ↶ Revenir au défaut
               </button>
@@ -265,7 +267,7 @@ export function RecipeManager({
                           }))
                         }
                         placeholder="Ingrédient"
-                        className="flex-1 rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/30"
+                        className="flex-1 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/50 focus:bg-white/15"
                       />
                       <input
                         type="text"
@@ -279,7 +281,7 @@ export function RecipeManager({
                           }))
                         }
                         placeholder="2 oz"
-                        className="w-24 rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-center font-mono text-xs text-white outline-none placeholder:text-white/30 focus:border-white/30"
+                        className="w-24 rounded-md border border-white/20 bg-white/10 px-2.5 py-2 text-center font-mono text-xs text-white outline-none placeholder:text-white/40 focus:border-white/50 focus:bg-white/15"
                       />
                       <button
                         onClick={() =>
@@ -290,7 +292,7 @@ export function RecipeManager({
                             ),
                           }))
                         }
-                        className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-white/55 transition-all hover:border-red-400/40 hover:bg-red-400/10 hover:text-red-300"
+                        className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 bg-white/5 text-lg text-white/75 transition-all hover:border-red-400/50 hover:bg-red-400/15 hover:text-red-200"
                         title="Retirer"
                       >
                         ×
@@ -307,7 +309,7 @@ export function RecipeManager({
                         ],
                       }))
                     }
-                    className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-white/15 py-2 text-xs font-bold uppercase tracking-wider text-white/55 transition-all hover:border-white/30 hover:bg-white/5 hover:text-white"
+                    className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-white/25 py-2.5 text-xs font-bold uppercase tracking-wider text-white/75 transition-all hover:border-white/45 hover:bg-white/10 hover:text-white"
                   >
                     + Ajouter un ingrédient
                   </button>
@@ -341,7 +343,7 @@ export function RecipeManager({
                         }
                         rows={2}
                         placeholder="Décrire l'étape…"
-                        className="flex-1 resize-none rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/30"
+                        className="flex-1 resize-none rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/50 focus:bg-white/15"
                       />
                       <div className="flex flex-col gap-1">
                         <button
@@ -382,7 +384,7 @@ export function RecipeManager({
                             steps: v.steps.filter((_, j) => j !== i),
                           }))
                         }
-                        className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 text-white/55 transition-all hover:border-red-400/40 hover:bg-red-400/10 hover:text-red-300"
+                        className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 bg-white/5 text-lg text-white/75 transition-all hover:border-red-400/50 hover:bg-red-400/15 hover:text-red-200"
                         title="Retirer"
                       >
                         ×
@@ -393,7 +395,7 @@ export function RecipeManager({
                     onClick={() =>
                       patchVariant((v) => ({ ...v, steps: [...v.steps, ""] }))
                     }
-                    className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-white/15 py-2 text-xs font-bold uppercase tracking-wider text-white/55 transition-all hover:border-white/30 hover:bg-white/5 hover:text-white"
+                    className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-white/25 py-2.5 text-xs font-bold uppercase tracking-wider text-white/75 transition-all hover:border-white/45 hover:bg-white/10 hover:text-white"
                   >
                     + Ajouter une étape
                   </button>
@@ -403,31 +405,47 @@ export function RecipeManager({
           </div>
 
           {/* Footer with save */}
-          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/10 bg-black/30 px-5 py-3">
-            <p className="text-xs text-white/55">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-white/15 bg-black/50 px-5 py-3.5">
+            <p
+              className="text-xs"
+              style={{
+                color: dirty
+                  ? "#fbbf24"
+                  : hasOverride
+                    ? TEAL_LIGHT
+                    : "rgba(255,255,255,0.65)",
+              }}
+            >
               {dirty
-                ? "Tu as des changements non sauvegardés."
+                ? "● Tu as des changements non sauvegardés."
                 : hasOverride
-                  ? "Recette personnalisée active."
+                  ? "✦ Recette personnalisée active."
                   : "Recette par défaut."}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={onClose}
-                className="rounded-full px-4 py-2 text-sm text-white/70 transition-all hover:text-white"
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/85 transition-all hover:bg-white/10 hover:text-white"
               >
                 Fermer
               </button>
               <button
                 onClick={handleSave}
                 disabled={!dirty || saving}
-                className="rounded-full px-5 py-2 text-sm font-bold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
-                style={{
-                  background: dirty && !saving
-                    ? `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`
-                    : "rgba(255,255,255,0.08)",
-                  color: "white",
-                }}
+                className="rounded-full px-5 py-2 text-sm font-bold transition-all active:scale-95 disabled:cursor-not-allowed"
+                style={
+                  dirty && !saving
+                    ? {
+                        background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
+                        color: "white",
+                        boxShadow: `0 6px 20px -4px ${TEAL}88`,
+                      }
+                    : {
+                        backgroundColor: "rgba(255,255,255,0.1)",
+                        color: "rgba(255,255,255,0.5)",
+                        border: "1px solid rgba(255,255,255,0.15)",
+                      }
+                }
               >
                 {saving ? "Enregistrement…" : "✓ Sauvegarder"}
               </button>
