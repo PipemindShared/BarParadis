@@ -10,10 +10,14 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { FORMATIONS, type Formation, type Profile } from "@/lib/formations";
 
 const TEAL = "#19978a";
-const INK = "#0f172a";
-const INK_MID = "#475569";
-const INK_MUTED = "#64748b";
-const BG = "#f6f7f9";
+const TEAL_LIGHT = "#7DD4C7";
+const BG = "#0a1729";
+const SURFACE = "#101d34";
+const INK = "#ffffff";
+const INK_MID = "rgba(255,255,255,0.75)";
+const INK_MUTED = "rgba(255,255,255,0.5)";
+const BORDER = "rgba(255,255,255,0.1)";
+const BORDER_SOFT = "rgba(255,255,255,0.06)";
 
 const SWIPE_CONFIDENCE_THRESHOLD = 8000;
 const swipePower = (offset: number, velocity: number) =>
@@ -59,12 +63,12 @@ export default function FormationsPage() {
       className="relative flex min-h-[100dvh] w-full flex-col"
       style={{ backgroundColor: BG, color: INK }}
     >
-      {/* Texture grille subtile */}
+      {/* Orbe teal de fond + texture grille subtile */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.05) 1px, transparent 0)",
+            "radial-gradient(circle at 1px 1px, rgba(125, 212, 199, 0.07) 1px, transparent 0)",
           backgroundSize: "24px 24px",
           maskImage:
             "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
@@ -72,11 +76,35 @@ export default function FormationsPage() {
             "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
         }}
       />
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          top: "-180px",
+          right: "-160px",
+          width: 460,
+          height: 460,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${TEAL_LIGHT}33 0%, transparent 65%)`,
+          filter: "blur(40px)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute"
+        style={{
+          bottom: "-200px",
+          left: "-180px",
+          width: 500,
+          height: 500,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${TEAL}22 0%, transparent 65%)`,
+          filter: "blur(50px)",
+        }}
+      />
 
       {/* Header */}
       <header
-        className="relative z-10 flex items-center justify-between border-b bg-white/85 px-5 py-3.5 backdrop-blur-md"
-        style={{ borderColor: "rgba(15, 23, 42, 0.06)" }}
+        className="relative z-10 flex items-center justify-between border-b bg-black/40 px-5 py-3.5 backdrop-blur-md"
+        style={{ borderColor: BORDER }}
       >
         <Link
           href="/file"
@@ -111,7 +139,7 @@ export default function FormationsPage() {
         >
           Trois spécialisations
           <br />
-          <span style={{ color: INK_MID }}>pour ton équipe.</span>
+          <span style={{ color: TEAL_LIGHT }}>pour ton équipe.</span>
         </h1>
 
         {profile && (
@@ -173,8 +201,8 @@ export default function FormationsPage() {
         <div className="mt-6 flex items-center justify-between gap-4 px-1">
           <button
             onClick={() => paginate(-1)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
-            style={{ borderColor: "rgba(15, 23, 42, 0.12)", color: INK }}
+            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white/5 shadow-sm transition-all hover:bg-white/10 active:scale-95"
+            style={{ borderColor: BORDER, color: INK }}
             aria-label="Formation précédente"
           >
             ←
@@ -190,9 +218,7 @@ export default function FormationsPage() {
                   backgroundColor: i === index ? f.accentColor : "transparent",
                   padding: i === index ? "6px 12px" : "6px 8px",
                   border:
-                    i === index
-                      ? "none"
-                      : "1px solid rgba(15, 23, 42, 0.12)",
+                    i === index ? "none" : `1px solid ${BORDER}`,
                 }}
                 aria-label={`Formation ${f.profile}`}
               >
@@ -214,8 +240,8 @@ export default function FormationsPage() {
 
           <button
             onClick={() => paginate(1)}
-            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
-            style={{ borderColor: "rgba(15, 23, 42, 0.12)", color: INK }}
+            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white/5 shadow-sm transition-all hover:bg-white/10 active:scale-95"
+            style={{ borderColor: BORDER, color: INK }}
             aria-label="Formation suivante"
           >
             →
@@ -242,11 +268,11 @@ function FormationCard({
 }) {
   return (
     <article
-      className="mx-auto max-w-xl rounded-2xl border bg-white shadow-lg"
+      className="mx-auto max-w-xl overflow-hidden rounded-2xl border shadow-2xl"
       style={{
-        borderColor: "rgba(15, 23, 42, 0.08)",
-        boxShadow:
-          "0 1px 2px rgba(15, 23, 42, 0.05), 0 16px 40px -12px rgba(15, 23, 42, 0.12)",
+        borderColor: BORDER,
+        backgroundColor: SURFACE,
+        boxShadow: `0 1px 2px rgba(0,0,0,0.3), 0 24px 60px -16px ${formation.accentColor}44`,
       }}
     >
       {/* Top accent bar */}
@@ -261,8 +287,9 @@ function FormationCard({
           <span
             className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
             style={{
-              backgroundColor: `${formation.accentColor}18`,
+              backgroundColor: `${formation.accentColor}26`,
               color: formation.accentColor,
+              border: `1px solid ${formation.accentColor}55`,
             }}
           >
             <span
@@ -321,8 +348,9 @@ function FormationCard({
                 <span
                   className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-bold"
                   style={{
-                    backgroundColor: `${formation.accentColor}15`,
+                    backgroundColor: `${formation.accentColor}22`,
                     color: formation.accentColor,
+                    border: `1px solid ${formation.accentColor}44`,
                   }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -349,9 +377,12 @@ function FormationCard({
         {/* CTA */}
         <div
           className="mt-5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5"
-          style={{ borderColor: "rgba(15, 23, 42, 0.08)" }}
+          style={{
+            borderColor: `${TEAL}33`,
+            backgroundColor: `${TEAL}11`,
+          }}
         >
-          <p className="text-[12px]" style={{ color: INK_MID }}>
+          <p className="text-[12px]" style={{ color: TEAL_LIGHT }}>
             Intéressé ? Parle au barman pour les détails et tarifs.
           </p>
         </div>
@@ -377,10 +408,5 @@ function Meta({ label, value }: { label: string; value: string }) {
 }
 
 function Divider() {
-  return (
-    <span
-      className="h-6 w-px"
-      style={{ backgroundColor: "rgba(15, 23, 42, 0.1)" }}
-    />
-  );
+  return <span className="h-6 w-px" style={{ backgroundColor: BORDER }} />;
 }
