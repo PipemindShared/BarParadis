@@ -1,5 +1,18 @@
 "use client";
 
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
 import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
@@ -76,6 +89,58 @@ export function AdvancedView({
   const [recipesOpen, setRecipesOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeMobileCol, setActiveMobileCol] = useState<Status>("waiting");
+  const [draggingId, setDraggingId] = useState<Id<"participants"> | null>(null);
+
+  const sensors = useSensors(
+    // Pointer: petit délai pour pas confondre avec un click sur les boutons
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    // Touch: long press pour drag (300ms) — évite les conflits avec le scroll
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 6 },
+    }),
+    useSensor(KeyboardSensor)
+  );
+
+  // Trouve un participant par son ID (utilisé par DragOverlay)
+  const allParticipants = useMemo(
+    () => [
+      ...data.waiting,
+      ...data.preparing,
+      ...data.ready,
+      ...data.served,
+      ...data.noShow,
+    ],
+    [data]
+  );
+
+  function findParticipant(id: Id<"participants"> | null): Participant | null {
+    if (!id) return null;
+    return allParticipants.find((p) => p._id === id) ?? null;
+  }
+
+  function handleDragStart(event: DragStartEvent) {
+    setDraggingId(event.active.id as Id<"participants">);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setDraggingId(null);
+    const { active, over } = event;
+    if (!over) return;
+    const participantId = active.id as Id<"participants">;
+    const targetStatus = over.id as Status;
+    const participant = findParticipant(participantId);
+    if (!participant) return;
+    if (participant.queueStatus === targetStatus) return;
+
+    // Si on déplace vers "ready", déclencher aussi le SMS via onMarkReady
+    if (targetStatus === "ready") {
+      onMarkReady(participant);
+      return;
+    }
+    setStatus({ participantId, status: targetStatus });
+  }
 
   const allByStatus = useMemo<Record<Status, Participant[]>>(
     () => ({
@@ -167,26 +232,32 @@ export function AdvancedView({
         </button>
       </div>
 
-      {/* Desktop/Tablet: kanban 5 colonnes côte à côte */}
-      <div className="hidden flex-1 gap-3 overflow-x-auto overflow-y-hidden p-4 teal-scrollbar lg:flex">
-        {COLUMN_DEFS.map((col) => (
-          <KanbanColumn
-            key={col.key}
-            col={col}
-            items={filtered[col.key]}
-            totalCount={allByStatus[col.key].length}
-            now={now}
-            onSetStatus={(p, newStatus) =>
-              setStatus({ participantId: p._id, status: newStatus })
-            }
-            onTogglePriority={(p) => togglePriority({ participantId: p._id })}
-            onMarkReady={onMarkReady}
-            onMarkServed={onMarkServed}
-            onMarkNoShow={onMarkNoShow}
-            onShowRecipe={onShowRecipe}
-          />
-        ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={() => setDraggingId(null)}
+      >
+        {/* Desktop/Tablet: kanban 5 colonnes côte à côte avec drag & drop */}
+        <div className="hidden flex-1 gap-3 overflow-x-auto overflow-y-hidden p-4 teal-scrollbar lg:flex">
+          {COLUMN_DEFS.map((col) => (
+            <KanbanColumn
+              key={col.key}
+              col={col}
+              items={filtered[col.key]}
+              totalCount={allByStatus[col.key].length}
+              now={now}
+              onSetStatus={(p, newStatus) =>
+                setStatus({ participantId: p._id, status: newStatus })
+              }
+              onTogglePriority={(p) => togglePriority({ participantId: p._id })}
+              onMarkReady={onMarkReady}
+              onMarkServed={onMarkServed}
+              onMarkNoShow={onMarkNoShow}
+              onShowRecipe={onShowRecipe}
+            />
+          ))}
+        </div>
 
       {/* Mobile: onglets + colonne active en pleine largeur */}
       <div className="flex flex-1 flex-col overflow-hidden lg:hidden">
@@ -248,12 +319,24 @@ export function AdvancedView({
                   onMarkServed={() => onMarkServed(p)}
                   onMarkNoShow={() => onMarkNoShow(p)}
                   onShowRecipe={() => onShowRecipe(p)}
+                  draggable={false}
                 />
               ))}
             </div>
           )}
         </div>
       </div>
+
+        {/* Drag overlay — card flottante pendant le drag */}
+        <DragOverlay dropAnimation={{ duration: 200 }}>
+          {draggingId ? (
+            <DragOverlayCard
+              participant={findParticipant(draggingId)!}
+              now={now}
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {inventoryOpen && (
         <InventoryDialog onClose={() => setInventoryOpen(false)} />
@@ -296,10 +379,21 @@ function KanbanColumn({
   onMarkNoShow: (p: Participant) => void;
   onShowRecipe: (p: Participant) => void;
 }) {
+  const { setNodeRef, isOver } = useDroppable({ id: col.key });
+
   return (
     <div
-      className="flex h-full min-w-[220px] flex-1 flex-col rounded-2xl border border-white/8 bg-white/[0.025] p-3"
-      style={{ borderTopWidth: 2, borderTopColor: col.accent }}
+      ref={setNodeRef}
+      className="flex h-full min-w-[220px] flex-1 flex-col rounded-2xl border bg-white/[0.025] p-3 transition-all"
+      style={{
+        borderColor: isOver ? col.accent : "rgba(255,255,255,0.08)",
+        borderTopWidth: 2,
+        borderTopColor: col.accent,
+        boxShadow: isOver ? `0 0 0 2px ${col.accent}99, 0 12px 32px -8px ${col.accent}55` : "none",
+        backgroundColor: isOver
+          ? `${col.accent}11`
+          : "rgba(255,255,255,0.025)",
+      }}
     >
       <div className="mb-3 flex shrink-0 items-center justify-between px-1">
         <h3 className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/65">
@@ -343,6 +437,7 @@ function CompactCard({
   participant,
   now,
   status,
+  draggable = true,
   onSetStatus,
   onTogglePriority,
   onMarkReady,
@@ -353,6 +448,7 @@ function CompactCard({
   participant: Participant;
   now: number;
   status: Status;
+  draggable?: boolean;
   onSetStatus: (s: Status) => void;
   onTogglePriority: () => void;
   onMarkReady: () => void;
@@ -360,6 +456,13 @@ function CompactCard({
   onMarkNoShow: () => void;
   onShowRecipe: () => void;
 }) {
+  const drag = useDraggable({ id: participant._id, disabled: !draggable });
+  const { attributes, listeners, setNodeRef, transform, isDragging } = drag;
+  const dragStyle = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
   const image = getElixirImage(participant.elixir);
   const profile = getProfileStyle(participant.profile);
   const withAlcohol = participant.withAlcohol !== false;
@@ -383,7 +486,10 @@ function CompactCard({
       layout
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative shrink-0 cursor-pointer overflow-hidden rounded-xl border bg-white/[0.03]"
+      ref={draggable ? setNodeRef : undefined}
+      {...(draggable ? attributes : {})}
+      {...(draggable ? listeners : {})}
+      className="relative shrink-0 overflow-hidden rounded-xl border bg-white/[0.03]"
       style={{
         borderColor: isPriority
           ? "rgba(251, 191, 36, 0.55)"
@@ -395,10 +501,13 @@ function CompactCard({
           : isPriority
             ? "0 0 0 1px rgba(251, 191, 36, 0.4), 0 4px 12px -4px rgba(251, 191, 36, 0.3)"
             : "0 2px 8px -4px rgba(0,0,0,0.4)",
-        touchAction: "manipulation",
+        touchAction: draggable ? "none" : "manipulation",
+        cursor: draggable ? (isDragging ? "grabbing" : "grab") : "pointer",
+        opacity: isDragging ? 0.4 : 1,
+        ...dragStyle,
       }}
       onDoubleClick={onShowRecipe}
-      title="Double-cliquer pour la recette"
+      title={draggable ? "Glisser pour changer de colonne · double-clic pour la recette" : "Double-cliquer pour la recette"}
     >
       {/* Image strip à gauche (plus compact: 56x56) + contenu */}
       <div className="flex gap-2.5 p-2.5">
@@ -485,7 +594,10 @@ function CompactCard({
       </div>
 
       {/* Quick actions selon le statut */}
-      <div className="flex gap-1.5 border-t border-white/10 bg-black/15 px-2 py-1.5">
+      <div
+        className="flex gap-1.5 border-t border-white/10 bg-black/15 px-2 py-1.5"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         {status === "waiting" && (
           <>
             <ActionBtn
@@ -544,6 +656,70 @@ function CompactCard({
         )}
       </div>
     </motion.div>
+  );
+}
+
+function DragOverlayCard({
+  participant,
+  now,
+}: {
+  participant: Participant;
+  now: number;
+}) {
+  const image = getElixirImage(participant.elixir);
+  const profile = getProfileStyle(participant.profile);
+  const withAlcohol = participant.withAlcohol !== false;
+  const elapsed = now - participant.createdAt;
+
+  return (
+    <div
+      className="relative w-[260px] cursor-grabbing overflow-hidden rounded-xl border-2"
+      style={{
+        borderColor: TEAL_LIGHT,
+        backgroundColor: "rgba(20, 30, 50, 0.95)",
+        boxShadow: `0 20px 60px -10px ${TEAL_LIGHT}88, 0 0 0 4px ${TEAL_LIGHT}33`,
+        transform: "rotate(-2deg)",
+      }}
+    >
+      <div className="flex gap-2.5 p-2.5">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
+          <img
+            src={image}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <div className="flex items-center gap-1">
+            {!withAlcohol && (
+              <span
+                className="rounded px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide"
+                style={{ backgroundColor: TEAL, color: "white" }}
+              >
+                ⊘ Sans alcool
+              </span>
+            )}
+            {profile && (
+              <span
+                className="rounded px-1.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-wide"
+                style={{ backgroundColor: profile.bg, color: profile.color }}
+              >
+                {profile.icon} {profile.label}
+              </span>
+            )}
+          </div>
+          <p className="truncate font-serif text-[14px] italic leading-tight text-white">
+            {participant.elixir ?? "—"}
+          </p>
+          <p className="truncate text-[12px] font-medium leading-tight text-white/90">
+            {participant.firstName} {maskLastName(participant.lastName)}
+          </p>
+          <p className="font-mono text-[9px] uppercase tracking-wider text-white/55">
+            {formatDuration(elapsed)}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
