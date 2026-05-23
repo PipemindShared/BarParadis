@@ -280,6 +280,79 @@ export const reassignmentCandidates = query({
   },
 });
 
+const CONFIG_KEY = "main";
+
+const DEFAULT_CLOSED_MESSAGE =
+  "Le paradis fait une pause. L'oracle se retire pour quelques minutes.";
+
+/**
+ * Config publique du bar — utilisée par l'app visiteur pour savoir
+ * si on accepte de nouvelles commandes.
+ */
+export const getConfig = query({
+  args: {},
+  handler: async (ctx) => {
+    const doc = await ctx.db
+      .query("barConfig")
+      .withIndex("by_key", (q) => q.eq("key", CONFIG_KEY))
+      .first();
+    return {
+      acceptingOrders: doc?.acceptingOrders ?? true,
+      closedMessage: doc?.closedMessage ?? DEFAULT_CLOSED_MESSAGE,
+    };
+  },
+});
+
+/**
+ * Met à jour l'état "accepte les commandes" et optionnellement le message custom.
+ */
+export const setAcceptingOrders = mutation({
+  args: {
+    accepting: v.boolean(),
+    closedMessage: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("barConfig")
+      .withIndex("by_key", (q) => q.eq("key", CONFIG_KEY))
+      .first();
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        acceptingOrders: args.accepting,
+        closedMessage: args.closedMessage ?? existing.closedMessage,
+        updatedAt: Date.now(),
+      });
+    } else {
+      await ctx.db.insert("barConfig", {
+        key: CONFIG_KEY,
+        acceptingOrders: args.accepting,
+        closedMessage: args.closedMessage,
+        updatedAt: Date.now(),
+      });
+    }
+    return { ok: true };
+  },
+});
+
+/**
+ * Supprime TOUTES les commandes live (vraies inscriptions, pas les seeds).
+ * Action destructive — utilisée pour repartir à zéro.
+ */
+export const clearLiveOrders = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const all = await ctx.db.query("participants").collect();
+    let deleted = 0;
+    for (const p of all) {
+      if (!p.isSeed) {
+        await ctx.db.delete(p._id);
+        deleted++;
+      }
+    }
+    return { deleted };
+  },
+});
+
 /**
  * Mode test: génère les 15 drinks de seed s'ils n'existent pas, sinon
  * les remet à l'état "waiting" avec createdAt = maintenant (staggered).

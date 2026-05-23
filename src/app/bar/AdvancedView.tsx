@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { api } from "../../../convex/_generated/api";
 import { RecipeManager } from "./RecipeManager";
+import { SettingsDialog } from "./SettingsDialog";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import {
   getElixirImage,
@@ -52,6 +53,7 @@ const ELIXIR_KEYS = [
 export function AdvancedView({
   data,
   now,
+  mode,
   onMarkReady,
   onMarkServed,
   onMarkNoShow,
@@ -60,6 +62,7 @@ export function AdvancedView({
 }: {
   data: Data;
   now: number;
+  mode: "live" | "test";
   onMarkReady: (p: Participant) => void;
   onMarkServed: (p: Participant) => void;
   onMarkNoShow: (p: Participant) => void;
@@ -71,6 +74,7 @@ export function AdvancedView({
   const [search, setSearch] = useState("");
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [recipesOpen, setRecipesOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeMobileCol, setActiveMobileCol] = useState<Status>("waiting");
 
   const allByStatus = useMemo<Record<Status, Participant[]>>(
@@ -138,6 +142,13 @@ export function AdvancedView({
           className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/85 transition-all hover:bg-white/10"
         >
           ⚗ Inventaire
+        </button>
+
+        <button
+          onClick={() => setSettingsOpen(true)}
+          className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/85 transition-all hover:bg-white/10"
+        >
+          ⚙ Paramètres
         </button>
 
         <button
@@ -250,6 +261,13 @@ export function AdvancedView({
 
       {recipesOpen && (
         <RecipeManager onClose={() => setRecipesOpen(false)} />
+      )}
+
+      {settingsOpen && (
+        <SettingsDialog
+          mode={mode}
+          onClose={() => setSettingsOpen(false)}
+        />
       )}
     </div>
   );

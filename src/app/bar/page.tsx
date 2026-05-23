@@ -28,7 +28,6 @@ export default function BarPage() {
   const [mode, setMode] = useState<"live" | "test">("live");
   const [view, setView] = useState<"simple" | "advanced">("simple");
   const [now, setNow] = useState(Date.now());
-  const [resetConfirm, setResetConfirm] = useState(false);
 
   useEffect(() => {
     try {
@@ -62,8 +61,6 @@ export default function BarPage() {
   const markServed = useMutation(api.bar.markServed);
   const markNoShow = useMutation(api.bar.markNoShow);
   const togglePriority = useMutation(api.bar.togglePriority);
-  const resetTest = useMutation(api.bar.resetTestDrinks);
-
   const [noShowDialog, setNoShowDialog] = useState<Participant | null>(null);
   const [recipeDialog, setRecipeDialog] = useState<Participant | null>(null);
 
@@ -75,13 +72,6 @@ export default function BarPage() {
     router.replace("/bar/login");
   }
 
-  async function handleReset() {
-    const result = await resetTest({});
-    setResetConfirm(false);
-    console.log(
-      `[bar] reset OK — ${result.total} drinks (${result.createdCount} créés, ${result.resetCount} reset)`
-    );
-  }
 
   async function handlePullNext() {
     await pullNext({ barmanName });
@@ -219,19 +209,6 @@ export default function BarPage() {
               Avancé
             </button>
           </div>
-          {mode === "test" && (
-            <button
-              onClick={() => setResetConfirm(true)}
-              className="shrink-0 rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] transition-all active:scale-95 sm:px-2.5 sm:tracking-[0.2em]"
-              style={{
-                backgroundColor: "rgba(245, 158, 11, 0.18)",
-                color: "#fcd34d",
-                border: "1px solid rgba(245, 158, 11, 0.4)",
-              }}
-            >
-              ↻ <span className="hidden sm:inline">reset</span>
-            </button>
-          )}
           <button
             onClick={logout}
             className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 hover:text-white"
@@ -260,6 +237,7 @@ export default function BarPage() {
         <AdvancedView
           data={data}
           now={now}
+          mode={mode}
           onMarkReady={handleMarkReady}
           onMarkServed={(p) => markServed({ participantId: p._id })}
           onMarkNoShow={(p) => setNoShowDialog(p)}
@@ -376,65 +354,6 @@ export default function BarPage() {
         />
       )}
 
-      {/* Reset confirmation */}
-      <AnimatePresence>
-        {resetConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
-            onClick={() => setResetConfirm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0a1729] p-5 shadow-2xl"
-            >
-              <p
-                className="font-mono text-[10px] uppercase tracking-[0.28em]"
-                style={{ color: "#fcd34d" }}
-              >
-                ── reset mode test
-              </p>
-              <h3 className="mt-2 font-serif text-2xl italic text-white">
-                Remettre tous les drinks de test en attente ?
-              </h3>
-              <p className="mt-2 text-sm text-white/65">
-                Les 15 drinks générés du mode test seront remis à
-                l’état « en attente » avec un nouveau timestamp. Les inscriptions
-                réelles ne sont pas touchées.
-                <br />
-                <span className="text-xs text-white/45">
-                  (Si la base de seed est vide, elle sera créée maintenant.)
-                </span>
-              </p>
-              <div className="mt-5 flex gap-2">
-                <button
-                  onClick={handleReset}
-                  className="flex-1 rounded-full px-4 py-3 text-sm font-bold transition-all active:scale-95"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-                    color: "white",
-                    boxShadow: "0 8px 24px -6px rgba(245, 158, 11, 0.55)",
-                  }}
-                >
-                  ↻ Reset
-                </button>
-                <button
-                  onClick={() => setResetConfirm(false)}
-                  className="rounded-full px-4 py-3 text-sm text-white/70 hover:text-white"
-                >
-                  Annuler
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

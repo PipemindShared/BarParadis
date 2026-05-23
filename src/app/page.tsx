@@ -1,7 +1,9 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { api } from "../../convex/_generated/api";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
@@ -9,6 +11,11 @@ const TEAL_LIGHT = "#7DD4C7";
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fadeRef = useRef<HTMLDivElement>(null);
+  const config = useQuery(api.bar.getConfig);
+  const accepting = config?.acceptingOrders ?? true;
+  const closedMessage =
+    config?.closedMessage ??
+    "Le paradis fait une pause. L'oracle se retire pour quelques minutes.";
 
   useEffect(() => {
     const video = videoRef.current;
@@ -179,36 +186,67 @@ export default function Home() {
             </p>
           </div>
 
-          <Link
-            href="/manifeste"
-            className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] animate-fade-up"
-            style={{
-              background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
-              boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
-              animationDelay: "2.4s",
-            }}
-          >
-            <span
-              className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
+          {accepting ? (
+            <Link
+              href="/manifeste"
+              className="group relative flex w-full items-center justify-between rounded-full px-6 py-4 text-base font-semibold tracking-wide text-white transition-all active:scale-[0.98] animate-fade-up"
               style={{
-                background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
+                background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
+                boxShadow: `0 10px 40px -8px ${TEAL}99, 0 0 0 1px ${TEAL_LIGHT}33 inset`,
+                animationDelay: "2.4s",
               }}
-            />
-            <span className="relative flex items-center gap-2">
-              <span style={{ color: TEAL_LIGHT }}>✦</span>
-              Obtiens ton élixir
-            </span>
-            <span className="relative text-xl transition-transform group-hover:translate-x-1">
-              →
-            </span>
-          </Link>
+            >
+              <span
+                className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-full opacity-60 blur-2xl"
+                style={{
+                  background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
+                }}
+              />
+              <span className="relative flex items-center gap-2">
+                <span style={{ color: TEAL_LIGHT }}>✦</span>
+                Obtiens ton élixir
+              </span>
+              <span className="relative text-xl transition-transform group-hover:translate-x-1">
+                →
+              </span>
+            </Link>
+          ) : (
+            <div
+              className="relative flex w-full flex-col items-center gap-2 rounded-2xl border px-5 py-5 text-center animate-fade-up"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                borderColor: "rgba(255,255,255,0.15)",
+                animationDelay: "2.4s",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+              }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.32em]"
+                style={{ color: TEAL_LIGHT }}
+              >
+                ✦ portail fermé ✦
+              </span>
+              <p
+                className="font-serif text-lg italic leading-snug text-white"
+                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}
+              >
+                {closedMessage}
+              </p>
+              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.22em] text-white/55">
+                Reviens dans quelques instants
+              </p>
+            </div>
+          )}
 
-          <p
-            className="whitespace-nowrap text-center font-mono text-[12px] uppercase tracking-[0.14em] text-white/75 animate-fade-up"
-            style={{ animationDelay: "2.7s" }}
-          >
-            ≈ 2&nbsp;min · 7&nbsp;questions
-          </p>
+          {accepting && (
+            <p
+              className="whitespace-nowrap text-center font-mono text-[12px] uppercase tracking-[0.14em] text-white/75 animate-fade-up"
+              style={{ animationDelay: "2.7s" }}
+            >
+              ≈ 2&nbsp;min · 7&nbsp;questions
+            </p>
+          )}
         </div>
 
         <div

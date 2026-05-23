@@ -80,6 +80,14 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_elixir", ["elixir"]),
 
+  // Config singleton du bar (1 seule ligne avec key="main")
+  barConfig: defineTable({
+    key: v.string(),
+    acceptingOrders: v.boolean(),
+    closedMessage: v.optional(v.string()),
+    updatedAt: v.number(),
+  }).index("by_key", ["key"]),
+
   // Recettes éditables (override les défauts du code)
   recipes: defineTable({
     elixir: v.union(
