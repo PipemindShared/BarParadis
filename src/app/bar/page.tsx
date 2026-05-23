@@ -516,22 +516,7 @@ function DrinkCard({
         src={image}
         alt=""
         className="absolute inset-0 h-full w-full object-cover transition-all"
-        style={
-          !withAlcohol
-            ? { filter: "saturate(0.25) brightness(0.7) contrast(1.05)" }
-            : undefined
-        }
       />
-      {/* Teal wash overlay for mocktail */}
-      {!withAlcohol && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: `linear-gradient(135deg, ${TEAL}66 0%, transparent 60%)`,
-            mixBlendMode: "color",
-          }}
-        />
-      )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20" />
 
       {/* MOCKTAIL banner pleine largeur en haut */}

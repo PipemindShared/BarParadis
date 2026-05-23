@@ -383,14 +383,7 @@ function CompactCard({
     >
       {/* Image strip à gauche (plus compact: 56x56) + contenu */}
       <div className="flex gap-2.5 p-2.5">
-        <div
-          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg"
-          style={
-            !withAlcohol
-              ? { filter: "saturate(0.3) brightness(0.7)" }
-              : undefined
-          }
-        >
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
           <img
             src={image}
             alt=""

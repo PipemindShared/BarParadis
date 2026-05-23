@@ -51,11 +51,6 @@ export function RecipeDialog({
               src={recipe.image}
               alt=""
               className="absolute inset-0 h-full w-full object-cover"
-              style={
-                !withAlcohol
-                  ? { filter: "saturate(0.3) brightness(0.7)" }
-                  : undefined
-              }
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0a1729] via-[#0a1729]/40 to-transparent" />
 
