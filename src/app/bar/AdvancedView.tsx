@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { api } from "../../../convex/_generated/api";
 import { RecipeManager } from "./RecipeManager";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
@@ -561,6 +562,8 @@ function InventoryDialog({ onClose }: { onClose: () => void }) {
   const setAvailability = useMutation(api.inventory.setAvailability);
   const [reasons, setReasons] = useState<Record<string, string>>({});
 
+  if (typeof document === "undefined") return null;
+
   async function toggle(key: "renaissance" | "perles" | "cendres" | "hotfix") {
     const current = inventory?.[key];
     const newAvailable = !(current?.available ?? true);
@@ -582,7 +585,7 @@ function InventoryDialog({ onClose }: { onClose: () => void }) {
     }
   }
 
-  return (
+  const modal = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -692,4 +695,6 @@ function InventoryDialog({ onClose }: { onClose: () => void }) {
       </motion.div>
     </motion.div>
   );
+
+  return createPortal(modal, document.body);
 }

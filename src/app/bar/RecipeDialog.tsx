@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import { api } from "../../../convex/_generated/api";
 import { getRecipeMerged } from "@/lib/recipes";
 
@@ -22,12 +23,13 @@ export function RecipeDialog({
   const overrides = useQuery(api.recipes.list);
   const recipe = getRecipeMerged(elixir, overrides);
   if (!recipe) return null;
+  if (typeof document === "undefined") return null;
 
   const variant = withAlcohol ? recipe.alcoholic : recipe.mocktail;
   const variantLabel = withAlcohol ? "Avec alcool" : "Sans alcool (mocktail)";
   const variantColor = withAlcohol ? TEAL_LIGHT : TEAL;
 
-  return (
+  const modal = (
     <AnimatePresence>
       <motion.div
         key="overlay"
@@ -209,6 +211,8 @@ export function RecipeDialog({
       </motion.div>
     </AnimatePresence>
   );
+
+  return createPortal(modal, document.body);
 }
 
 function Section({

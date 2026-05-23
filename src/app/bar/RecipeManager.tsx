@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { api } from "../../../convex/_generated/api";
 import {
   ELIXIR_KEY_TO_NAME,
@@ -108,7 +109,11 @@ export function RecipeManager({
   const currentVariant = draft[variant];
   const tabImage = ELIXIR_TABS.find((t) => t.key === activeKey)?.image;
 
-  return (
+  // Render via portal pour échapper au stacking context du parent
+  // (sinon le top bar du Bar passe par-dessus la modal)
+  if (typeof document === "undefined") return null;
+
+  const modal = (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -504,6 +509,8 @@ export function RecipeManager({
       </motion.div>
     </AnimatePresence>
   );
+
+  return createPortal(modal, document.body);
 }
 
 function VariantBtn({
