@@ -7,75 +7,81 @@ export type Module = {
 
 export type Formation = {
   profile: Profile;
+  category: string; // tag catégorie (DÉVELOPPEMENT, DESIGN, MANAGEMENT)
   title: string;
   subtitle: string;
   modules: Module[];
   accentColor: string;
-  emoji: string;
+  duration: string; // ex: "12h sur 2 jours"
+  level: string; // ex: "Intermédiaire"
 };
 
 export const FORMATIONS: Formation[] = [
   {
     profile: "Codeur",
+    category: "Développement",
     accentColor: "#10b981",
-    emoji: "</>",
-    title: "Le Code Réincarné",
-    subtitle: "Tape moins. Spécifie mieux. L'IA porte le clavier.",
+    duration: "16h sur 2 jours",
+    level: "Intermédiaire",
+    title: "Vibe Coding & Développement IA",
+    subtitle:
+      "Maîtrise les nouvelles pratiques du développement assisté par IA — du prompt à la production.",
     modules: [
       {
-        title: "Spec-driven development",
-        description:
-          "L'art d'écrire des specs que l'IA peut suivre fidèlement.",
+        title: "Spec-Driven Development",
+        description: "Rédiger des spécifications actionnables pour les LLMs.",
       },
       {
         title: "Gestion du contexte",
-        description:
-          "Orchestrer la mémoire de l'IA — la nouvelle gestion mémoire.",
+        description: "Orchestrer la mémoire des agents IA en environnement réel.",
       },
       {
-        title: "Standards émergents (MCP, A2A)",
-        description:
-          "Les protocoles qui connectent agents et outils entre eux.",
+        title: "Standards d'agents : MCP & A2A",
+        description: "Protocoles émergents de communication entre agents et outils.",
       },
     ],
   },
   {
     profile: "Designer",
+    category: "Design",
     accentColor: "#ec4899",
-    emoji: "✿",
-    title: "Le Pinceau Augmenté",
+    duration: "12h sur 2 jours",
+    level: "Tous niveaux",
+    title: "Design & IA",
     subtitle:
-      "La frontière UI/UX/Front-end s'efface. Tu livres en design et en code.",
+      "Du concept au prototype fonctionnel, en intégrant l'IA dans tes flux quotidiens.",
     modules: [
       {
-        title: "Outils génératifs",
-        description:
-          "Maîtriser Midjourney, Figma AI, v0 pour amplifier ta vitesse.",
+        title: "Outils génératifs en pratique",
+        description: "Workflows Figma AI, v0, Midjourney pour accélérer la création.",
       },
       {
-        title: "Vibe Designer",
-        description: "Fusionner UI, UX et front-end en une seule pratique.",
+        title: "Vibe Designer : fusion UI/UX/Front-end",
+        description: "Concevoir et livrer du code fonctionnel sans rupture.",
       },
     ],
   },
   {
     profile: "Manager",
+    category: "Management",
     accentColor: "#f59e0b",
-    emoji: "▤",
-    title: "Le Chef d'Orchestre IA",
-    subtitle: "Tu chorégraphies des équipes hybrides humain+IA.",
+    duration: "14h sur 2 jours",
+    level: "Confirmé",
+    title: "Management & Gouvernance IA",
+    subtitle:
+      "Piloter des équipes hybrides humain+IA et encadrer l'usage responsable des outils.",
     modules: [
       {
-        title: "Gestion d'équipe en vibe coding",
-        description: "Encadrer une équipe qui produit avec des agents IA.",
+        title: "Gestion d'équipes en environnement IA",
+        description: "Adapter le leadership aux nouvelles dynamiques de production.",
       },
       {
-        title: "Planification hybride",
-        description: "Orchestrer des cycles humain+IA, estimer autrement.",
+        title: "Planification de cycles hybrides",
+        description: "Estimer, prioriser et livrer dans un contexte humain+IA.",
       },
       {
-        title: "Gouvernance IA",
-        description: "Garde-fous éthiques et techniques de l'usage IA.",
+        title: "Gouvernance et risques",
+        description: "Cadres éthiques, conformité et garde-fous techniques.",
       },
     ],
   },

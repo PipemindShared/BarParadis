@@ -10,11 +10,12 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { FORMATIONS, type Formation, type Profile } from "@/lib/formations";
 
 const TEAL = "#19978a";
-const TEAL_LIGHT = "#7DD4C7";
-const INK = "#1d2a3a";
-const INK_MUTED = "#7a8a9a";
+const INK = "#0f172a";
+const INK_MID = "#475569";
+const INK_MUTED = "#64748b";
+const BG = "#f6f7f9";
 
-const SWIPE_CONFIDENCE_THRESHOLD = 10000;
+const SWIPE_CONFIDENCE_THRESHOLD = 8000;
 const swipePower = (offset: number, velocity: number) =>
   Math.abs(offset) * velocity;
 
@@ -37,7 +38,6 @@ export default function FormationsPage() {
 
   const profile = participant?.profile as Profile | undefined;
 
-  // Réordonne pour mettre la formation du profil en premier
   const ordered = useMemo<Formation[]>(() => {
     if (!profile) return FORMATIONS;
     const idx = FORMATIONS.findIndex((f) => f.profile === profile);
@@ -48,6 +48,7 @@ export default function FormationsPage() {
   const [[page, direction], setPage] = useState<[number, 1 | -1]>([0, 1]);
   const index = ((page % ordered.length) + ordered.length) % ordered.length;
   const formation = ordered[index];
+  const isRecommended = formation.profile === profile;
 
   function paginate(dir: 1 | -1) {
     setPage([page + dir, dir]);
@@ -55,285 +56,331 @@ export default function FormationsPage() {
 
   return (
     <div
-      className="relative flex min-h-[100dvh] w-full overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(to bottom, #f3f7fb 0%, #e5edf5 50%, #d6e2ec 100%)",
-        color: INK,
-      }}
+      className="relative flex min-h-[100dvh] w-full flex-col"
+      style={{ backgroundColor: BG, color: INK }}
     >
-      <div className="divine-rays pointer-events-none absolute inset-0" />
+      {/* Texture grille subtile */}
       <div
-        className="sun-pulse pointer-events-none absolute left-1/2 top-[-160px] h-[520px] w-[520px] rounded-full"
+        className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "radial-gradient(circle, rgba(255,210,130,0.75) 0%, rgba(255,200,110,0.55) 20%, rgba(255,220,160,0.32) 45%, rgba(255,235,190,0.16) 65%, transparent 80%)",
-          filter: "blur(18px)",
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(15, 23, 42, 0.05) 1px, transparent 0)",
+          backgroundSize: "24px 24px",
+          maskImage:
+            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
         }}
       />
 
-      <div className="relative z-10 flex w-full flex-col px-5 pt-6 pb-8">
-        {/* Header */}
-        <header className="flex items-center justify-between gap-3">
-          <Link
-            href="/file"
-            className="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 hover:text-zinc-800"
-          >
-            ← retour à la file
-          </Link>
-          <div className="flex h-7 items-center gap-2">
-            <Image
-              src="/images/pipemindlogo1.png"
-              alt="Pipemind"
-              width={80}
-              height={24}
-              className="h-6 w-auto object-contain"
-            />
-          </div>
-        </header>
+      {/* Header */}
+      <header
+        className="relative z-10 flex items-center justify-between border-b bg-white/85 px-5 py-3.5 backdrop-blur-md"
+        style={{ borderColor: "rgba(15, 23, 42, 0.06)" }}
+      >
+        <Link
+          href="/file"
+          className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em]"
+          style={{ color: INK_MUTED }}
+        >
+          <span>←</span>
+          <span className="hidden sm:inline">retour à la file</span>
+          <span className="sm:hidden">file</span>
+        </Link>
+        <Image
+          src="/images/pipemindlogo1.png"
+          alt="Pipemind"
+          width={88}
+          height={26}
+          className="h-6 w-auto object-contain"
+          priority
+        />
+      </header>
 
-        {/* Title */}
-        <div className="mt-6 text-center">
-          <p
-            className="font-mono text-[11px] uppercase tracking-[0.28em]"
-            style={{ color: INK_MUTED }}
+      {/* Title section */}
+      <div className="relative z-10 px-5 pt-7 sm:pt-9">
+        <p
+          className="font-mono text-[11px] font-bold uppercase tracking-[0.24em]"
+          style={{ color: TEAL }}
+        >
+          Formations Pipemind
+        </p>
+        <h1
+          className="mt-2 text-[clamp(1.6rem,6vw,2.1rem)] font-semibold leading-[1.1] tracking-tight"
+          style={{ color: INK }}
+        >
+          Trois spécialisations
+          <br />
+          <span style={{ color: INK_MID }}>pour ton équipe.</span>
+        </h1>
+
+        {profile && (
+          <div
+            className="mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
+            style={{
+              borderColor: `${formation.accentColor}55`,
+              backgroundColor: `${formation.accentColor}11`,
+            }}
           >
-            ── formations pipemind
-          </p>
-          <h1
-            className="mt-2 font-serif text-[clamp(1.8rem,7vw,2.4rem)] italic leading-tight"
-            style={{ color: INK }}
-          >
-            Trois voies pour ta renaissance.
-          </h1>
-          {profile && (
-            <p
-              className="mt-2 font-mono text-[10px] uppercase tracking-[0.22em]"
-              style={{ color: TEAL }}
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: formation.accentColor }}
+            />
+            <span
+              className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
+              style={{ color: formation.accentColor }}
             >
-              ✦ recommandée pour toi : {profile}
-            </p>
-          )}
+              Recommandée pour ton profil {profile}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Carousel */}
+      <div className="relative z-10 mt-6 flex flex-1 flex-col px-2 sm:px-5">
+        <div className="relative">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={page}
+              custom={direction}
+              initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction > 0 ? -60 : 60 }}
+              transition={{
+                opacity: { duration: 0.25 },
+                x: { type: "spring", stiffness: 300, damping: 32 },
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.7}
+              onDragEnd={(_, info) => {
+                const swipe = swipePower(info.offset.x, info.velocity.x);
+                if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) paginate(1);
+                else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) paginate(-1);
+              }}
+              className="cursor-grab active:cursor-grabbing"
+              style={{ touchAction: "pan-y" }}
+            >
+              <FormationCard
+                formation={formation}
+                isRecommended={isRecommended}
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Carousel — avec peek des cartes adjacentes */}
-        <div className="relative mt-6 flex items-center justify-center">
-          {/* Prev arrow — toujours visible (mobile + desktop) */}
+        {/* Navigation: arrows + indicators */}
+        <div className="mt-6 flex items-center justify-between gap-4 px-1">
           <button
             onClick={() => paginate(-1)}
-            className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-md transition-all hover:scale-110 active:scale-95"
-            style={{
-              borderColor: `${formation.accentColor}77`,
-              color: formation.accentColor,
-              boxShadow: `0 6px 18px -6px ${formation.accentColor}55`,
-            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
+            style={{ borderColor: "rgba(15, 23, 42, 0.12)", color: INK }}
             aria-label="Formation précédente"
           >
-            <span className="text-lg font-bold">←</span>
+            ←
           </button>
 
-          {/* Peek prev (légèrement visible derrière) */}
-          <div className="pointer-events-none absolute left-0 top-1/2 hidden h-[80%] w-12 -translate-y-1/2 sm:block">
-            <div
-              className="h-full rounded-r-2xl border border-l-0 opacity-30"
-              style={{
-                background: "rgba(255,255,255,0.4)",
-                borderColor: "rgba(29,42,58,0.1)",
-              }}
-            />
-          </div>
-
-          <div className="relative w-full max-w-md px-12">
-            <AnimatePresence initial={false} custom={direction} mode="wait">
-              <motion.div
-                key={page}
-                custom={direction}
-                initial={{ opacity: 0, x: direction > 0 ? 80 : -80, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: direction > 0 ? -80 : 80, scale: 0.95 }}
-                transition={{
-                  opacity: { duration: 0.25 },
-                  x: { type: "spring", stiffness: 280, damping: 30 },
-                  scale: { duration: 0.3 },
+          <div className="flex flex-1 items-center justify-center gap-1.5">
+            {ordered.map((f, i) => (
+              <button
+                key={f.profile}
+                onClick={() => setPage([i, i > index ? 1 : -1])}
+                className="group flex items-center gap-1.5 rounded-full transition-all"
+                style={{
+                  backgroundColor: i === index ? f.accentColor : "transparent",
+                  padding: i === index ? "6px 12px" : "6px 8px",
+                  border:
+                    i === index
+                      ? "none"
+                      : "1px solid rgba(15, 23, 42, 0.12)",
                 }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.7}
-                onDragEnd={(_, info) => {
-                  const swipe = swipePower(info.offset.x, info.velocity.x);
-                  if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) paginate(1);
-                  else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) paginate(-1);
-                }}
-                className="cursor-grab active:cursor-grabbing"
-                style={{ touchAction: "pan-y" }}
+                aria-label={`Formation ${f.profile}`}
               >
-                <FormationCard formation={formation} />
-              </motion.div>
-            </AnimatePresence>
+                <span
+                  className="h-1.5 w-1.5 rounded-full transition-all"
+                  style={{
+                    backgroundColor:
+                      i === index ? "white" : f.accentColor,
+                  }}
+                />
+                {i === index && (
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-white">
+                    {f.profile}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
 
-          {/* Peek next */}
-          <div className="pointer-events-none absolute right-0 top-1/2 hidden h-[80%] w-12 -translate-y-1/2 sm:block">
-            <div
-              className="h-full rounded-l-2xl border border-r-0 opacity-30"
-              style={{
-                background: "rgba(255,255,255,0.4)",
-                borderColor: "rgba(29,42,58,0.1)",
-              }}
-            />
-          </div>
-
-          {/* Next arrow */}
           <button
             onClick={() => paginate(1)}
-            className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-md transition-all hover:scale-110 active:scale-95"
-            style={{
-              borderColor: `${formation.accentColor}77`,
-              color: formation.accentColor,
-              boxShadow: `0 6px 18px -6px ${formation.accentColor}55`,
-            }}
+            className="flex h-11 w-11 items-center justify-center rounded-full border bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
+            style={{ borderColor: "rgba(15, 23, 42, 0.12)", color: INK }}
             aria-label="Formation suivante"
           >
-            <span className="text-lg font-bold">→</span>
+            →
           </button>
         </div>
 
-        {/* Indicators */}
-        <div className="mt-5 flex items-center justify-center gap-2">
-          {ordered.map((f, i) => (
-            <button
-              key={f.profile}
-              onClick={() => setPage([i, i > index ? 1 : -1])}
-              className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all"
-              style={{
-                backgroundColor:
-                  i === index ? f.accentColor : "rgba(29,42,58,0.08)",
-                color: i === index ? "white" : INK_MUTED,
-              }}
-            >
-              <span className="font-mono text-[9px] font-bold">{f.emoji}</span>
-              <span className="font-mono text-[10px] uppercase tracking-wider">
-                {f.profile}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Animated swipe hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mt-3 flex items-center justify-center gap-2"
+        <p
+          className="mt-3 mb-4 text-center font-mono text-[10px] uppercase tracking-[0.2em]"
+          style={{ color: INK_MUTED }}
         >
-          <motion.span
-            animate={{ x: [-3, 3, -3] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="text-base"
-            style={{ color: TEAL }}
-          >
-            ←
-          </motion.span>
-          <span
-            className="font-mono text-[10px] uppercase tracking-[0.22em]"
-            style={{ color: INK_MUTED }}
-          >
-            glisse pour explorer
-          </span>
-          <motion.span
-            animate={{ x: [3, -3, 3] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-            className="text-base"
-            style={{ color: TEAL }}
-          >
-            →
-          </motion.span>
-        </motion.div>
+          Glisse ou utilise les flèches
+        </p>
       </div>
     </div>
   );
 }
 
-function FormationCard({ formation }: { formation: Formation }) {
+function FormationCard({
+  formation,
+  isRecommended,
+}: {
+  formation: Formation;
+  isRecommended: boolean;
+}) {
   return (
     <article
-      className="rounded-2xl border bg-white/75 p-4 shadow-xl backdrop-blur-md"
+      className="mx-auto max-w-xl rounded-2xl border bg-white shadow-lg"
       style={{
-        borderColor: `${formation.accentColor}55`,
-        boxShadow: `0 16px 48px -16px ${formation.accentColor}55`,
+        borderColor: "rgba(15, 23, 42, 0.08)",
+        boxShadow:
+          "0 1px 2px rgba(15, 23, 42, 0.05), 0 16px 40px -12px rgba(15, 23, 42, 0.12)",
       }}
     >
-      {/* Profil tag */}
-      <div className="flex items-center justify-between">
-        <span
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{
-            backgroundColor: `${formation.accentColor}22`,
-            color: formation.accentColor,
-            border: `1px solid ${formation.accentColor}55`,
-          }}
-        >
-          <span>{formation.emoji}</span>
-          {formation.profile}
-        </span>
-      </div>
+      {/* Top accent bar */}
+      <div
+        className="h-1 rounded-t-2xl"
+        style={{ backgroundColor: formation.accentColor }}
+      />
 
-      {/* Title */}
-      <h2
-        className="mt-2 font-serif text-[clamp(1.5rem,6vw,1.95rem)] italic leading-tight"
-        style={{ color: INK }}
-      >
-        {formation.title}
-      </h2>
-      <p className="mt-1.5 text-sm leading-snug" style={{ color: INK }}>
-        {formation.subtitle}
-      </p>
-
-      {/* Modules — compacts, sans paragraphe d'intro */}
-      <div className="mt-4">
-        <h3
-          className="font-mono text-[10px] font-bold uppercase tracking-[0.25em]"
-          style={{ color: formation.accentColor }}
-        >
-          — Modules
-        </h3>
-        <ul className="mt-2 space-y-1.5">
-          {formation.modules.map((m, i) => (
-            <li
-              key={i}
-              className="flex gap-2.5 rounded-lg border px-2.5 py-2"
-              style={{
-                borderColor: `${formation.accentColor}33`,
-                backgroundColor: "rgba(255,255,255,0.7)",
-              }}
+      <div className="p-5 sm:p-6">
+        {/* Category + recommended */}
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
+            style={{
+              backgroundColor: `${formation.accentColor}18`,
+              color: formation.accentColor,
+            }}
+          >
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ backgroundColor: formation.accentColor }}
+            />
+            {formation.category}
+          </span>
+          {isRecommended && (
+            <span
+              className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]"
+              style={{ color: TEAL }}
             >
-              <span
-                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold"
-                style={{
-                  backgroundColor: `${formation.accentColor}22`,
-                  color: formation.accentColor,
-                }}
-              >
-                {i + 1}
-              </span>
-              <div className="min-w-0">
-                <h4
-                  className="font-serif text-sm italic leading-tight"
-                  style={{ color: INK }}
+              ✓ Recommandée
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h2
+          className="mt-3 text-[clamp(1.35rem,5.5vw,1.75rem)] font-bold leading-[1.15] tracking-tight"
+          style={{ color: INK }}
+        >
+          {formation.title}
+        </h2>
+        <p
+          className="mt-2 text-[14px] leading-snug"
+          style={{ color: INK_MID }}
+        >
+          {formation.subtitle}
+        </p>
+
+        {/* Meta */}
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-[12px]">
+          <Meta label="Durée" value={formation.duration} />
+          <Divider />
+          <Meta label="Niveau" value={formation.level} />
+          <Divider />
+          <Meta
+            label="Modules"
+            value={`${formation.modules.length} séances`}
+          />
+        </div>
+
+        {/* Modules */}
+        <div className="mt-5">
+          <h3
+            className="font-mono text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: INK_MUTED }}
+          >
+            Au programme
+          </h3>
+          <ul className="mt-3 space-y-2">
+            {formation.modules.map((m, i) => (
+              <li key={i} className="flex gap-3">
+                <span
+                  className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-bold"
+                  style={{
+                    backgroundColor: `${formation.accentColor}15`,
+                    color: formation.accentColor,
+                  }}
                 >
-                  {m.title}
-                </h4>
-                <p
-                  className="text-[12px] leading-snug"
-                  style={{ color: INK_MUTED }}
-                >
-                  {m.description}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0">
+                  <h4
+                    className="text-[14px] font-semibold leading-snug"
+                    style={{ color: INK }}
+                  >
+                    {m.title}
+                  </h4>
+                  <p
+                    className="text-[12px] leading-snug"
+                    style={{ color: INK_MUTED }}
+                  >
+                    {m.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* CTA */}
+        <div
+          className="mt-5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5"
+          style={{ borderColor: "rgba(15, 23, 42, 0.08)" }}
+        >
+          <p className="text-[12px]" style={{ color: INK_MID }}>
+            Intéressé ? Parle au barman pour les détails et tarifs.
+          </p>
+        </div>
       </div>
     </article>
+  );
+}
+
+function Meta({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col">
+      <span
+        className="font-mono text-[9px] font-bold uppercase tracking-[0.18em]"
+        style={{ color: INK_MUTED }}
+      >
+        {label}
+      </span>
+      <span className="text-[13px] font-medium" style={{ color: INK }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function Divider() {
+  return (
+    <span
+      className="h-6 w-px"
+      style={{ backgroundColor: "rgba(15, 23, 42, 0.1)" }}
+    />
   );
 }
