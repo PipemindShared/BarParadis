@@ -160,7 +160,7 @@ export default function Home() {
             style={{ animationDelay: "2.1s" }}
           >
             <p className="text-xl leading-snug text-white">
-              Ta carrière d’avant est{" "}
+              Ta profession est{" "}
               <span className="relative inline-block whitespace-nowrap">
                 <span className="italic">morte</span>
                 <svg
@@ -181,7 +181,10 @@ export default function Home() {
                   />
                 </svg>
               </span>
-              .
+              {" ? "}
+              <span className="block text-white/85">
+                Il est temps de se réincarner.
+              </span>
             </p>
           </div>
 
