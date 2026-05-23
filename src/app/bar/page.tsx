@@ -146,18 +146,24 @@ export default function BarPage() {
       )}
 
       {/* TOP BAR */}
-      <header className="relative z-20 flex items-center justify-between gap-4 border-b border-white/10 bg-black/40 px-5 py-3 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <span className="font-serif text-xl italic" style={{ color: TEAL_LIGHT }}>
+      <header className="relative z-20 flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-black/40 px-3 py-2.5 backdrop-blur-md sm:gap-4 sm:px-5 sm:py-3">
+        {/* Left: brand */}
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <span
+            className="shrink-0 font-serif text-xl italic"
+            style={{ color: TEAL_LIGHT }}
+          >
             ✦
           </span>
-          <h1 className="font-serif text-lg italic">Bar du Paradis</h1>
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.25em] text-white/45 sm:inline">
+          <h1 className="truncate font-serif text-base italic sm:text-lg">
+            Bar du Paradis
+          </h1>
+          <span className="hidden truncate font-mono text-[10px] uppercase tracking-[0.25em] text-white/45 md:inline">
             {barmanName}
           </span>
           {mode === "test" && (
             <span
-              className="rounded-md px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em]"
+              className="shrink-0 rounded-md px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.2em]"
               style={{
                 backgroundColor: "rgba(245, 158, 11, 0.2)",
                 color: "#fcd34d",
@@ -169,34 +175,40 @@ export default function BarPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.18em] text-white/70">
+        {/* Middle: counters — visible only on larger screens */}
+        <div className="hidden items-center gap-3 font-mono text-[11px] uppercase tracking-[0.18em] text-white/70 lg:flex">
           <Counter label="attente" n={data.counts.waiting} />
           <span className="text-white/20">·</span>
-          <Counter label="en cours" n={data.counts.preparing} color={TEAL_LIGHT} />
+          <Counter
+            label="en cours"
+            n={data.counts.preparing}
+            color={TEAL_LIGHT}
+          />
           <span className="text-white/20">·</span>
           <Counter label="prêts" n={data.counts.ready} color="#fbbf24" />
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right: controls */}
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           {/* Toggle Simple/Avancé */}
           <div
-            className="flex rounded-full border border-white/15 p-0.5"
+            className="flex shrink-0 rounded-full border border-white/15 p-0.5"
             style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
           >
             <button
               onClick={() => switchView("simple")}
-              className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-all"
+              className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] transition-all sm:px-3 sm:tracking-[0.18em]"
               style={{
-                backgroundColor:
-                  view === "simple" ? TEAL : "transparent",
-                color: view === "simple" ? "white" : "rgba(255,255,255,0.55)",
+                backgroundColor: view === "simple" ? TEAL : "transparent",
+                color:
+                  view === "simple" ? "white" : "rgba(255,255,255,0.55)",
               }}
             >
               Simple
             </button>
             <button
               onClick={() => switchView("advanced")}
-              className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] transition-all"
+              className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] transition-all sm:px-3 sm:tracking-[0.18em]"
               style={{
                 backgroundColor:
                   view === "advanced" ? TEAL : "transparent",
@@ -210,24 +222,39 @@ export default function BarPage() {
           {mode === "test" && (
             <button
               onClick={() => setResetConfirm(true)}
-              className="rounded-md px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] transition-all active:scale-95"
+              className="shrink-0 rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] transition-all active:scale-95 sm:px-2.5 sm:tracking-[0.2em]"
               style={{
                 backgroundColor: "rgba(245, 158, 11, 0.18)",
                 color: "#fcd34d",
                 border: "1px solid rgba(245, 158, 11, 0.4)",
               }}
             >
-              ↻ reset
+              ↻ <span className="hidden sm:inline">reset</span>
             </button>
           )}
           <button
             onClick={logout}
-            className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 hover:text-white"
+            className="shrink-0 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 hover:text-white"
+            title="Quitter"
           >
-            Quitter
+            <span className="hidden sm:inline">Quitter</span>
+            <span className="sm:hidden text-base">↩</span>
           </button>
         </div>
       </header>
+
+      {/* Compteurs mobile — sous le header en bandeau plein largeur */}
+      <div className="flex shrink-0 items-center justify-around gap-2 border-b border-white/10 bg-black/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-white/70 lg:hidden">
+        <Counter label="attente" n={data.counts.waiting} />
+        <span className="text-white/15">·</span>
+        <Counter
+          label="en cours"
+          n={data.counts.preparing}
+          color={TEAL_LIGHT}
+        />
+        <span className="text-white/15">·</span>
+        <Counter label="prêts" n={data.counts.ready} color="#fbbf24" />
+      </div>
 
       {view === "advanced" ? (
         <AdvancedView
