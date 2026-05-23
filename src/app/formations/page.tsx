@@ -52,7 +52,6 @@ export default function FormationsPage() {
   const [[page, direction], setPage] = useState<[number, 1 | -1]>([0, 1]);
   const index = ((page % ordered.length) + ordered.length) % ordered.length;
   const formation = ordered[index];
-  const isRecommended = formation.profile === profile;
 
   function paginate(dir: 1 | -1) {
     setPage([page + dir, dir]);
@@ -142,26 +141,6 @@ export default function FormationsPage() {
           <span style={{ color: TEAL_LIGHT }}>pour ton équipe.</span>
         </h1>
 
-        {profile && (
-          <div
-            className="mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
-            style={{
-              borderColor: `${formation.accentColor}55`,
-              backgroundColor: `${formation.accentColor}11`,
-            }}
-          >
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: formation.accentColor }}
-            />
-            <span
-              className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
-              style={{ color: formation.accentColor }}
-            >
-              Recommandée pour ton profil {profile}
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Carousel */}
@@ -189,10 +168,7 @@ export default function FormationsPage() {
               className="cursor-grab active:cursor-grabbing"
               style={{ touchAction: "pan-y" }}
             >
-              <FormationCard
-                formation={formation}
-                isRecommended={isRecommended}
-              />
+              <FormationCard formation={formation} />
             </motion.div>
           </AnimatePresence>
         </div>
@@ -259,13 +235,7 @@ export default function FormationsPage() {
   );
 }
 
-function FormationCard({
-  formation,
-  isRecommended,
-}: {
-  formation: Formation;
-  isRecommended: boolean;
-}) {
+function FormationCard({ formation }: { formation: Formation }) {
   return (
     <article
       className="mx-auto max-w-xl overflow-hidden rounded-2xl border shadow-2xl"
@@ -298,14 +268,6 @@ function FormationCard({
             />
             {formation.category}
           </span>
-          {isRecommended && (
-            <span
-              className="font-mono text-[9px] font-bold uppercase tracking-[0.22em]"
-              style={{ color: TEAL }}
-            >
-              ✓ Recommandée
-            </span>
-          )}
         </div>
 
         {/* Title */}
