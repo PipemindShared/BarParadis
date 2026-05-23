@@ -570,13 +570,21 @@ function CompactCard({
             )}
           </div>
 
-          {/* Nom du drink */}
+          {/* Nom du drink (varié) */}
           <p
             className="truncate font-serif text-[14px] italic leading-tight text-white"
-            title={participant.elixir ?? undefined}
+            title={participant.drinkName ?? participant.elixir ?? undefined}
           >
-            {participant.elixir ?? "—"}
+            {participant.drinkName ?? participant.elixir ?? "—"}
           </p>
+          {participant.drinkName && participant.elixir && (
+            <p
+              className="truncate font-mono text-[8px] uppercase tracking-wider text-white/45"
+              title={participant.elixir}
+            >
+              {participant.elixir}
+            </p>
+          )}
 
           {/* Client + temps */}
           <div className="flex items-center justify-between gap-2">
@@ -709,8 +717,13 @@ function DragOverlayCard({
             )}
           </div>
           <p className="truncate font-serif text-[14px] italic leading-tight text-white">
-            {participant.elixir ?? "—"}
+            {participant.drinkName ?? participant.elixir ?? "—"}
           </p>
+          {participant.drinkName && participant.elixir && (
+            <p className="truncate font-mono text-[8px] uppercase tracking-wider text-white/45">
+              {participant.elixir}
+            </p>
+          )}
           <p className="truncate text-[12px] font-medium leading-tight text-white/90">
             {participant.firstName} {maskLastName(participant.lastName)}
           </p>

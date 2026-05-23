@@ -348,6 +348,7 @@ export default function BarPage() {
       {recipeDialog && (
         <RecipeDialog
           elixir={recipeDialog.elixir}
+          drinkName={recipeDialog.drinkName}
           withAlcohol={recipeDialog.withAlcohol !== false}
           firstName={recipeDialog.firstName}
           onClose={() => setRecipeDialog(null)}
@@ -512,8 +513,16 @@ function DrinkCard({
           className="font-serif text-2xl italic leading-[1.05] text-white"
           style={{ textShadow: "0 2px 8px rgba(0,0,0,0.95)" }}
         >
-          {participant.elixir ?? "Élixir mystère"}
+          {participant.drinkName ?? participant.elixir ?? "Élixir mystère"}
         </p>
+        {participant.drinkName && participant.elixir && (
+          <p
+            className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/65"
+            style={{ textShadow: "0 1px 3px rgba(0,0,0,0.9)" }}
+          >
+            type : {participant.elixir}
+          </p>
+        )}
         <p
           className="text-base font-semibold leading-tight text-white/95"
           style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}

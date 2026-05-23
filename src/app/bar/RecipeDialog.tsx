@@ -11,11 +11,13 @@ const TEAL_LIGHT = "#7DD4C7";
 
 export function RecipeDialog({
   elixir,
+  drinkName,
   withAlcohol,
   firstName,
   onClose,
 }: {
   elixir: string | undefined | null;
+  drinkName?: string | null;
   withAlcohol: boolean;
   firstName?: string;
   onClose: () => void;
@@ -78,8 +80,16 @@ export function RecipeDialog({
                 className="mt-1 font-serif text-3xl italic leading-tight text-white"
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
               >
-                {recipe.elixir}
+                {drinkName ?? recipe.elixir}
               </h2>
+              {drinkName && drinkName !== recipe.elixir && (
+                <p
+                  className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/75"
+                  style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}
+                >
+                  type : {recipe.elixir}
+                </p>
+              )}
               <p
                 className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em]"
                 style={{ color: TEAL_LIGHT }}

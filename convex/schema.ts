@@ -17,7 +17,8 @@ export default defineSchema({
     // Données du questionnaire
     profile: v.optional(v.string()), // "Codeur" | "Designer" | "Manager"
     deity: v.optional(v.string()), // "Iris" | "Idun" | "Mellona" | "Heimdall"
-    elixir: v.optional(v.string()), // "L'Élixir de Renaissance" | etc.
+    elixir: v.optional(v.string()), // "L'Élixir de Renaissance" | etc. (nom canonique)
+    drinkName: v.optional(v.string()), // Nom personnalisé selon profil + divinité
     withAlcohol: v.optional(v.boolean()),
     traits: v.optional(v.array(v.string())),
     rawAnswers: v.optional(

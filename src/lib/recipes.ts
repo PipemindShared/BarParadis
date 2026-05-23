@@ -217,6 +217,117 @@ export const ELIXIR_KEY_TO_NAME: Record<ElixirKey, string> = {
   hotfix: ELIXIRS.hotfix,
 };
 
+/**
+ * Variantes de nom de drink selon le profil + l'élixir (donc la divinité).
+ * 4 noms par combinaison (3 profils × 4 élixirs = 12 combos × 4 = 48 noms).
+ * Inspirés du profil, de la divinité et de ses attributs, des ingrédients,
+ * et de la thématique de résurrection/renaissance.
+ */
+export const DRINK_NAME_VARIANTS: Record<
+  ElixirKey,
+  Record<"Codeur" | "Designer" | "Manager", string[]>
+> = {
+  // Iris — arc-en-ciel, transformation, traînée acidulée
+  renaissance: {
+    Codeur: [
+      "Le Refactor d’Iris",
+      "La Compilation Arc-en-Ciel",
+      "Le Commit Acidulé",
+      "L’Iridescence du Code",
+    ],
+    Designer: [
+      "Le Spectre d’Iris",
+      "La Palette Renaissance",
+      "Le Pigment Acidulé",
+      "Le Gradient Céleste",
+    ],
+    Manager: [
+      "Le Sprint d’Iris",
+      "La Roadmap Iridescente",
+      "Le Pivot Acidulé",
+      "La Réincarnation du Pipeline",
+    ],
+  },
+  // Idun — gardienne des pommes d'or, jeunesse éternelle, perles dorées
+  perles: {
+    Codeur: [
+      "Le Cache Doré d’Idun",
+      "Les Perles d’API",
+      "Le Buffer Éternel",
+      "Le Stash Tropical",
+    ],
+    Designer: [
+      "Les Pixels Dorés d’Idun",
+      "L’Icône Renaissance",
+      "La Maquette Tropicale",
+      "Le Drop Shadow Doré",
+    ],
+    Manager: [
+      "Le Sprint Doré d’Idun",
+      "Le Backlog Tropical",
+      "La Récompense Éternelle",
+      "Le KPI des Vergers",
+    ],
+  },
+  // Mellona — abeilles, miel, poussières sucrées
+  cendres: {
+    Codeur: [
+      "Le Hotpatch de Mellona",
+      "Le Build Sucré",
+      "Les Cendres du Stack",
+      "La Rebuild Mielleuse",
+    ],
+    Designer: [
+      "Le Halo Sucré de Mellona",
+      "Le Reset Doux",
+      "L’Éclat Pollinisé",
+      "La Renaissance UX",
+    ],
+    Manager: [
+      "Le Standup Sucré",
+      "Le Sprint des Abeilles",
+      "Le Post-Mortem Doré",
+      "La Vélocité de Mellona",
+    ],
+  },
+  // Heimdall — veilleur d'Asgard, yeux d'or, nuits longues
+  hotfix: {
+    Codeur: [
+      "Le Hotfix de Heimdall",
+      "Le Patch des Nuits Longues",
+      "Le Deploy Nocturne",
+      "La Sentinelle du Stack",
+    ],
+    Designer: [
+      "La Veille de Heimdall",
+      "Le Rework Nocturne",
+      "Le Pixel des Cieux",
+      "L’Aurora Royale",
+    ],
+    Manager: [
+      "Le Standup de 11h47",
+      "Le Sprint Nocturne",
+      "Le Rétro Royal",
+      "L’Escalade de Heimdall",
+    ],
+  },
+};
+
+/**
+ * Choisit aléatoirement un nom de drink selon profil + élixir (déduit du nom canonique).
+ */
+export function pickDrinkNameVariant(
+  elixirName: string | undefined | null,
+  profile: "Codeur" | "Designer" | "Manager" | undefined | null
+): string | null {
+  if (!elixirName || !profile) return null;
+  const key = ELIXIR_NAME_TO_KEY[elixirName];
+  if (!key) return null;
+  const variants = DRINK_NAME_VARIANTS[key]?.[profile];
+  if (!variants || variants.length === 0) return null;
+  return variants[Math.floor(Math.random() * variants.length)];
+}
+
 type RecipeOverride = {
   alcoholic: {
     ingredients: { name: string; qty: string }[];

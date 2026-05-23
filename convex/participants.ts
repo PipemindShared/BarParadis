@@ -24,6 +24,7 @@ export const register = mutation({
         })
       )
     ),
+    drinkName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     if (!args.consentParticipation) {
@@ -56,6 +57,7 @@ export const register = mutation({
       profile: args.profile,
       deity: args.deity,
       elixir: args.elixir,
+      drinkName: args.drinkName,
       withAlcohol: args.withAlcohol,
       traits: args.traits,
       rawAnswers: args.rawAnswers,
@@ -111,7 +113,7 @@ export const getQueuePosition = query({
         ahead: 0,
         me: {
           firstName: me.firstName,
-          elixir: me.elixir,
+          elixir: me.drinkName ?? me.elixir,
           deity: me.deity,
         },
       };
@@ -163,7 +165,7 @@ export const getQueuePosition = query({
       ahead,
       me: {
         firstName: me.firstName,
-        elixir: me.elixir,
+        elixir: me.drinkName ?? me.elixir,
         deity: me.deity,
       },
     };

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import { computeResult, type Answer } from "@/lib/questionnaire";
+import { pickDrinkNameVariant } from "@/lib/recipes";
 
 const TEAL = "#19978a";
 const TEAL_DEEP = "#0f7a70";
@@ -76,6 +77,8 @@ export default function ReclamerPage() {
     setSubmitting(true);
     try {
       const result = answers.length > 0 ? computeResult(answers) : null;
+      const drinkName =
+        pickDrinkNameVariant(result?.elixir, result?.primary) ?? undefined;
       const { participantId } = await register({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
@@ -87,6 +90,7 @@ export default function ReclamerPage() {
         profile: result?.primary,
         deity: result?.deity ?? undefined,
         elixir: result?.elixir ?? undefined,
+        drinkName,
         withAlcohol: result?.withAlcohol,
         traits: result?.traits,
         rawAnswers: answers,

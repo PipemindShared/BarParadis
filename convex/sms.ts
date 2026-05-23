@@ -77,7 +77,8 @@ export const notifyReady = action({
       return { sent: false, reason: "seed_participant" };
     }
 
-    const drinkLabel = participant.elixir ?? "ton élixir";
+    const drinkLabel =
+      participant.drinkName ?? participant.elixir ?? "ton élixir";
     const body = wasReassigned
       ? `✦ Bonne nouvelle, ${participant.firstName}.\n` +
         `Ton « ${drinkLabel} » a de l'avance — il est prêt maintenant.\n` +
@@ -120,7 +121,8 @@ export const sendConfirmation = action({
       return { sent: false, reason: "seed_participant" };
     }
 
-    const drinkLabel = participant.elixir ?? "ton élixir";
+    const drinkLabel =
+      participant.drinkName ?? participant.elixir ?? "ton élixir";
 
     const body =
       `✦ Le Paradis t'accueille, ${participant.firstName}.\n` +

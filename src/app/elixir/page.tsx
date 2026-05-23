@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   computeProfile,
+  computeResult,
   pickDrinkName,
   type Answer,
   type Profile,
 } from "@/lib/questionnaire";
+import { pickDrinkNameVariant } from "@/lib/recipes";
 
 const TEAL = "#19978a";
 const TEAL_LIGHT = "#7DD4C7";
@@ -68,9 +70,12 @@ export default function ElixirPage() {
       const raw = localStorage.getItem("paradis_answers");
       if (raw) {
         const answers: Answer[] = JSON.parse(raw);
-        const { primary } = computeProfile(answers);
-        setProfile(primary);
-        setDrink(pickDrinkName(primary));
+        const result = computeResult(answers);
+        setProfile(result.primary);
+        // Si une variante de nom existe pour profil + élixir, l'utiliser
+        // Sinon fallback sur l'élixir canonique ou un nom random par profil
+        const variant = pickDrinkNameVariant(result.elixir, result.primary);
+        setDrink(variant ?? result.elixir ?? pickDrinkName(result.primary));
       } else {
         // No answers — pick a random profile for demo
         const profiles: Profile[] = ["Codeur", "Designer", "Manager"];

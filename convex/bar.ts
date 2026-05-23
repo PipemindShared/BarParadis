@@ -5,11 +5,14 @@ const modeValidator = v.union(v.literal("live"), v.literal("test"));
 type Mode = "live" | "test";
 
 // Profils, divinités, élixirs pour les seeds (mêmes que le client)
+type SeedProfile = "Codeur" | "Designer" | "Manager";
+type SeedDeity = "Iris" | "Idun" | "Mellona" | "Heimdall";
+
 const SEED_PARTICIPANTS: Array<{
   firstName: string;
   lastName: string;
-  profile: "Codeur" | "Designer" | "Manager";
-  deity: "Iris" | "Idun" | "Mellona" | "Heimdall";
+  profile: SeedProfile;
+  deity: SeedDeity;
   elixir: string;
   withAlcohol: boolean;
 }> = [
@@ -29,6 +32,35 @@ const SEED_PARTICIPANTS: Array<{
   { firstName: "Élodie", lastName: "Dufresne", profile: "Designer", deity: "Mellona", elixir: "Les Cendres du Phénix", withAlcohol: false },
   { firstName: "Mathieu", lastName: "Thibault", profile: "Manager", deity: "Heimdall", elixir: "Le Hotfix Royal", withAlcohol: true },
 ];
+
+// Variantes de noms de drink — synchronisées avec src/lib/recipes.ts
+const DRINK_NAME_VARIANTS: Record<string, Record<SeedProfile, string[]>> = {
+  "L’Élixir de Renaissance": {
+    Codeur: ["Le Refactor d’Iris", "La Compilation Arc-en-Ciel", "Le Commit Acidulé", "L’Iridescence du Code"],
+    Designer: ["Le Spectre d’Iris", "La Palette Renaissance", "Le Pigment Acidulé", "Le Gradient Céleste"],
+    Manager: ["Le Sprint d’Iris", "La Roadmap Iridescente", "Le Pivot Acidulé", "La Réincarnation du Pipeline"],
+  },
+  "Les Perles du Paradis": {
+    Codeur: ["Le Cache Doré d’Idun", "Les Perles d’API", "Le Buffer Éternel", "Le Stash Tropical"],
+    Designer: ["Les Pixels Dorés d’Idun", "L’Icône Renaissance", "La Maquette Tropicale", "Le Drop Shadow Doré"],
+    Manager: ["Le Sprint Doré d’Idun", "Le Backlog Tropical", "La Récompense Éternelle", "Le KPI des Vergers"],
+  },
+  "Les Cendres du Phénix": {
+    Codeur: ["Le Hotpatch de Mellona", "Le Build Sucré", "Les Cendres du Stack", "La Rebuild Mielleuse"],
+    Designer: ["Le Halo Sucré de Mellona", "Le Reset Doux", "L’Éclat Pollinisé", "La Renaissance UX"],
+    Manager: ["Le Standup Sucré", "Le Sprint des Abeilles", "Le Post-Mortem Doré", "La Vélocité de Mellona"],
+  },
+  "Le Hotfix Royal": {
+    Codeur: ["Le Hotfix de Heimdall", "Le Patch des Nuits Longues", "Le Deploy Nocturne", "La Sentinelle du Stack"],
+    Designer: ["La Veille de Heimdall", "Le Rework Nocturne", "Le Pixel des Cieux", "L’Aurora Royale"],
+    Manager: ["Le Standup de 11h47", "Le Sprint Nocturne", "Le Rétro Royal", "L’Escalade de Heimdall"],
+  },
+};
+
+function pickSeedDrinkName(elixir: string, profile: SeedProfile): string {
+  const list = DRINK_NAME_VARIANTS[elixir]?.[profile] ?? [];
+  return list[Math.floor(Math.random() * list.length)] ?? elixir;
+}
 
 /**
  * Vérifie le PIN d'accès au bar.
@@ -384,6 +416,7 @@ export const resetTestDrinks = mutation({
           profile: s.profile,
           deity: s.deity,
           elixir: s.elixir,
+          drinkName: pickSeedDrinkName(s.elixir, s.profile),
           withAlcohol: s.withAlcohol,
           queueStatus: "waiting",
           source: "Seed test data",
