@@ -116,50 +116,85 @@ export default function FormationsPage() {
           )}
         </div>
 
-        {/* Carousel */}
-        <div className="relative mt-6 flex-1">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={page}
-              custom={direction}
-              initial={{ opacity: 0, x: direction > 0 ? 80 : -80 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction > 0 ? -80 : 80 }}
-              transition={{
-                opacity: { duration: 0.3 },
-                x: { type: "spring", stiffness: 260, damping: 28 },
-              }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.6}
-              onDragEnd={(_, info) => {
-                const swipe = swipePower(info.offset.x, info.velocity.x);
-                if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) paginate(1);
-                else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) paginate(-1);
-              }}
-              className="cursor-grab active:cursor-grabbing"
-              style={{ touchAction: "pan-y" }}
-            >
-              <FormationCard formation={formation} />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Side buttons (desktop) */}
+        {/* Carousel — avec peek des cartes adjacentes */}
+        <div className="relative mt-6 flex items-center justify-center">
+          {/* Prev arrow — toujours visible (mobile + desktop) */}
           <button
             onClick={() => paginate(-1)}
-            className="absolute -left-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white/80 backdrop-blur-md transition-all hover:bg-white sm:flex"
-            style={{ borderColor: `${TEAL}33`, color: INK }}
-            aria-label="Précédent"
+            className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-md transition-all hover:scale-110 active:scale-95"
+            style={{
+              borderColor: `${formation.accentColor}77`,
+              color: formation.accentColor,
+              boxShadow: `0 6px 18px -6px ${formation.accentColor}55`,
+            }}
+            aria-label="Formation précédente"
           >
-            ←
+            <span className="text-lg font-bold">←</span>
           </button>
+
+          {/* Peek prev (légèrement visible derrière) */}
+          <div className="pointer-events-none absolute left-0 top-1/2 hidden h-[80%] w-12 -translate-y-1/2 sm:block">
+            <div
+              className="h-full rounded-r-2xl border border-l-0 opacity-30"
+              style={{
+                background: "rgba(255,255,255,0.4)",
+                borderColor: "rgba(29,42,58,0.1)",
+              }}
+            />
+          </div>
+
+          <div className="relative w-full max-w-md px-12">
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <motion.div
+                key={page}
+                custom={direction}
+                initial={{ opacity: 0, x: direction > 0 ? 80 : -80, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: direction > 0 ? -80 : 80, scale: 0.95 }}
+                transition={{
+                  opacity: { duration: 0.25 },
+                  x: { type: "spring", stiffness: 280, damping: 30 },
+                  scale: { duration: 0.3 },
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.7}
+                onDragEnd={(_, info) => {
+                  const swipe = swipePower(info.offset.x, info.velocity.x);
+                  if (swipe < -SWIPE_CONFIDENCE_THRESHOLD) paginate(1);
+                  else if (swipe > SWIPE_CONFIDENCE_THRESHOLD) paginate(-1);
+                }}
+                className="cursor-grab active:cursor-grabbing"
+                style={{ touchAction: "pan-y" }}
+              >
+                <FormationCard formation={formation} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Peek next */}
+          <div className="pointer-events-none absolute right-0 top-1/2 hidden h-[80%] w-12 -translate-y-1/2 sm:block">
+            <div
+              className="h-full rounded-l-2xl border border-r-0 opacity-30"
+              style={{
+                background: "rgba(255,255,255,0.4)",
+                borderColor: "rgba(29,42,58,0.1)",
+              }}
+            />
+          </div>
+
+          {/* Next arrow */}
           <button
             onClick={() => paginate(1)}
-            className="absolute -right-2 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white/80 backdrop-blur-md transition-all hover:bg-white sm:flex"
-            style={{ borderColor: `${TEAL}33`, color: INK }}
-            aria-label="Suivant"
+            className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border bg-white shadow-md transition-all hover:scale-110 active:scale-95"
+            style={{
+              borderColor: `${formation.accentColor}77`,
+              color: formation.accentColor,
+              boxShadow: `0 6px 18px -6px ${formation.accentColor}55`,
+            }}
+            aria-label="Formation suivante"
           >
-            →
+            <span className="text-lg font-bold">→</span>
           </button>
         </div>
 
@@ -171,13 +206,12 @@ export default function FormationsPage() {
               onClick={() => setPage([i, i > index ? 1 : -1])}
               className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all"
               style={{
-                backgroundColor: i === index ? f.accentColor : "rgba(29,42,58,0.08)",
+                backgroundColor:
+                  i === index ? f.accentColor : "rgba(29,42,58,0.08)",
                 color: i === index ? "white" : INK_MUTED,
               }}
             >
-              <span className="font-mono text-[9px] font-bold">
-                {f.emoji}
-              </span>
+              <span className="font-mono text-[9px] font-bold">{f.emoji}</span>
               <span className="font-mono text-[10px] uppercase tracking-wider">
                 {f.profile}
               </span>
@@ -185,12 +219,36 @@ export default function FormationsPage() {
           ))}
         </div>
 
-        <p
-          className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.22em]"
-          style={{ color: INK_MUTED }}
+        {/* Animated swipe hint */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mt-3 flex items-center justify-center gap-2"
         >
-          glisse ←/→ ou tape sur un onglet
-        </p>
+          <motion.span
+            animate={{ x: [-3, 3, -3] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="text-base"
+            style={{ color: TEAL }}
+          >
+            ←
+          </motion.span>
+          <span
+            className="font-mono text-[10px] uppercase tracking-[0.22em]"
+            style={{ color: INK_MUTED }}
+          >
+            glisse pour explorer
+          </span>
+          <motion.span
+            animate={{ x: [3, -3, 3] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="text-base"
+            style={{ color: TEAL }}
+          >
+            →
+          </motion.span>
+        </motion.div>
       </div>
     </div>
   );
@@ -199,7 +257,7 @@ export default function FormationsPage() {
 function FormationCard({ formation }: { formation: Formation }) {
   return (
     <article
-      className="mx-auto max-w-xl rounded-2xl border bg-white/65 p-5 shadow-xl backdrop-blur-md sm:p-6"
+      className="rounded-2xl border bg-white/75 p-4 shadow-xl backdrop-blur-md"
       style={{
         borderColor: `${formation.accentColor}55`,
         boxShadow: `0 16px 48px -16px ${formation.accentColor}55`,
@@ -208,7 +266,7 @@ function FormationCard({ formation }: { formation: Formation }) {
       {/* Profil tag */}
       <div className="flex items-center justify-between">
         <span
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
+          className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.18em]"
           style={{
             backgroundColor: `${formation.accentColor}22`,
             color: formation.accentColor,
@@ -218,93 +276,63 @@ function FormationCard({ formation }: { formation: Formation }) {
           <span>{formation.emoji}</span>
           {formation.profile}
         </span>
-        <span
-          className="font-mono text-[9px] uppercase tracking-[0.22em]"
-          style={{ color: INK_MUTED }}
-        >
-          formation pipemind
-        </span>
       </div>
 
       {/* Title */}
       <h2
-        className="mt-3 font-serif text-[clamp(1.7rem,7vw,2.2rem)] italic leading-tight"
+        className="mt-2 font-serif text-[clamp(1.5rem,6vw,1.95rem)] italic leading-tight"
         style={{ color: INK }}
       >
         {formation.title}
       </h2>
-      <p
-        className="mt-2 text-base leading-snug"
-        style={{ color: INK }}
-      >
+      <p className="mt-1.5 text-sm leading-snug" style={{ color: INK }}>
         {formation.subtitle}
       </p>
 
-      {/* Intro */}
-      <p
-        className="mt-3 text-sm leading-snug"
-        style={{ color: INK_MUTED }}
-      >
-        {formation.intro}
-      </p>
-
-      {/* Modules */}
-      <div className="mt-5">
+      {/* Modules — compacts, sans paragraphe d'intro */}
+      <div className="mt-4">
         <h3
           className="font-mono text-[10px] font-bold uppercase tracking-[0.25em]"
           style={{ color: formation.accentColor }}
         >
-          — Modules ({formation.modules.length})
+          — Modules
         </h3>
-        <ul className="mt-3 space-y-3">
+        <ul className="mt-2 space-y-1.5">
           {formation.modules.map((m, i) => (
             <li
               key={i}
-              className="rounded-xl border p-3"
+              className="flex gap-2.5 rounded-lg border px-2.5 py-2"
               style={{
                 borderColor: `${formation.accentColor}33`,
                 backgroundColor: "rgba(255,255,255,0.7)",
               }}
             >
-              <div className="flex items-baseline gap-2">
-                <span
-                  className="font-mono text-[10px] font-bold"
-                  style={{ color: formation.accentColor }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+              <span
+                className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-bold"
+                style={{
+                  backgroundColor: `${formation.accentColor}22`,
+                  color: formation.accentColor,
+                }}
+              >
+                {i + 1}
+              </span>
+              <div className="min-w-0">
                 <h4
-                  className="font-serif text-base italic leading-tight"
+                  className="font-serif text-sm italic leading-tight"
                   style={{ color: INK }}
                 >
                   {m.title}
                 </h4>
+                <p
+                  className="text-[12px] leading-snug"
+                  style={{ color: INK_MUTED }}
+                >
+                  {m.description}
+                </p>
               </div>
-              <p
-                className="mt-1.5 text-sm leading-snug"
-                style={{ color: INK_MUTED }}
-              >
-                {m.description}
-              </p>
             </li>
           ))}
         </ul>
-      </div>
-
-      {/* CTA placeholder */}
-      <div
-        className="mt-5 rounded-xl border border-dashed p-3 text-center"
-        style={{ borderColor: `${formation.accentColor}55` }}
-      >
-        <p
-          className="font-mono text-[9px] uppercase tracking-[0.22em]"
-          style={{ color: INK_MUTED }}
-        >
-          ── inscription au comptoir
-        </p>
-        <p className="mt-1 text-xs" style={{ color: INK }}>
-          Demande au barman pour discuter de cette formation avec un humain.
-        </p>
       </div>
     </article>
   );

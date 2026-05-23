@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "../../../convex/_generated/api";
@@ -293,32 +294,56 @@ function PositionDisplay({
         · mise à jour en temps réel ·
       </p>
 
-      {/* Lien formations */}
+      {/* Lien formations — card visible et accrocheuse */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.5 }}
-        className="mt-8"
+        transition={{ duration: 0.8, delay: 1.4 }}
+        className="mt-8 w-full max-w-md"
       >
         <Link
           href="/formations"
-          className="group flex items-center gap-2 rounded-full border px-4 py-2.5 transition-all hover:bg-white/60 active:scale-95"
+          className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border p-4 shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
           style={{
-            borderColor: `${TEAL}55`,
-            backgroundColor: "rgba(255,255,255,0.5)",
-            color: INK,
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            borderColor: TEAL,
+            background: `linear-gradient(135deg, ${TEAL} 0%, #0f7a70 100%)`,
+            color: "white",
+            boxShadow: `0 12px 36px -8px ${TEAL}99`,
           }}
         >
-          <span style={{ color: TEAL }}>✦</span>
-          <span className="font-serif text-sm italic">
-            En attendant ton élixir, prépare ta prochaine vie
-          </span>
+          {/* Glow pulsant */}
           <span
-            className="text-sm transition-transform group-hover:translate-x-0.5"
-            style={{ color: TEAL }}
-          >
+            className="pointer-events-none absolute inset-0 -m-3 animate-pulse rounded-2xl opacity-60 blur-2xl"
+            style={{
+              background: `linear-gradient(90deg, ${TEAL}99, ${TEAL_LIGHT}66, ${TEAL}99)`,
+            }}
+            aria-hidden
+          />
+
+          {/* Pipemind logo */}
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
+            <Image
+              src="/images/pipemindlogo1.png"
+              alt="Pipemind"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
+          </div>
+
+          <div className="relative flex flex-col text-left">
+            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.22em] text-white/85">
+              ── en attendant ton élixir
+            </span>
+            <span className="mt-0.5 font-serif text-lg italic leading-tight">
+              Forme-toi à ta prochaine vie
+            </span>
+            <span className="mt-0.5 font-mono text-[9px] uppercase tracking-wider text-white/75">
+              3 formations · pipemind
+            </span>
+          </div>
+
+          <span className="relative ml-auto text-2xl transition-transform group-hover:translate-x-1">
             →
           </span>
         </Link>
