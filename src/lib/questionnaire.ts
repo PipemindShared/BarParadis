@@ -77,34 +77,52 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 3,
-    intro: "Quelle phrase",
-    text: "tu répétais le plus à job ?",
-    type: "trait",
+    intro: "Ton bureau idéal,",
+    text: "il contient quoi ?",
+    type: "profile",
     options: [
       {
         letter: "A",
-        text: "« Ça marche sur ma machine »",
-        trait: "stubborn",
+        text: "Trois écrans, un clavier qui clique fort pis une rangée de cannettes vides",
+        profile: "Codeur",
       },
       {
         letter: "B",
-        text: "« As-tu pensé à l’utilisateur, là ? »",
-        trait: "empathic",
+        text: "Une belle lumière naturelle, des plantes pis un Wacom — c’est tout",
+        profile: "Designer",
       },
       {
         letter: "C",
-        text: "« Booke-moi 30 minutes dans 3 semaines, on va voir ça ensemble »",
-        trait: "procrastinator",
-      },
-      {
-        letter: "D",
-        text: "« Petite question rapide… » (pis 14 paragraphes après)",
-        trait: "chaotic",
+        text: "Un grand tableau blanc, des Post-it partout pis du café qu’on remplit jamais",
+        profile: "Manager",
       },
     ],
   },
   {
     id: 4,
+    intro: "On te demande une démo dans 5 minutes.",
+    text: "Tu commences par…",
+    type: "profile",
+    options: [
+      {
+        letter: "A",
+        text: "Un live coding avec les yeux fermés",
+        profile: "Codeur",
+      },
+      {
+        letter: "B",
+        text: "Un mockup high-fi que t’avais préparé juste au cas",
+        profile: "Designer",
+      },
+      {
+        letter: "C",
+        text: "Le timeline pis les jalons jusqu’à la fin du trimestre",
+        profile: "Manager",
+      },
+    ],
+  },
+  {
+    id: 5,
     intro: "Le symbole",
     text: "de ton chaos professionnel ?",
     type: "trait",
@@ -132,7 +150,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 5,
+    id: 6,
     intro: "Quelle divinité",
     text: "préparera ton élixir ?",
     type: "deity",
@@ -144,7 +162,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 6,
+    id: 7,
     intro: "Pour ton élixir,",
     text: "avec ou sans spiritueux ?",
     type: "alcohol",
@@ -168,11 +186,8 @@ export type Answer = {
   letter: "A" | "B" | "C" | "D";
 };
 
+// Tiebreaker subtil basé sur les traits (utile en cas d'égalité parfaite)
 const TRAIT_TO_PROFILE_HINT: Record<string, Profile | null> = {
-  stubborn: "Codeur",
-  empathic: "Designer",
-  procrastinator: "Manager",
-  chaotic: null,
   endurant: null,
   guardian: null,
   social_survivor: "Manager",
