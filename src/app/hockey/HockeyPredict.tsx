@@ -1,7 +1,6 @@
 "use client";
 
 import { useAction, useMutation, useQuery } from "convex/react";
-import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import {
@@ -9,7 +8,6 @@ import {
   NUM_PERIODS,
   ROSTERS,
   TEAMS,
-  TEAM_CODES,
   totalFromPeriods,
   type PeriodScore,
   type TeamCode,
@@ -17,7 +15,6 @@ import {
 import {
   NumberStepper,
   SectionTitle,
-  TeamLogo,
   TEAL,
   TEAL_DEEP,
   TEAL_LIGHT,
@@ -59,7 +56,6 @@ export default function HockeyPredict({
   const savePrediction = useMutation(api.hockey.savePrediction);
   const sendConfirmation = useAction(api.hockeySms.sendPredictionConfirmation);
 
-  const [winner, setWinner] = useState<TeamCode | null>(null);
   const [periods, setPeriods] = useState<PeriodScore[]>(emptyPeriods());
   const [shots, setShots] = useState<PeriodScore[]>(emptyPeriods());
   const [otWinner, setOtWinner] = useState<TeamCode | null>(null);
@@ -73,7 +69,6 @@ export default function HockeyPredict({
   useEffect(() => {
     if (!entry || prefilled.current) return;
     prefilled.current = true;
-    if (entry.winner) setWinner(entry.winner);
     if (entry.periodScores && entry.periodScores.length >= NUM_PERIODS) {
       setPeriods(entry.periodScores.slice(0, NUM_PERIODS));
       // 4e entrée = prolongation
@@ -107,6 +102,10 @@ export default function HockeyPredict({
     [reg, otWinner]
   );
 
+  // Le gagnant prédit est déterminé par le score (prolongation incluse)
+  const derivedWinner: TeamCode | null =
+    final.mtl > final.car ? "mtl" : final.car > final.mtl ? "car" : null;
+
   // Si plus d'égalité, on annule la prolongation
   useEffect(() => {
     if (!isTied && otWinner !== null) setOtWinner(null);
@@ -135,10 +134,10 @@ export default function HockeyPredict({
   const allScorersChosen =
     scorersMtl.every((s) => s !== "") && scorersCar.every((s) => s !== "");
   const otOk = !isTied || otWinner !== null;
-  const canSubmit = !!winner && otOk && allScorersChosen && !submitting;
+  const canSubmit = otOk && !!derivedWinner && allScorersChosen && !submitting;
 
   async function submit() {
-    if (!canSubmit || !winner) return;
+    if (!canSubmit || !derivedWinner) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -155,7 +154,7 @@ export default function HockeyPredict({
       ];
       await savePrediction({
         entryId: entryId as Id<"hockeyEntries">,
-        winner,
+        winner: derivedWinner,
         periodScores,
         scorers,
         shots,
@@ -175,9 +174,8 @@ export default function HockeyPredict({
     }
   }
 
-  const submitHint = !winner
-    ? "Choisis un gagnant"
-    : isTied && !otWinner
+  const submitHint =
+    isTied && !otWinner
       ? "Égalité après 3 périodes — choisis qui marque en prolongation"
       : !allScorersChosen
         ? "Choisis un scoreur pour chaque but prévu"
@@ -195,51 +193,13 @@ export default function HockeyPredict({
         </h1>
       </header>
 
-      {/* 1 — Gagnant */}
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mt-7"
-      >
-        <SectionTitle index={1} title="Qui va gagner?" />
-        <div className="grid grid-cols-2 gap-3">
-          {TEAM_CODES.map((code) => {
-            const t = TEAMS[code];
-            const selected = winner === code;
-            return (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setWinner(code)}
-                className="flex flex-col items-center gap-2 rounded-2xl border px-3 py-4 transition active:scale-95"
-                style={{
-                  borderColor: selected ? t.color : "rgba(255,255,255,0.12)",
-                  background: selected
-                    ? `${t.color}22`
-                    : "rgba(255,255,255,0.04)",
-                  boxShadow: selected ? `0 0 26px -6px ${t.color}` : "none",
-                }}
-              >
-                <TeamLogo
-                  src={t.logo}
-                  alt={t.name}
-                  color={t.color}
-                  abbr={t.abbr}
-                  size={60}
-                />
-                <span className="text-sm font-semibold text-white">
-                  {t.short}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </motion.section>
-
-      {/* 2 — Score par période */}
-      <section className="mt-9">
-        <SectionTitle index={2} title="Score par période" />
+      {/* 1 — Score par période (détermine le gagnant) */}
+      <section className="mt-7">
+        <SectionTitle
+          index={1}
+          title="Score par période"
+          hint="Le gagnant est déterminé par ton pointage"
+        />
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <div
             className="grid grid-cols-3 px-4 py-2.5 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/50"
@@ -325,18 +285,26 @@ export default function HockeyPredict({
             </span>
           </div>
         </div>
-        {isTied && (
+        {isTied && !otWinner && (
           <p className="mt-2 text-[13px] leading-snug text-amber-200/80">
             Égalité après 3 périodes&nbsp;: choisis l&apos;équipe qui marque le
             but gagnant en prolongation (mort subite).
           </p>
         )}
+        {derivedWinner && (
+          <p className="mt-2 text-center text-[13px] text-white/60">
+            🏆 Tu prédis une victoire des{" "}
+            <span className="font-semibold" style={{ color: TEAL_LIGHT }}>
+              {TEAMS[derivedWinner].short}
+            </span>
+          </p>
+        )}
       </section>
 
-      {/* 3 — Scoreurs */}
+      {/* 2 — Scoreurs */}
       <section className="mt-9">
         <SectionTitle
-          index={3}
+          index={2}
           title="Les scoreurs"
           hint="Un joueur par but prévu"
         />
@@ -368,9 +336,9 @@ export default function HockeyPredict({
         )}
       </section>
 
-      {/* 4 — Tirs au but */}
+      {/* 3 — Tirs au but */}
       <section className="mt-9">
-        <SectionTitle index={4} title="Tirs au but par période" />
+        <SectionTitle index={3} title="Tirs au but par période" />
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <div
             className="grid grid-cols-3 px-4 py-2.5 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/50"
