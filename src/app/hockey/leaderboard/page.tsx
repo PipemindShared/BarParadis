@@ -2,7 +2,6 @@
 
 import { useQuery } from "convex/react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
 import { api } from "../../../../convex/_generated/api";
 import { favTeamMeta, TEAMS, totalFromPeriods, type FavTeam } from "@/lib/hockey";
 import { HOCKEY_BG, TeamLogo, TEAL, TEAL_LIGHT } from "../ui";
@@ -119,15 +118,6 @@ export default function LeaderboardPage() {
             })}
           </AnimatePresence>
         </ol>
-
-        <div className="mt-10 flex justify-center">
-          <Link
-            href="/hockey"
-            className="rounded-full border border-white/15 px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-white/60 transition hover:text-white"
-          >
-            ← Faire une prédiction
-          </Link>
-        </div>
       </div>
     </div>
   );
