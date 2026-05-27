@@ -21,12 +21,14 @@ export function TeamLogo({
   color,
   abbr,
   size = 72,
+  glow = false,
 }: {
   src: string;
   alt: string;
   color: string;
   abbr: string;
   size?: number;
+  glow?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
 
@@ -57,8 +59,14 @@ export function TeamLogo({
       width={size}
       height={size}
       onError={() => setFailed(true)}
-      style={{ width: size, height: size, objectFit: "contain" }}
-      className="drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+      style={{
+        width: size,
+        height: size,
+        objectFit: "contain",
+        filter: glow
+          ? "drop-shadow(0 0 7px rgba(255,255,255,0.65)) drop-shadow(0 0 18px rgba(255,255,255,0.35))"
+          : "drop-shadow(0 4px 16px rgba(0,0,0,0.5))",
+      }}
     />
   );
 }
