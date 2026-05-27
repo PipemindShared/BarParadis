@@ -139,7 +139,8 @@ export default function HockeyRegister({
                   className="flex flex-col items-center gap-2 rounded-2xl border-2 px-2 py-3 transition active:scale-95"
                   style={{
                     borderColor: selected ? t.color : "transparent",
-                    background: "#ffffff",
+                    background:
+                      "linear-gradient(160deg, #eef4fa 0%, #d7e4f0 100%)",
                     boxShadow: selected
                       ? `0 0 0 2px ${t.color}, 0 0 22px -4px ${t.color}`
                       : "0 2px 12px rgba(0,0,0,0.3)",
