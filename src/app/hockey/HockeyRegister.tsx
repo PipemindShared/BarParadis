@@ -136,13 +136,13 @@ export default function HockeyRegister({
                   key={t.code}
                   type="button"
                   onClick={() => setFavoriteTeam(t.code)}
-                  className="flex flex-col items-center gap-2 rounded-2xl border px-2 py-3 transition active:scale-95"
+                  className="flex flex-col items-center gap-2 rounded-2xl border-2 px-2 py-3 transition active:scale-95"
                   style={{
-                    borderColor: selected ? t.color : "rgba(255,255,255,0.12)",
-                    background: selected
-                      ? `${t.color}22`
-                      : "rgba(255,255,255,0.04)",
-                    boxShadow: selected ? `0 0 22px -6px ${t.color}` : "none",
+                    borderColor: selected ? t.color : "transparent",
+                    background: "#ffffff",
+                    boxShadow: selected
+                      ? `0 0 0 2px ${t.color}, 0 0 22px -4px ${t.color}`
+                      : "0 2px 12px rgba(0,0,0,0.3)",
                   }}
                 >
                   <TeamLogo
@@ -152,7 +152,10 @@ export default function HockeyRegister({
                     abbr={t.short.slice(0, 3).toUpperCase()}
                     size={52}
                   />
-                  <span className="text-center text-[11px] font-semibold leading-tight text-white">
+                  <span
+                    className="text-center text-[11px] font-bold leading-tight"
+                    style={{ color: "#1d2a3a" }}
+                  >
                     {t.short}
                   </span>
                 </button>
