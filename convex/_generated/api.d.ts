@@ -9,6 +9,9 @@
  */
 
 import type * as bar from "../bar.js";
+import type * as hockey from "../hockey.js";
+import type * as hockeyScore from "../hockeyScore.js";
+import type * as hockeySms from "../hockeySms.js";
 import type * as inventory from "../inventory.js";
 import type * as participants from "../participants.js";
 import type * as phone from "../phone.js";
@@ -23,6 +26,9 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   bar: typeof bar;
+  hockey: typeof hockey;
+  hockeyScore: typeof hockeyScore;
+  hockeySms: typeof hockeySms;
   inventory: typeof inventory;
   participants: typeof participants;
   phone: typeof phone;

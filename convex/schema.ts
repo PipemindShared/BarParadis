@@ -112,4 +112,78 @@ export default defineSchema({
     updatedAt: v.number(),
     updatedBy: v.optional(v.string()),
   }).index("by_elixir", ["elixir"]),
+
+  // ─────────────────────────────────────────────────────────────
+  // HOCKEY — app de prédiction de match (indépendante du Paradis)
+  // Match: Canadiens (mtl) vs Hurricanes (car)
+  // ─────────────────────────────────────────────────────────────
+
+  // Une ligne par participant: identité + sa prédiction
+  hockeyEntries: defineTable({
+    // Identité
+    firstName: v.string(),
+    lastName: v.string(),
+    phone: v.string(),
+    // Équipe de coeur (badge cosmétique sur le leaderboard) — 3 choix
+    favoriteTeam: v.union(
+      v.literal("canadiens"),
+      v.literal("nordiques"),
+      v.literal("hurricanes")
+    ),
+    consent: v.boolean(),
+
+    // Prédiction (optionnelle jusqu'à soumission)
+    winner: v.optional(v.union(v.literal("mtl"), v.literal("car"))),
+    // Score par période: tableau de 3 objets { mtl, car }
+    periodScores: v.optional(
+      v.array(v.object({ mtl: v.number(), car: v.number() }))
+    ),
+    // Buteurs prédits: un par but prévu
+    scorers: v.optional(
+      v.array(
+        v.object({
+          team: v.union(v.literal("mtl"), v.literal("car")),
+          player: v.string(),
+        })
+      )
+    ),
+    // Tirs au but par période par équipe: tableau de 3 objets { mtl, car }
+    shots: v.optional(
+      v.array(v.object({ mtl: v.number(), car: v.number() }))
+    ),
+    predictedAt: v.optional(v.number()),
+
+    createdAt: v.number(),
+    isSeed: v.optional(v.boolean()),
+  })
+    .index("by_phone", ["phone"])
+    .index("by_created", ["createdAt"]),
+
+  // Config singleton du match (key="main"): phase + résultats réels
+  hockeyConfig: defineTable({
+    key: v.string(),
+    // pregame = prédictions ouvertes; live = fermées; final = terminé
+    phase: v.union(
+      v.literal("pregame"),
+      v.literal("live"),
+      v.literal("final")
+    ),
+    // Résultats réels saisis par l'admin (partiels permis, remplis au fil du match)
+    actualWinner: v.optional(v.union(v.literal("mtl"), v.literal("car"))),
+    actualPeriodScores: v.optional(
+      v.array(v.object({ mtl: v.number(), car: v.number() }))
+    ),
+    actualScorers: v.optional(
+      v.array(
+        v.object({
+          team: v.union(v.literal("mtl"), v.literal("car")),
+          player: v.string(),
+        })
+      )
+    ),
+    actualShots: v.optional(
+      v.array(v.object({ mtl: v.number(), car: v.number() }))
+    ),
+    updatedAt: v.number(),
+  }).index("by_key", ["key"]),
 });
