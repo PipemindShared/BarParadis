@@ -196,6 +196,10 @@ export const leaderboard = query({
       actualShots: config?.actualShots,
     };
 
+    // Le match est "commencé" dès que la phase n'est plus "pré-match".
+    // Avant le début, on NE révèle PAS les prédictions des joueurs.
+    const started = (config?.phase ?? "pregame") !== "pregame";
+
     const raw = await ctx.db.query("hockeyEntries").collect();
     const entries = raw.filter((e) =>
       includeSeeds ? true : e.isSeed !== true
@@ -212,19 +216,22 @@ export const leaderboard = query({
         actual
       );
 
-      // Résumé bref de la prédiction (pour l'affichage sous le nom)
+      // Prédiction complète — seulement une fois le match commencé
       const predFinal = (e.periodScores ?? []).reduce(
         (a, p) => ({ mtl: a.mtl + (p.mtl || 0), car: a.car + (p.car || 0) }),
         { mtl: 0, car: 0 }
       );
-      const prediction = e.predictedAt
-        ? {
-            winner: e.winner ?? null,
-            finalMtl: predFinal.mtl,
-            finalCar: predFinal.car,
-            scorers: (e.scorers ?? []).map((s) => s.player),
-          }
-        : null;
+      const prediction =
+        started && e.predictedAt
+          ? {
+              winner: e.winner ?? null,
+              periodScores: e.periodScores ?? [],
+              shots: e.shots ?? [],
+              scorers: e.scorers ?? [],
+              finalMtl: predFinal.mtl,
+              finalCar: predFinal.car,
+            }
+          : null;
 
       return {
         entryId: e._id,
